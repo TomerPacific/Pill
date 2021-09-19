@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pill/dayWidget.dart';
 
 void main() {
   runApp(MyApp());
@@ -36,10 +37,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[],
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            new DayWidget(date: DateTime.now())
+          ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
