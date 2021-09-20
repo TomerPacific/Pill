@@ -1,5 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
+import 'package:pill/service/DateService.dart';
 
 class DayWidget extends StatefulWidget {
 
@@ -25,7 +26,7 @@ class DayWidgetState extends State<DayWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               new Text(
-                  widget.date.month.toString() + "/" + widget.date.day.toString(),
+                  DateService().getDateAsMonthAndDay(widget.date),
                   style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)
               )
             ],
