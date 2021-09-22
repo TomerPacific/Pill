@@ -35,14 +35,16 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
+      body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             new DayWidget(date: DateTime.now())
           ],
         ),
-      ),
-    );
+      floatingActionButton: new FloatingActionButton(
+          onPressed: () {},
+          child: Icon(Icons.add)
+        ),
+      );
   }
 }
