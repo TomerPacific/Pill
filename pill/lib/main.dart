@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pill/dayWidget.dart';
+import 'package:pill/service/SharedPreferencesService.dart';
 
-void main() {
+Future<void> main() async {
+  await SharedPreferencesService().init();
   runApp(MyApp());
 }
 
