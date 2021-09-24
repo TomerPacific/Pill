@@ -14,6 +14,7 @@ class AddingPillForm extends StatefulWidget {
 class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   final pillNameTextEditingController = TextEditingController();
+  String pillRegiment = "Daily";
 
 
   @override void dispose() {
@@ -36,10 +37,29 @@ class AddingPillFormState extends State<AddingPillForm> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Please enter a pill name';
                 }
                 return null;
               },
+            ),
+            DropdownButtonFormField<String>(
+                value: pillRegiment,
+                hint: new Text("Choose Pill Regiment"),
+                onChanged: (value) => pillRegiment = value,
+                items: [
+                  DropdownMenuItem<String>(
+                      value: 'Daily',
+                      child: new Text("Daily")
+                  ),
+                  DropdownMenuItem<String>(
+                      value: 'Weekly',
+                      child: new Text("Weekly")
+                  ),
+                  DropdownMenuItem<String>(
+                      value: 'Monthly',
+                      child: new Text("Monthly")
+                  )
+                ]
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
