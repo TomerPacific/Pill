@@ -13,10 +13,15 @@ class AddingPillForm extends StatefulWidget {
 
 class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
+  final pillNameTextEditingController = TextEditingController();
 
+
+  @override void dispose() {
+    pillNameTextEditingController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
     return new Scaffold(
       body: Form(
         key: _formKey,
@@ -24,9 +29,10 @@ class AddingPillFormState extends State<AddingPillForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextFormField(
+              controller: pillNameTextEditingController,
               decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'Enter the pill name'
+                  hintText: 'What is the pill\'s name?'
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -45,7 +51,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
+                            const SnackBar(content: Text('Pill Added')),
                           );
                         }
                       },
