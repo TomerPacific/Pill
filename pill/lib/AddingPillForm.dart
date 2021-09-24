@@ -21,6 +21,7 @@ class AddingPillFormState extends State<AddingPillForm> {
       body: Form(
         key: _formKey,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextFormField(
               decoration: const InputDecoration(
@@ -34,6 +35,34 @@ class AddingPillFormState extends State<AddingPillForm> {
                 return null;
               },
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                    alignment: Alignment.topLeft,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Processing Data')),
+                          );
+                        }
+                      },
+                      child: const Text('Submit'),
+                    )
+                ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                )
+              ],
+            )
           ],
         ),
       ),
