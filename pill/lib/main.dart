@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pill/AddingPillForm.dart';
 import 'package:pill/dayWidget.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesService().init();
   runApp(MyApp());
 }
@@ -31,6 +33,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  bool _showForm = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       floatingActionButton: new FloatingActionButton(
-          onPressed: () {},
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddingPillForm()),
+          ),
           child: Icon(Icons.add)
         ),
       );
