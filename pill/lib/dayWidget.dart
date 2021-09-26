@@ -31,11 +31,16 @@ class DayWidgetState extends State<DayWidget> {
                     children: [
                       new Align(
                         alignment: Alignment.topCenter,
-                        child:  new Text(
-                            DateService().getDateAsMonthAndDay(widget.date),
-                            style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)
+                        child:  new Padding(
+                            padding: const EdgeInsets.only(
+                                top:8.0
+                            ),
+                          child: new Text(
+                              DateService().getDateAsMonthAndDay(widget.date),
+                              style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)
+                          ),
                         ),
-                      )
+                      ),
                     ],
                   ),
                 )
