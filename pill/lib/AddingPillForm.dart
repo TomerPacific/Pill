@@ -54,6 +54,9 @@ class AddingPillFormState extends State<AddingPillForm> {
               visible: showPillRegimentDropDown,
                 child: DropdownButtonFormField<String>(
                 value: pillRegiment,
+                decoration: InputDecoration(
+                  labelText: 'Choose Pill Regiment'
+                ),
                 hint: new Text("Choose Pill Regiment"),
                 onChanged: (value) => pillRegiment = value,
                 focusNode: focusNode,
