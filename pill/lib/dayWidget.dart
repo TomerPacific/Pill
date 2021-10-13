@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/DateService.dart';
 
 class DayWidget extends StatefulWidget {
@@ -17,6 +18,12 @@ class DayWidget extends StatefulWidget {
 
 class DayWidgetState extends State<DayWidget> {
 
+  List<PillToTake> _pillsToTake = List.empty();
+
+  @override void initState() {
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
