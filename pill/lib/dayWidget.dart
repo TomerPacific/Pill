@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/DateService.dart';
+import 'package:pill/service/SharedPreferencesService.dart';
 
 class DayWidget extends StatefulWidget {
 
@@ -21,7 +22,8 @@ class DayWidgetState extends State<DayWidget> {
   List<PillToTake> _pillsToTake = List.empty();
 
   @override void initState() {
-
+    String currentDate = DateService().getDateAsMonthAndDay(widget.date);
+    _pillsToTake = SharedPreferencesService().getPillsToTakeForDate(currentDate);
     super.initState();
   }
 
