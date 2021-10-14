@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pill/model/PillRegiment.dart';
 
 class AddingPillForm extends StatefulWidget {
   const AddingPillForm({Key key}) : super(key: key);
@@ -62,15 +63,15 @@ class AddingPillFormState extends State<AddingPillForm> {
                 focusNode: focusNode,
                 items: [
                   DropdownMenuItem<String>(
-                      value: 'Daily',
+                      value: PillRegiment.Daily.toString(),
                       child: new Text("Daily")
                   ),
                   DropdownMenuItem<String>(
-                      value: 'Weekly',
+                      value: PillRegiment.Weekly.toString(),
                       child: new Text("Weekly")
                   ),
                   DropdownMenuItem<String>(
-                      value: 'Monthly',
+                      value: PillRegiment.Monthly.toString(),
                       child: new Text("Monthly")
                   )
                 ]
