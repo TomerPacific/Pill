@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pill/AddingPillForm.dart';
+import 'package:pill/addingPillForm.dart';
 import 'package:pill/dayWidget.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 

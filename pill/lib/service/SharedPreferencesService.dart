@@ -26,7 +26,7 @@ class SharedPreferencesService {
       if (encodedPills != null) {
         pills = PillToTake.decode(encodedPills);
       }
-      
+
       return pills;
   }
 
