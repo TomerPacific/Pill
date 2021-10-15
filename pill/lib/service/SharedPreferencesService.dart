@@ -22,7 +22,11 @@ class SharedPreferencesService {
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
       String encodedPills = _sharedPreferences.getString(currentDate);
-      final List<PillToTake> pills = PillToTake.decode(encodedPills);
+      List<PillToTake> pills = [];
+      if (encodedPills != null) {
+        pills = PillToTake.decode(encodedPills);
+      }
+      
       return pills;
   }
 
