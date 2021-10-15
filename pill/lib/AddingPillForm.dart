@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pill/model/PillRegiment.dart';
+import 'package:pill/model/PillToTake.dart';
 
 class AddingPillForm extends StatefulWidget {
   const AddingPillForm({Key key}) : super(key: key);
@@ -15,7 +16,8 @@ class AddingPillForm extends StatefulWidget {
 class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   final pillNameTextEditingController = TextEditingController();
-  String pillRegiment = "Daily";
+  String pillName = "";
+  PillRegiment pillRegiment = PillRegiment.Daily;
   bool showPillRegimentDropDown = false;
   final FocusNode focusNode = FocusNode();
 
@@ -47,6 +49,7 @@ class AddingPillFormState extends State<AddingPillForm> {
               onFieldSubmitted: (v){
                 setState(() {
                   showPillRegimentDropDown = true;
+                  pillName = v;
                 });
                 FocusScope.of(context).requestFocus(focusNode);
               },
@@ -54,12 +57,14 @@ class AddingPillFormState extends State<AddingPillForm> {
             Visibility(
               visible: showPillRegimentDropDown,
                 child: DropdownButtonFormField<String>(
-                value: pillRegiment,
+                value: pillRegiment.toString(),
                 decoration: InputDecoration(
                   labelText: 'Choose Pill Regiment'
                 ),
                 hint: new Text("Choose Pill Regiment"),
-                onChanged: (value) => pillRegiment = value,
+                onChanged: (value) => {
+                  pillRegiment = PillRegiment.values.firstWhere((e) => e.toString() == value)
+                },
                 focusNode: focusNode,
                 items: [
                   DropdownMenuItem<String>(
@@ -87,6 +92,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
+                          PillToTake pill = new PillToTake(
+                              pillName: pillName,
+                              pillWeight: 0.0,
+                              pillRegiment: pillRegiment,
+                              description: '');
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Pill Added')),
                           );
