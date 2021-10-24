@@ -98,8 +98,9 @@ class AddingPillFormState extends State<AddingPillForm> {
                               pillRegiment: pillRegiment,
                               description: '');
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Pill Added')),
+                            const SnackBar(content: Text('Pill Added'))
                           );
+                          Navigator.pop(context);
                         }
                       },
                       child: const Text('Submit'),
