@@ -16,7 +16,7 @@ class SharedPreferencesService {
     }
   }
 
-  void setPillsForDate(String currentDate, List<PillToTake> pills) {
+  void _setPillsForDate(String currentDate, List<PillToTake> pills) {
     _sharedPreferences.setString(currentDate, PillToTake.encode(pills));
   }
 
@@ -28,6 +28,12 @@ class SharedPreferencesService {
       }
 
       return pills;
+  }
+
+  void addPillToDate(String currentDate, PillToTake pill) {
+    List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+    pills.add(pill);
+    _setPillsForDate(currentDate, pills);
   }
 
 }
