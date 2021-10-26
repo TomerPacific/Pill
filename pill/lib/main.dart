@@ -50,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
           onPressed: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AddingPillForm()),
+            MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
           ),
           child: Icon(Icons.add)
         ),
