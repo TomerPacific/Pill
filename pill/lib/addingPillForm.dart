@@ -3,9 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pill/model/PillRegiment.dart';
 import 'package:pill/model/PillToTake.dart';
+import 'package:pill/service/SharedPreferencesService.dart';
+import 'package:pill/service/DateService.dart';
 
 class AddingPillForm extends StatefulWidget {
-  const AddingPillForm({Key key}) : super(key: key);
+
+  final DateTime currentDate;
+
+  const AddingPillForm(this.currentDate);
 
   @override
   AddingPillFormState createState() {
@@ -17,10 +22,9 @@ class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   final pillNameTextEditingController = TextEditingController();
   String pillName = "";
-  PillRegiment pillRegiment = PillRegiment.Daily;
+  PillRegiment pillRegiment = PillRegiment.DAILY;
   bool showPillRegimentDropDown = false;
   final FocusNode focusNode = FocusNode();
-
 
   @override void dispose() {
     pillNameTextEditingController.dispose();
@@ -68,15 +72,15 @@ class AddingPillFormState extends State<AddingPillForm> {
                 focusNode: focusNode,
                 items: [
                   DropdownMenuItem<String>(
-                      value: PillRegiment.Daily.toString(),
+                      value: PillRegiment.DAILY.toString(),
                       child: new Text("Daily")
                   ),
                   DropdownMenuItem<String>(
-                      value: PillRegiment.Weekly.toString(),
+                      value: PillRegiment.WEEKLY.toString(),
                       child: new Text("Weekly")
                   ),
                   DropdownMenuItem<String>(
-                      value: PillRegiment.Monthly.toString(),
+                      value: PillRegiment.MONTHLY.toString(),
                       child: new Text("Monthly")
                   )
                 ]
@@ -97,6 +101,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                               pillWeight: 0.0,
                               pillRegiment: pillRegiment,
                               description: '');
+
+                          SharedPreferencesService().addPillToDate(
+                              DateService().getDateAsMonthAndDay(widget.currentDate),
+                              pill
+                          );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Pill Added'))
                           );
