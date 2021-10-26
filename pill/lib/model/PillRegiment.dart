@@ -1,3 +1,5 @@
 enum PillRegiment {
-  Daily, Weekly, Monthly
+  DAILY,
+  WEEKLY,
+  MONTHLY
 }
