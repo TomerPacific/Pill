@@ -26,7 +26,7 @@ class PillToTake {
   static Map<String, dynamic> toMap(PillToTake pill) => {
     'pillName': pill.pillName,
     'pillWeight': pill.pillWeight,
-    'pillRegiment': pill.pillRegiment,
+    'pillRegiment': pill.pillRegiment.toString(),
     'description': pill.description
   };
 
