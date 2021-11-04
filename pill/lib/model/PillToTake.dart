@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:pill/model/PillRegiment.dart';
 
 class PillToTake {
@@ -18,7 +19,7 @@ class PillToTake {
     return PillToTake(
       pillName: jsonData['pillName'],
       pillWeight: jsonData['pillWeight'],
-      pillRegiment: jsonData['pillRegiment'],
+      pillRegiment: PillRegimentHelper.getPillRegiment(jsonData['pillRegiment']),
       description: jsonData['description']
     );
   }
@@ -26,7 +27,7 @@ class PillToTake {
   static Map<String, dynamic> toMap(PillToTake pill) => {
     'pillName': pill.pillName,
     'pillWeight': pill.pillWeight,
-    'pillRegiment': pill.pillRegiment.toString(),
+    'pillRegiment': describeEnum(pill.pillRegiment),
     'description': pill.description
   };
 
