@@ -54,9 +54,17 @@ class DayWidgetState extends State<DayWidget> {
                       _pillsToTake.length == 0 ?
                       new Text("You do not have to take any pills today.") :
                           ListView.builder(
+                            shrinkWrap: true,
+                              itemCount: _pillsToTake.length,
                               itemBuilder:
                                   (_, index) =>
-                              new Text(_pillsToTake[index].pillName)
+                              new Text(
+                                  _pillsToTake[index].pillName,
+                                  style: new TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold
+                                  )
+                              )
                           )
                     ],
                   ),
