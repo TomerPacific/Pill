@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  bool _showForm = false;
+  final GlobalKey<DayWidgetState> _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +44,19 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            new DayWidget(date: DateTime.now())
+            new DayWidget(
+                key: _key,
+                date: DateTime.now()
+            )
           ],
         ),
       floatingActionButton: new FloatingActionButton(
           onPressed: () => Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
-          ),
+          ).then((value) {
+            _key.currentState.updatePillsAfterAddition();
+          }),
           child: Icon(Icons.add)
         ),
       );
