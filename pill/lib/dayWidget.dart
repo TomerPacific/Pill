@@ -27,6 +27,14 @@ class DayWidgetState extends State<DayWidget> {
     super.initState();
   }
 
+  void updatePillsAfterAddition() {
+    String currentDate = DateService().getDateAsMonthAndDay(widget.date);
+    setState(() {
+      _pillsToTake = SharedPreferencesService().getPillsToTakeForDate(currentDate);
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
       return new Container(
