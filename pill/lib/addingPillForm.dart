@@ -1,7 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pill/model/PillRegiment.dart';
 import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 import 'package:pill/service/DateService.dart';
@@ -22,7 +21,7 @@ class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   final pillNameTextEditingController = TextEditingController();
   String pillName = "";
-  PillRegiment pillRegiment = PillRegiment.DAILY;
+  String pillRegiment = "1";
   bool showPillRegimentDropDown = false;
   final FocusNode focusNode = FocusNode();
 
@@ -61,27 +60,27 @@ class AddingPillFormState extends State<AddingPillForm> {
             Visibility(
               visible: showPillRegimentDropDown,
                 child: DropdownButtonFormField<String>(
-                value: pillRegiment.toString(),
+                value: "1",
                 decoration: InputDecoration(
-                  labelText: 'Choose Pill Regiment'
+                  labelText: 'How Much To Take Per Day'
                 ),
-                hint: new Text("Choose Pill Regiment"),
+                hint: new Text("How Much To Take Per Day"),
                 onChanged: (value) => {
-                  pillRegiment = PillRegiment.values.firstWhere((e) => e.toString() == value)
+                  pillRegiment = value
                 },
                 focusNode: focusNode,
                 items: [
                   DropdownMenuItem<String>(
-                      value: PillRegiment.DAILY.toString(),
-                      child: new Text("Daily")
+                      value: "1",
+                      child: new Text("1")
                   ),
                   DropdownMenuItem<String>(
-                      value: PillRegiment.WEEKLY.toString(),
-                      child: new Text("Weekly")
+                      value: "2",
+                      child: new Text("2")
                   ),
                   DropdownMenuItem<String>(
-                      value: PillRegiment.MONTHLY.toString(),
-                      child: new Text("Monthly")
+                      value: "3",
+                      child: new Text("3")
                   )
                 ]
               )
