@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pill/addingPillForm.dart';
-import 'package:pill/dayWidget.dart';
+import 'widget/addingPillForm.dart';
+import 'widget/dayWidget.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 
 Future<void> main() async {
