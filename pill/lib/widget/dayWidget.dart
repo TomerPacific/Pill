@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/DateService.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
+import 'package:pill/widget/pillWidget.dart';
 
 class DayWidget extends StatefulWidget {
 
@@ -66,13 +67,7 @@ class DayWidgetState extends State<DayWidget> {
                               itemCount: _pillsToTake.length,
                               itemBuilder:
                                   (_, index) =>
-                              new Text(
-                                  _pillsToTake[index].pillName,
-                                  style: new TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold
-                                  )
-                              )
+                                    new PillWidget(pillToTake: _pillsToTake[index])
                           )
                     ],
                   ),
