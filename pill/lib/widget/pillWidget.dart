@@ -25,6 +25,17 @@ class PillWidget extends StatelessWidget {
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold
             ),
+          ),
+          new Text(
+            "Days left to take " + this.pillToTake.pillRegiment,
+              style:  new TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold
+              )
+          ),
+          new IconButton(
+              onPressed: () {},
+              icon: new Icon(Icons.info_sharp)
           )
         ],
       )
