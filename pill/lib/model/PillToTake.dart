@@ -5,6 +5,7 @@ class PillToTake {
   String pillName;
   double pillWeight;
   String pillRegiment;
+  String pillImage = 'assets/images/defaultPill.png';
   String description;
 
   PillToTake({
