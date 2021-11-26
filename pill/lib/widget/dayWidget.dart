@@ -59,24 +59,6 @@ class DayWidgetState extends State<DayWidget> {
                           ),
                         ),
                       ),
-                      new Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          new Expanded(
-                              child:  new Align(
-                                alignment: Alignment.center,
-                                  child:  new Text(
-                                    "Pill Name    Pill Regiment    Information",
-                                    style:  new TextStyle(
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blueAccent
-                                    ),
-                                  )
-                          ),
-                          ),
-                        ],
-                      ),
                       _pillsToTake.length == 0 ?
                       new Text("You do not have to take any pills today.") :
                           ListView.builder(
