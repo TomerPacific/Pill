@@ -16,7 +16,8 @@ class PillWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Container(
       color: Colors.greenAccent,
-      child: Row(
+      child: new Card(
+        child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           new Text(
@@ -27,7 +28,7 @@ class PillWidget extends StatelessWidget {
             ),
           ),
           new Text(
-            "Days left to take " + this.pillToTake.pillRegiment,
+              "Pill Per Day: " + this.pillToTake.pillRegiment,
               style:  new TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold
@@ -38,6 +39,7 @@ class PillWidget extends StatelessWidget {
               icon: new Icon(Icons.info_sharp)
           )
         ],
+      ),
       )
     );
   }
