@@ -28,7 +28,7 @@ class PillWidget extends StatelessWidget {
             ),
           ),
           new Text(
-              "Pill Per Day: " + this.pillToTake.pillRegiment,
+              this.pillToTake.pillRegiment,
               style:  new TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold
