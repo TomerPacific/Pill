@@ -21,9 +21,8 @@ class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   final pillNameTextEditingController = TextEditingController();
   String pillName = "";
-  String pillRegiment = "1";
+  String pillRegiment = "0";
   bool showPillRegimentDropDown = false;
-  final FocusNode focusNode = FocusNode();
 
   @override void dispose() {
     pillNameTextEditingController.dispose();
@@ -54,12 +53,9 @@ class AddingPillFormState extends State<AddingPillForm> {
                   showPillRegimentDropDown = true;
                   pillName = v;
                 });
-                FocusScope.of(context).requestFocus(focusNode);
               },
             ),
-            Visibility(
-              visible: showPillRegimentDropDown,
-                child: DropdownButtonFormField<String>(
+            DropdownButtonFormField<String>(
                 value: "1",
                 decoration: InputDecoration(
                   labelText: 'How Much To Take Per Day'
@@ -68,7 +64,6 @@ class AddingPillFormState extends State<AddingPillForm> {
                 onChanged: (value) => {
                   pillRegiment = value
                 },
-                focusNode: focusNode,
                 items: [
                   DropdownMenuItem<String>(
                       value: "1",
@@ -82,10 +77,15 @@ class AddingPillFormState extends State<AddingPillForm> {
                       value: "3",
                       child: new Text("3")
                   )
-                ]
-              )
-            ),
+                ],
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value == "0") {
+                      return 'Please choose a pill regiment';
+                    }
 
+                    return null;
+                  },
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
