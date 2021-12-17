@@ -8,7 +8,7 @@ import 'package:pill/widget/pillWidget.dart';
 
 class DayWidget extends StatefulWidget {
 
-  DayWidget({Key key, this.date}): super(key: key);
+  DayWidget({required Key key, required this.date}): super(key: key);
 
   final DateTime date;
 

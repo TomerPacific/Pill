@@ -6,9 +6,8 @@ import 'package:pill/model/PillToTake.dart';
 class PillWidget extends StatelessWidget {
 
   const PillWidget({
-    Key key,
-    @required this.pillToTake
-  }) : super(key: key);
+    required this.pillToTake
+  }) : super();
 
   final PillToTake pillToTake;
 

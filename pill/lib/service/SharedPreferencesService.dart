@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
 
-  static SharedPreferences _sharedPreferences;
+  static SharedPreferences? _sharedPreferences;
 
   factory SharedPreferencesService() => SharedPreferencesService._internal();
 
@@ -17,11 +17,11 @@ class SharedPreferencesService {
   }
 
   void _setPillsForDate(String currentDate, List<PillToTake> pills) {
-    _sharedPreferences.setString(currentDate, PillToTake.encode(pills));
+    _sharedPreferences?.setString(currentDate, PillToTake.encode(pills));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
-      String encodedPills = _sharedPreferences.getString(currentDate);
+      String? encodedPills = _sharedPreferences?.getString(currentDate);
       List<PillToTake> pills = [];
       if (encodedPills != null) {
         pills = PillToTake.decode(encodedPills);

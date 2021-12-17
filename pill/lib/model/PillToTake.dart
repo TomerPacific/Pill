@@ -9,10 +9,10 @@ class PillToTake {
   String description;
 
   PillToTake({
-    this.pillName,
-    this.pillWeight,
-    this.pillRegiment,
-    this.description
+    this.pillName = "Random Pill",
+    this.pillWeight = 0,
+    this.pillRegiment = "1",
+    this.description = "Description"
   });
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {

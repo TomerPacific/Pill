@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({required this.title}) : super();
 
   final String title;
 
@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
             context,
             MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
           ).then((value) {
-            _key.currentState.updatePillsAfterAddition();
+            _key.currentState?.updatePillsAfterAddition();
           }),
           child: Icon(Icons.add)
         ),

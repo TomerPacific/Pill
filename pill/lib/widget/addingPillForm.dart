@@ -62,7 +62,9 @@ class AddingPillFormState extends State<AddingPillForm> {
                 ),
                 hint: new Text("How Much To Take Per Day"),
                 onChanged: (value) => {
-                  pillRegiment = value
+                  if (value != null) {
+                    pillRegiment = value
+                  }
                 },
                 items: [
                   DropdownMenuItem<String>(
@@ -94,7 +96,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                     alignment: Alignment.topLeft,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        if (_formKey.currentState?.validate() ?? false) {
                           PillToTake pill = new PillToTake(
                               pillName: pillName,
                               pillWeight: 0.0,
