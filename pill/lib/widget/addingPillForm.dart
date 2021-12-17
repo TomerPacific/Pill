@@ -21,7 +21,7 @@ class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   final pillNameTextEditingController = TextEditingController();
   String pillName = "";
-  String pillRegiment = "0";
+  String pillRegiment = "1";
   bool showPillRegimentDropDown = false;
 
   @override void dispose() {
