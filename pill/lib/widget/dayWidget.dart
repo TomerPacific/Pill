@@ -36,15 +36,19 @@ class DayWidgetState extends State<DayWidget> {
 
   }
 
-  StatelessWidget drawPills() {
+  Widget drawPills() {
     return _pillsToTake.length == 0 ?
     new Text("You do not have to take any pills today.") :
-    ListView.builder(
-        shrinkWrap: true,
-        itemCount: _pillsToTake.length,
-        itemBuilder:
-            (_, index) =>
-        new PillWidget(pillToTake: _pillsToTake[index])
+    Expanded(
+      child: SizedBox(
+        height: 200.0,
+        child:  ListView.builder(
+            itemCount: _pillsToTake.length,
+            itemBuilder:
+                (_, index) =>
+            new PillWidget(pillToTake: _pillsToTake[index])
+        ),
+      )
     );
   }
 
@@ -71,7 +75,7 @@ class DayWidgetState extends State<DayWidget> {
                           ),
                         ),
                       ),
-                      drawPills()
+                      drawPills(),
                     ],
                   ),
                 )
