@@ -36,4 +36,10 @@ class SharedPreferencesService {
     _setPillsForDate(currentDate, pills);
   }
 
+  void removePillAtIndexFromDate(int indexOfPillToRemove, String currentDate) {
+    List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+    pills.removeAt(indexOfPillToRemove);
+    _setPillsForDate(currentDate, pills);
+  }
+
 }
