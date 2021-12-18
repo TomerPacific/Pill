@@ -20,9 +20,7 @@ class AddingPillForm extends StatefulWidget {
 class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   final pillNameTextEditingController = TextEditingController();
-  String pillName = "";
   String pillRegiment = "1";
-  bool showPillRegimentDropDown = false;
 
   @override void dispose() {
     pillNameTextEditingController.dispose();
@@ -47,13 +45,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                   return 'Please enter a pill name';
                 }
                 return null;
-              },
-              onFieldSubmitted: (v){
-                setState(() {
-                  showPillRegimentDropDown = true;
-                  pillName = v;
-                });
-              },
+              }
             ),
             DropdownButtonFormField<String>(
                 value: "1",
@@ -98,7 +90,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
                           PillToTake pill = new PillToTake(
-                              pillName: pillName,
+                              pillName: pillNameTextEditingController.text,
                               pillWeight: 0.0,
                               pillRegiment: pillRegiment,
                               description: '');
