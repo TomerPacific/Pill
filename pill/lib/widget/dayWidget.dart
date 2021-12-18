@@ -46,7 +46,19 @@ class DayWidgetState extends State<DayWidget> {
             itemCount: _pillsToTake.length,
             itemBuilder:
                 (_, index) =>
-            new PillWidget(pillToTake: _pillsToTake[index])
+                new Dismissible(
+                    key: ObjectKey(_pillsToTake[index].pillName),
+                    child: new PillWidget(pillToTake: _pillsToTake[index]
+                    ),
+                  onDismissed: (direction) {
+                      setState(() {
+                        SharedPreferencesService().removePillAtIndexFromDate(
+                          index, DateService().getDateAsMonthAndDay(widget.date)
+                        );
+                        _pillsToTake.removeAt(index);
+                      });
+                  },
+                )
         ),
       )
     );
