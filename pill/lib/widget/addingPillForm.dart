@@ -99,9 +99,6 @@ class AddingPillFormState extends State<AddingPillForm> {
                               DateService().getDateAsMonthAndDay(widget.currentDate),
                               pill
                           );
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Pill Added'))
-                          );
                           Navigator.pop(context);
                         }
                       },
