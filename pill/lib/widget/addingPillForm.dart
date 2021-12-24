@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pill/model/PillToTake.dart';
+import 'package:pill/service/NetworkService.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 import 'package:pill/service/DateService.dart';
 
@@ -17,13 +18,17 @@ class AddingPillForm extends StatefulWidget {
   }
 }
 
+final _formKey = GlobalKey<FormState>();
+
 class AddingPillFormState extends State<AddingPillForm> {
-  final _formKey = GlobalKey<FormState>();
+
   final pillNameTextEditingController = TextEditingController();
+  final pillAmountOfDaysToTakeController = TextEditingController();
   String pillRegiment = "1";
 
   @override void dispose() {
     pillNameTextEditingController.dispose();
+    pillAmountOfDaysToTakeController.dispose();
     super.dispose();
   }
   @override
@@ -80,6 +85,20 @@ class AddingPillFormState extends State<AddingPillForm> {
                     return null;
                   },
               ),
+            TextFormField(
+                controller: pillAmountOfDaysToTakeController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'For How Many Days?'
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a number representing the number of days';
+                  }
+                  return null;
+                }
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -89,6 +108,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
+                          NetworkService().getPillImage(pillNameTextEditingController.text);
                           PillToTake pill = new PillToTake(
                               pillName: pillNameTextEditingController.text,
                               pillWeight: 0.0,
@@ -99,6 +119,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                               DateService().getDateAsMonthAndDay(widget.currentDate),
                               pill
                           );
+                          FocusScope.of(context).unfocus();
                           Navigator.pop(context);
                         }
                       },
@@ -109,6 +130,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                   alignment: Alignment.bottomRight,
                   child: ElevatedButton(
                     onPressed: () {
+                      FocusScope.of(context).unfocus();
                       Navigator.pop(context);
                     },
                     child: const Text('Cancel'),
