@@ -2,7 +2,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pill/model/PillToTake.dart';
-import 'package:pill/service/NetworkService.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 import 'package:pill/service/DateService.dart';
 
@@ -24,11 +23,12 @@ class AddingPillFormState extends State<AddingPillForm> {
 
   final pillNameTextEditingController = TextEditingController();
   final pillAmountOfDaysToTakeController = TextEditingController();
-  String pillRegiment = "1";
+  final pillRegimentController = TextEditingController();
 
   @override void dispose() {
     pillNameTextEditingController.dispose();
     pillAmountOfDaysToTakeController.dispose();
+    pillRegimentController.dispose();
     super.dispose();
   }
   @override
@@ -52,39 +52,20 @@ class AddingPillFormState extends State<AddingPillForm> {
                 return null;
               }
             ),
-            DropdownButtonFormField<String>(
-                value: "1",
-                decoration: InputDecoration(
-                  labelText: 'How Much To Take Per Day'
+            TextFormField(
+                controller: pillRegimentController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'How many pills to take per day?'
                 ),
-                hint: new Text("How Much To Take Per Day"),
-                onChanged: (value) => {
-                  if (value != null) {
-                    pillRegiment = value
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a number representing the amount of pills to take';
                   }
-                },
-                items: [
-                  DropdownMenuItem<String>(
-                      value: "1",
-                      child: new Text("1")
-                  ),
-                  DropdownMenuItem<String>(
-                      value: "2",
-                      child: new Text("2")
-                  ),
-                  DropdownMenuItem<String>(
-                      value: "3",
-                      child: new Text("3")
-                  )
-                ],
-                  validator: (value) {
-                    if (value == null || value.isEmpty || value == "0") {
-                      return 'Please choose a pill regiment';
-                    }
-
-                    return null;
-                  },
-              ),
+                  return null;
+                }
+            ),
             TextFormField(
                 controller: pillAmountOfDaysToTakeController,
                 keyboardType: TextInputType.number,
@@ -108,11 +89,10 @@ class AddingPillFormState extends State<AddingPillForm> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState?.validate() ?? false) {
-                          NetworkService().getPillImage(pillNameTextEditingController.text);
                           PillToTake pill = new PillToTake(
                               pillName: pillNameTextEditingController.text,
                               pillWeight: 0.0,
-                              pillRegiment: pillRegiment,
+                              pillRegiment: pillRegimentController.text,
                               description: '');
 
                           SharedPreferencesService().addPillToDate(
