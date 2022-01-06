@@ -47,7 +47,7 @@ class PillWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           new Text(
-                              this.pillToTake.pillRegiment,
+                              "Pills left to take today: ${this.pillToTake.pillRegiment}",
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
