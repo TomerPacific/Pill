@@ -41,4 +41,13 @@ class PillToTake {
       (json.decode(pills) as List<dynamic>)
           .map<PillToTake>((pill) => PillToTake.fromJson(pill))
           .toList();
+
+  bool equals(PillToTake otherPill) {
+    return (
+        this.pillRegiment == otherPill.pillRegiment &&
+        this.pillName == otherPill.pillName &&
+        this.pillWeight == otherPill.pillWeight &&
+        this.description == otherPill.description &&
+        this.pillImage == otherPill.pillImage);
+  }
 }
