@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pill/model/PillToTake.dart';
@@ -36,6 +38,16 @@ class DayWidgetState extends State<DayWidget> {
 
   }
 
+  void removePillWhenDailyRegimentHasBeenMet(PillToTake pill) {
+    String currentDate = DateService().getDateAsMonthAndDay(widget.date);
+    int indexOfPillToRemove = _pillsToTake.indexWhere((element) => element.equals(pill));
+    SharedPreferencesService().removePillAtIndexFromDate(indexOfPillToRemove, currentDate);
+
+    setState(() {
+      _pillsToTake.removeAt(indexOfPillToRemove);
+    });
+  }
+
   Widget drawPills() {
     return _pillsToTake.length == 0 ?
     new Text("You do not have to take any pills today.") :
@@ -48,8 +60,7 @@ class DayWidgetState extends State<DayWidget> {
                 (_, index) =>
                 new Dismissible(
                     key: ObjectKey(_pillsToTake[index].pillName),
-                    child: new PillWidget(pillToTake: _pillsToTake[index]
-                    ),
+                    child: new PillWidget(pillToTake: _pillsToTake[index], onPillRegimentMetHandler: removePillWhenDailyRegimentHasBeenMet),
                   onDismissed: (direction) {
                       setState(() {
                         SharedPreferencesService().removePillAtIndexFromDate(
