@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:pill/model/PillToTake.dart';
+import 'package:pill/service/DateService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
@@ -30,10 +31,17 @@ class SharedPreferencesService {
       return pills;
   }
 
-  void addPillToDate(String currentDate, PillToTake pill) {
-    List<PillToTake> pills = getPillsToTakeForDate(currentDate);
-    pills.add(pill);
-    _setPillsForDate(currentDate, pills);
+  void addPillToDates(String currentDate, PillToTake pill) {
+    int amountOfDaysToTakePill = pill.amountOfDaysToTake;
+    DateTime startDate = DateTime.now();
+    for (int day = 0; day < amountOfDaysToTakePill; day++) {
+      List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+      pills.add(pill);
+      _setPillsForDate(currentDate, pills);
+      startDate = startDate.add(new Duration(days: 1));
+      currentDate = DateService().getDateAsMonthAndDay(startDate);
+      pill.amountOfDaysToTake--;
+    }
   }
 
   void removePillAtIndexFromDate(int indexOfPillToRemove, String currentDate) {
