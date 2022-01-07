@@ -35,7 +35,7 @@ class PillWidgetState extends State<PillWidget> {
 
   @override
   void initState() {
-    _amountOfPillsLeftToTakeToday = int.parse(widget.pillToTake.pillRegiment);
+    _amountOfPillsLeftToTakeToday = widget.pillToTake.pillRegiment;
     super.initState();
   }
 
