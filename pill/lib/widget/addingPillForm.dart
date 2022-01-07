@@ -92,10 +92,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                           PillToTake pill = new PillToTake(
                               pillName: pillNameTextEditingController.text,
                               pillWeight: 0.0,
-                              pillRegiment: pillRegimentController.text,
-                              description: '');
+                              pillRegiment: int.parse(pillRegimentController.text),
+                              description: '',
+                              amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
 
-                          SharedPreferencesService().addPillToDate(
+                          SharedPreferencesService().addPillToDates(
                               DateService().getDateAsMonthAndDay(widget.currentDate),
                               pill
                           );
