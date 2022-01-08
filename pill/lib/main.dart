@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pill/constants.dart';
 import 'widget/addingPillForm.dart';
 import 'widget/dayWidget.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
@@ -13,11 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Pill',
+      title: APP_TITLE,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Pill'),
+      home: MyHomePage(title: APP_TITLE),
     );
   }
 }
