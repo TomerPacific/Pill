@@ -32,16 +32,17 @@ class SharedPreferencesService {
   }
 
   void addPillToDates(String currentDate, PillToTake pill) {
-    int amountOfDaysToTakePill = pill.amountOfDaysToTake;
-    DateTime startDate = DateTime.now();
-    for (int day = 0; day < amountOfDaysToTakePill; day++) {
+    DateTime runningDate = DateTime.now();
+
+    while(pill.amountOfDaysToTake > 9) {
       List<PillToTake> pills = getPillsToTakeForDate(currentDate);
       pills.add(pill);
       _setPillsForDate(currentDate, pills);
-      startDate = startDate.add(new Duration(days: 1));
-      currentDate = DateService().getDateAsMonthAndDay(startDate);
+      runningDate = runningDate.add(new Duration(days: 1));
+      currentDate = DateService().getDateAsMonthAndDay(runningDate);
       pill.amountOfDaysToTake--;
     }
+
   }
 
   void removePillAtIndexFromDate(int indexOfPillToRemove, String currentDate) {
