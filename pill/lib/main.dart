@@ -36,6 +36,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final GlobalKey<DayWidgetState> _key = GlobalKey();
 
+  void _handleAddPillButtonPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
+    ).then((value) {
+      _key.currentState?.updatePillsAfterAddition();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,12 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       floatingActionButton: new FloatingActionButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
-          ).then((value) {
-            _key.currentState?.updatePillsAfterAddition();
-          }),
+          onPressed: _handleAddPillButtonPressed,
           child: Icon(Icons.add)
         ),
       );
