@@ -34,7 +34,7 @@ class SharedPreferencesService {
   void addPillToDates(String currentDate, PillToTake pill) {
     DateTime runningDate = DateTime.now();
 
-    while(pill.amountOfDaysToTake > 9) {
+    while(pill.amountOfDaysToTake > 0) {
       List<PillToTake> pills = getPillsToTakeForDate(currentDate);
       pills.add(pill);
       _setPillsForDate(currentDate, pills);
