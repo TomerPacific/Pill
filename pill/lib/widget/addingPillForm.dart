@@ -34,94 +34,99 @@ class AddingPillFormState extends State<AddingPillForm> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              controller: pillNameTextEditingController,
-              decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'What is the pill\'s name?'
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a pill name';
-                }
-                return null;
-              }
-            ),
-            TextFormField(
-                controller: pillRegimentController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'How many pills to take per day?'
+      body:
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Adding A Pill",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)
+          ),
+          SizedBox(height: 25.0),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                    controller: pillNameTextEditingController,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'What is the pill\'s name?'
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a pill name';
+                      }
+                      return null;
+                    }
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a number representing the amount of pills to take';
-                  }
-                  return null;
-                }
-            ),
-            TextFormField(
-                controller: pillAmountOfDaysToTakeController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'For How Many Days?'
+                SizedBox(height: 25.0),
+                TextFormField(
+                    controller: pillRegimentController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'How many pills to take per day?'
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a number representing the amount of pills to take';
+                      }
+                      return null;
+                    }
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a number representing the number of days';
-                  }
-                  return null;
-                }
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Align(
-                    alignment: Alignment.topLeft,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          PillToTake pill = new PillToTake(
-                              pillName: pillNameTextEditingController.text,
-                              pillWeight: 0.0,
-                              pillRegiment: int.parse(pillRegimentController.text),
-                              description: '',
-                              amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
+                SizedBox(height: 25.0),
+                TextFormField(
+                    controller: pillAmountOfDaysToTakeController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'For How Many Days?'
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a number representing the number of days';
+                      }
+                      return null;
+                    }
+                ),
+                SizedBox(height: 25.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              PillToTake pill = new PillToTake(
+                                  pillName: pillNameTextEditingController.text,
+                                  pillWeight: 0.0,
+                                  pillRegiment: int.parse(pillRegimentController.text),
+                                  description: '',
+                                  amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
 
-                          SharedPreferencesService().addPillToDates(
-                              DateService().getDateAsMonthAndDay(widget.currentDate),
-                              pill
-                          );
+                              SharedPreferencesService().addPillToDates(
+                                  DateService().getDateAsMonthAndDay(widget.currentDate),
+                                  pill
+                              );
+                              FocusScope.of(context).unfocus();
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: const Text('Submit'),
+                        ),
+                   ElevatedButton(
+                        onPressed: () {
                           FocusScope.of(context).unfocus();
                           Navigator.pop(context);
-                        }
-                      },
-                      child: const Text('Submit'),
-                    )
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel'),
-                  ),
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                  ],
                 )
               ],
-            )
-          ],
-        ),
-      ),
+            ),
+          ),
+        ],
+      )
     );
   }
 }
