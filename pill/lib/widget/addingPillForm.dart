@@ -50,7 +50,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                     controller: pillNameTextEditingController,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'What is the pill\'s name?'
+                        hintText: 'What is the pill\'s name?',
+                        prefixIcon: Icon(Icons.title)
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -65,7 +66,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'How many pills to take per day?'
+                        hintText: 'How many pills to take per day?',
+                        prefixIcon: Icon(Icons.confirmation_number)
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -80,7 +82,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: 'For How Many Days?'
+                        hintText: 'For How Many Days?',
+                        prefixIcon: Icon(Icons.calendar_today)
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
