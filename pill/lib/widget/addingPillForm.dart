@@ -46,51 +46,60 @@ class AddingPillFormState extends State<AddingPillForm> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                TextFormField(
-                    controller: pillNameTextEditingController,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'What is the pill\'s name?',
-                        prefixIcon: Icon(Icons.title)
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a pill name';
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: TextFormField(
+                      controller: pillNameTextEditingController,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'What is the pill\'s name?',
+                          prefixIcon: Icon(Icons.title)
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a pill name';
+                        }
+                        return null;
                       }
-                      return null;
-                    }
+                  ),
                 ),
                 SizedBox(height: 25.0),
-                TextFormField(
-                    controller: pillRegimentController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'How many pills to take per day?',
-                        prefixIcon: Icon(Icons.confirmation_number)
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a number representing the amount of pills to take';
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child:  TextFormField(
+                      controller: pillRegimentController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'How many pills to take per day?',
+                          prefixIcon: Icon(Icons.confirmation_number)
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a number representing the amount of pills to take';
+                        }
+                        return null;
                       }
-                      return null;
-                    }
+                  ),
                 ),
                 SizedBox(height: 25.0),
-                TextFormField(
-                    controller: pillAmountOfDaysToTakeController,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'For How Many Days?',
-                        prefixIcon: Icon(Icons.calendar_today)
+                Container(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child:  TextFormField(
+                        controller: pillAmountOfDaysToTakeController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'For How Many Days?',
+                            prefixIcon: Icon(Icons.calendar_today)
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a number representing the number of days';
+                          }
+                          return null;
+                        }
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a number representing the number of days';
-                      }
-                      return null;
-                    }
                 ),
                 SizedBox(height: 25.0),
                 Row(
