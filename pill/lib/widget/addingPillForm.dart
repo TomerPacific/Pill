@@ -105,32 +105,33 @@ class AddingPillFormState extends State<AddingPillForm> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              PillToTake pill = new PillToTake(
-                                  pillName: pillNameTextEditingController.text,
-                                  pillWeight: 0.0,
-                                  pillRegiment: int.parse(pillRegimentController.text),
-                                  description: '',
-                                  amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
+                    ElevatedButton.icon(onPressed: () {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        PillToTake pill = new PillToTake(
+                            pillName: pillNameTextEditingController.text,
+                            pillWeight: 0.0,
+                            pillRegiment: int.parse(pillRegimentController.text),
+                            description: '',
+                            amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
 
-                              SharedPreferencesService().addPillToDates(
-                                  DateService().getDateAsMonthAndDay(widget.currentDate),
-                                  pill
-                              );
-                              FocusScope.of(context).unfocus();
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: const Text('Submit'),
-                        ),
-                   ElevatedButton(
+                        SharedPreferencesService().addPillToDates(
+                            DateService().getDateAsMonthAndDay(widget.currentDate),
+                            pill
+                        );
+                        FocusScope.of(context).unfocus();
+                        Navigator.pop(context);
+                      }
+                    } ,
+                        icon: Icon(Icons.check, color: Colors.lightGreen),
+                        label: const Text('Submit')
+                    ),
+                   ElevatedButton.icon(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
                           Navigator.pop(context);
                         },
-                        child: const Text('Cancel'),
+                        icon: Icon(Icons.clear, color: Colors.red),
+                        label: const Text('Cancel'),
                       ),
                   ],
                 )
