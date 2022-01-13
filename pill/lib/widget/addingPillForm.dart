@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 import 'package:pill/service/DateService.dart';
@@ -38,7 +39,7 @@ class AddingPillFormState extends State<AddingPillForm> {
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Adding A Pill",
+          Text(ADDING_A_PILL_TITLE,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)
           ),
           SizedBox(height: 25.0),
@@ -123,7 +124,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                       }
                     } ,
                         icon: Icon(Icons.check, color: Colors.lightGreen),
-                        label: const Text('Submit')
+                        label: const Text(ADD_PILL_FORM_CONFIRM)
                     ),
                    ElevatedButton.icon(
                         onPressed: () {
@@ -131,7 +132,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                           Navigator.pop(context);
                         },
                         icon: Icon(Icons.clear, color: Colors.red),
-                        label: const Text('Cancel'),
+                        label: const Text(ADD_PILL_FORM_CANCEL),
                       ),
                   ],
                 )
