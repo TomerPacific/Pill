@@ -50,7 +50,14 @@ class DayWidgetState extends State<DayWidget> {
 
   Widget drawPills() {
     return _pillsToTake.length == 0 ?
-    new Text("You do not have to take any pills today.") :
+    new Padding(
+      padding: const EdgeInsets.only(top: 20),
+        child: new Text(
+            "You do not have to take any pills today 😀",
+            style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+        )
+      )
+     :
     Expanded(
       child: SizedBox(
         height: 200.0,
@@ -90,11 +97,11 @@ class DayWidgetState extends State<DayWidget> {
                         alignment: Alignment.topCenter,
                         child:  new Padding(
                             padding: const EdgeInsets.only(
-                                top:8.0
+                                top:40.0
                             ),
                           child: new Text(
                               DateService().getDateAsMonthAndDay(widget.date),
-                              style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)
+                              style: new TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
                           ),
                         ),
                       ),
