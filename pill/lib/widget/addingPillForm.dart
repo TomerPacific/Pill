@@ -27,12 +27,25 @@ class AddingPillFormState extends State<AddingPillForm> {
   final pillAmountOfDaysToTakeController = TextEditingController();
   final pillRegimentController = TextEditingController();
 
+
+  bool _isNumberGreaterThanZero(String? str) {
+    if (str != null) {
+      double? number = double.tryParse(str);
+      if (number != null) {
+        return number > 0;
+      }
+    }
+
+    return false;
+  }
+
   @override void dispose() {
     pillNameTextEditingController.dispose();
     pillAmountOfDaysToTakeController.dispose();
     pillRegimentController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -59,7 +72,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                           // prefixIcon: Icon(Icons.title)
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
+                        RegExp onlyLetters = RegExp('[a-zA-Z]');
+                        if (value == null || value.isEmpty || !value.startsWith(onlyLetters)) {
                           return 'Please enter a pill name';
                         }
                         return null;
@@ -78,7 +92,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                           prefixIcon: Icon(Icons.confirmation_number)
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
+                        if (value == null || value.isEmpty || !_isNumberGreaterThanZero(value)) {
                           return 'Please enter a number representing the amount of pills to take';
                         }
                         return null;
@@ -97,7 +111,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                             prefixIcon: Icon(Icons.calendar_today)
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty || !_isNumberGreaterThanZero(value)) {
                             return 'Please enter a number representing the number of days';
                           }
                           return null;
