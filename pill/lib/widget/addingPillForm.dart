@@ -69,7 +69,6 @@ class AddingPillFormState extends State<AddingPillForm> {
                           border: OutlineInputBorder(),
                           hintText: 'What is the pill\'s name?',
                           prefixIcon: Icon(CustomIcons.pill)
-                          // prefixIcon: Icon(Icons.title)
                       ),
                       validator: (value) {
                         RegExp onlyLetters = RegExp('[a-zA-Z]');
