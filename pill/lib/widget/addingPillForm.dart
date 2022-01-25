@@ -2,7 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pill/constants.dart';
-import 'package:pill/custom_icons_icons.dart';
+import 'package:pill/custom_icons.dart';
 import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
 import 'package:pill/service/DateService.dart';
