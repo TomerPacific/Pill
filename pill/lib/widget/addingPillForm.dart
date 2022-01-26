@@ -61,22 +61,27 @@ class AddingPillFormState extends State<AddingPillForm> {
             key: _formKey,
             child: Column(
               children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: TextFormField(
-                      controller: pillNameTextEditingController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'What is the pill\'s name?',
-                          prefixIcon: Icon(CustomIcons.pill)
-                      ),
-                      validator: (value) {
-                        RegExp onlyLetters = RegExp('[a-zA-Z]');
-                        if (value == null || value.isEmpty || !value.startsWith(onlyLetters)) {
-                          return 'Please enter a pill name';
+                Theme(
+                  data: ThemeData(colorScheme:
+                  ThemeData().colorScheme.copyWith(primary:Colors.red)
+                  ),
+                  child:  Container(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child: TextFormField(
+                        controller: pillNameTextEditingController,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'What is the pill\'s name?',
+                            prefixIcon: Icon(CustomIcons.pill)
+                        ),
+                        validator: (value) {
+                          RegExp onlyLetters = RegExp('[a-zA-Z]');
+                          if (value == null || value.isEmpty || !value.startsWith(onlyLetters)) {
+                            return 'Please enter a pill name';
+                          }
+                          return null;
                         }
-                        return null;
-                      }
+                    ),
                   ),
                 ),
                 SizedBox(height: 25.0),
@@ -99,7 +104,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                   ),
                 ),
                 SizedBox(height: 25.0),
-                Container(
+                Theme(
+                  data: ThemeData(colorScheme:
+                  ThemeData().colorScheme.copyWith(primary:Colors.green)
+                  ),
+                child:Container(
                     width: MediaQuery.of(context).size.width * 0.9,
                     child:  TextFormField(
                         controller: pillAmountOfDaysToTakeController,
@@ -116,6 +125,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                           return null;
                         }
                     ),
+                  )
                 ),
                 SizedBox(height: 25.0),
                 Row(
