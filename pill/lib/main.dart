@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/bloc/PillEvent.dart';
+import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/page/main_page.dart';
 import 'package:pill/service/SharedPreferencesService.dart';
@@ -12,12 +15,18 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MultiBlocProvider(
+        providers: [BlocProvider(
+          create: (context) => PillBloc()
+            ..add(LoadPill(),),
+        )],
+        child: MaterialApp(
       title: APP_TITLE,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainPage(title: APP_TITLE),
+        home: MainPage(title: APP_TITLE),
+      )
     );
   }
 }
