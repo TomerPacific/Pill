@@ -6,13 +6,15 @@ import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/service/DateService.dart';
 import 'package:pill/widget/pillWidget.dart';
 
+import '../bloc/PillEvent.dart';
+
 class DayWidget extends StatelessWidget {
 
   DayWidget({required this.date});
 
   final DateTime date;
 
-  Widget drawPills(PillState state) {
+  Widget drawPills(BuildContext context, PillState state) {
     if (state is PillLoading) {
       return const CircularProgressIndicator();
     }
@@ -34,10 +36,11 @@ class DayWidget extends StatelessWidget {
                 itemBuilder:
                     (_, index) =>
                 new Dismissible(
-                  key: ObjectKey(state.pillsToTake[index].pillName),
-                  child: new PillWidget(pillToTake: state.pillsToTake[index]),
-                  onDismissed: (direction) {
-                      state.pillsToTake.removeAt(index);
+                    key: ObjectKey(state.pillsToTake[index].pillName),
+                    child: new PillWidget(pillToTake: state.pillsToTake[index]),
+                    onDismissed: (direction) {
+                      context.read<PillBloc>().add(DeletePill(pillToTake: state.pillsToTake[index]));
+                      //state.pillsToTake.removeAt(index);
                     }
                 )
             ),
@@ -74,7 +77,7 @@ class DayWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      drawPills(state),
+                      drawPills(context, state),
                     ],
                   ),
                 )
