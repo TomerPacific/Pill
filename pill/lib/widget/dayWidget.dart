@@ -1,53 +1,16 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/PillState.dart';
 import 'package:pill/bloc/pill_bloc.dart';
-import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/DateService.dart';
-import 'package:pill/service/SharedPreferencesService.dart';
 import 'package:pill/widget/pillWidget.dart';
 
-class DayWidget extends StatefulWidget {
+class DayWidget extends StatelessWidget {
 
-  DayWidget({required Key key, required this.date}): super(key: key);
+  DayWidget({required this.date});
 
   final DateTime date;
-
-  @override
-  State<StatefulWidget> createState() {
-    return DayWidgetState();
-  }
-}
-
-class DayWidgetState extends State<DayWidget> {
-
-  List<PillToTake> _pillsToTake = List.empty();
-
-  @override void initState() {
-    String currentDate = DateService().getDateAsMonthAndDay(widget.date);
-    _pillsToTake = SharedPreferencesService().getPillsToTakeForDate(currentDate);
-    super.initState();
-  }
-
-  void updatePillsAfterAddition() {
-    String currentDate = DateService().getDateAsMonthAndDay(widget.date);
-    setState(() {
-      _pillsToTake = SharedPreferencesService().getPillsToTakeForDate(currentDate);
-    });
-
-  }
-
-  void removePillWhenDailyRegimentHasBeenMet(PillToTake pill) {
-    String currentDate = DateService().getDateAsMonthAndDay(widget.date);
-    int indexOfPillToRemove = _pillsToTake.indexWhere((element) => element.equals(pill));
-    SharedPreferencesService().removePillAtIndexFromDate(indexOfPillToRemove, currentDate);
-
-    setState(() {
-      _pillsToTake.removeAt(indexOfPillToRemove);
-    });
-  }
 
   Widget drawPills(PillState state) {
     if (state is PillLoading) {
@@ -72,15 +35,10 @@ class DayWidgetState extends State<DayWidget> {
                     (_, index) =>
                 new Dismissible(
                   key: ObjectKey(state.pillsToTake[index].pillName),
-                  child: new PillWidget(pillToTake: state.pillsToTake[index], onPillRegimentMetHandler: removePillWhenDailyRegimentHasBeenMet),
+                  child: new PillWidget(pillToTake: state.pillsToTake[index]),
                   onDismissed: (direction) {
-                    setState(() {
-                      SharedPreferencesService().removePillAtIndexFromDate(
-                          index, DateService().getDateAsMonthAndDay(widget.date)
-                      );
                       state.pillsToTake.removeAt(index);
-                    });
-                  },
+                    }
                 )
             ),
           )
@@ -111,7 +69,7 @@ class DayWidgetState extends State<DayWidget> {
                               top:40.0
                           ),
                           child: new Text(
-                              DateService().getDateAsMonthAndDay(widget.date),
+                              DateService().getDateAsMonthAndDay(date),
                               style: new TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
                           ),
                         ),
