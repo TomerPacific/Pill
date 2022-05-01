@@ -53,7 +53,13 @@ class AddingPillFormState extends State<AddingPillForm> {
       body:
           BlocListener<PillBloc, PillState>(
             listener: (context, state) {
-
+              if (state is PillLoaded) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content:
+                    const Text("Pill Added!")
+                  ),
+                );
+              }
             },
             child:  Column(
               mainAxisAlignment: MainAxisAlignment.center,
