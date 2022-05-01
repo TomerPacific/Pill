@@ -36,7 +36,12 @@ class PillBloc extends Bloc<PillEvent, PillState> {
   }
 
   void _onDeletePill(DeletePill event, Emitter<PillState> emitter) {
-
+    final state = this.state;
+    if (state is PillLoaded) {
+      List<PillToTake> updatedPills = state.pillsToTake.where((pill) => !pill.equals(event.pillToTake)).toList();
+      emitter(PillLoaded(pillsToTake: updatedPills),
+      );
+    }
   }
 
 }
