@@ -48,7 +48,11 @@ class UpdatePill extends PillEvent {
 class DeletePill extends PillEvent {
   final PillToTake pillToTake;
 
-  const DeletePill({required this.pillToTake});
+  DeletePill({required this.pillToTake}) {
+    DateTime date = DateTime.now();
+    String converted = DateService().getDateAsMonthAndDay(date);
+    SharedPreferencesService().removePillFromDate(pillToTake, converted);
+  }
 
   @override
   List<Object> get props => [pillToTake];
