@@ -1,5 +1,6 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/model/PillToTake.dart';
 
 import 'PillEvent.dart';
 import 'PillState.dart';
@@ -17,11 +18,21 @@ class PillBloc extends Bloc<PillEvent, PillState> {
   }
 
   void _onAddPill(AddPill event, Emitter<PillState> emitter) {
-
+    final state = this.state;
+    if (state is PillLoaded) {
+      emitter(PillLoaded(pillsToTake: List.from(state.pillsToTake)..add(event.pillToTake),
+        )
+      );
+    }
   }
 
   void _onUpdatePill(UpdatePill event, Emitter<PillState> emitter) {
-
+    final state = this.state;
+    if (state is PillLoaded) {
+    List<PillToTake> updatedPills = state.pillsToTake.map((pill) => pill.equals(event.pillToTake) ? event.pillToTake : pill).toList();
+        emitter(PillLoaded(pillsToTake: updatedPills),
+        );
+    }
   }
 
   void _onDeletePill(DeletePill event, Emitter<PillState> emitter) {
