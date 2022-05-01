@@ -39,7 +39,11 @@ class AddPill extends PillEvent {
 class UpdatePill extends PillEvent {
   final PillToTake pillToTake;
 
-  const UpdatePill({required this.pillToTake});
+  UpdatePill({required this.pillToTake}) {
+    DateTime date = DateTime.now();
+    String converted = DateService().getDateAsMonthAndDay(date);
+    SharedPreferencesService().updatePillForDate(pillToTake, converted);
+  }
 
   @override
   List<Object> get props => [pillToTake];
