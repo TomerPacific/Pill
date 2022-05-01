@@ -13,15 +13,11 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
 
-  final GlobalKey<DayWidgetState> _key = GlobalKey();
-
   void _handleAddPillButtonPressed() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
-    ).then((value) {
-      _key.currentState?.updatePillsAfterAddition();
-    });
+    );
   }
 
   @override
@@ -31,9 +27,7 @@ class _MainPageState extends State<MainPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          new DayWidget(
-              key: _key,
-              date: DateTime.now()
+          new DayWidget(date: DateTime.now()
           )
         ],
       ),
