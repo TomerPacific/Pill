@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:pill/custom_icons.dart';
 import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/DateService.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,10 +46,10 @@ class SharedPreferencesService {
 
   }
 
-  void removePillAtIndexFromDate(int indexOfPillToRemove, String currentDate) {
+  void removePillFromDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
-    pills.removeAt(indexOfPillToRemove);
-    _setPillsForDate(currentDate, pills);
+    List<PillToTake> updatedPills = pills.where((element) => !element.equals(pillToTake)).toList();
+    _setPillsForDate(currentDate, updatedPills);
   }
 
   void clearAllPillsFromDate(String dateToRemovePillsFrom) {
