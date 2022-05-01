@@ -26,7 +26,11 @@ class LoadPill extends PillEvent {
 class AddPill extends PillEvent {
   final PillToTake pillToTake;
 
-  const AddPill({required this.pillToTake});
+  AddPill({required this.pillToTake}) {
+    DateTime date = DateTime.now();
+    SharedPreferencesService().addPillToDates(
+        DateService().getDateAsMonthAndDay(date), pillToTake);
+  }
 
   @override
   List<Object> get props => [pillToTake];
