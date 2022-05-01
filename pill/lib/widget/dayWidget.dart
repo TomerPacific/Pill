@@ -6,7 +6,7 @@ import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/service/DateService.dart';
 import 'package:pill/widget/pillWidget.dart';
 
-import '../bloc/pilll_event.dart';
+import '../bloc/pill_event.dart';
 
 class DayWidget extends StatelessWidget {
 
