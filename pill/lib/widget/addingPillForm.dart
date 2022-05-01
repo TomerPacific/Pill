@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/PillEvent.dart';
-import 'package:pill/bloc/PillState.dart';
+import 'package:pill/bloc/pilll_event.dart';
+import 'package:pill/bloc/pill_state.dart';
 import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/custom_icons.dart';

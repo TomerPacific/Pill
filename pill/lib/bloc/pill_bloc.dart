@@ -2,8 +2,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/model/PillToTake.dart';
 
-import 'PillEvent.dart';
-import 'PillState.dart';
+import 'pilll_event.dart';
+import 'pill_state.dart';
 
 class PillBloc extends Bloc<PillEvent, PillState> {
   PillBloc() : super(PillLoading()) {
