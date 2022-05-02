@@ -4,7 +4,6 @@ import 'package:pill/model/PillToTake.dart';
 abstract class PillState {
   const PillState();
 
-  @override
   List<Object> get props => [];
 }
 
@@ -15,6 +14,5 @@ class PillLoaded extends PillState {
 
   const PillLoaded({this.pillsToTake = const <PillToTake>[]});
 
-  @override
   List<Object> get props => [pillsToTake];
 }

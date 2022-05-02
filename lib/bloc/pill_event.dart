@@ -6,7 +6,6 @@ import 'package:pill/service/SharedPreferencesService.dart';
 abstract class PillEvent {
   const PillEvent();
 
-  @override
   List<Object> get props => [];
 }
 
