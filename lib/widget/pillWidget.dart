@@ -1,16 +1,16 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/bloc/pill_event.dart';
+import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/model/PillToTake.dart';
 
 class PillWidget extends StatefulWidget {
 
   const PillWidget({
-    required this.pillToTake, required this.onPillRegimentMetHandler
-  }) : super();
+    required this.pillToTake}) : super();
 
   final PillToTake pillToTake;
-  final Function onPillRegimentMetHandler;
 
   @override
   State<StatefulWidget> createState() {
@@ -23,13 +23,17 @@ class PillWidgetState extends State<PillWidget> {
 
   int _amountOfPillsLeftToTakeToday = 0;
 
-  void _handleOnTap() {
+  void _handleOnTap(BuildContext context) {
     setState(() {
       _amountOfPillsLeftToTakeToday = --_amountOfPillsLeftToTakeToday;
     });
 
+    widget.pillToTake.pillRegiment = _amountOfPillsLeftToTakeToday;
+
     if (_amountOfPillsLeftToTakeToday == 0) {
-      widget.onPillRegimentMetHandler(widget.pillToTake);
+        context.read<PillBloc>().add(DeletePill(pillToTake: widget.pillToTake));
+    } else {
+      context.read<PillBloc>().add(UpdatePill(pillToTake: widget.pillToTake));
     }
   }
 
@@ -45,7 +49,9 @@ class PillWidgetState extends State<PillWidget> {
       child: new Card(
             child: InkWell(
                 splashColor: Colors.blue.withAlpha(30),
-                onTap: _handleOnTap,
+                onTap: () {
+                  _handleOnTap(context);
+                },
                 child: new Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
