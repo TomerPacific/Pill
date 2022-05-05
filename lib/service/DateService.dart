@@ -1,3 +1,4 @@
+
 class DateService {
   static final DateService instance = DateService._internal();
 
@@ -9,5 +10,9 @@ class DateService {
 
   String getDateAsMonthAndDay(DateTime date) {
     return date.month.toString() + "/" + date.day.toString();
+  }
+
+  String getHourFromDate(DateTime dateTime) {
+    return "${dateTime.hour}:${dateTime.minute}:${dateTime.second}";
   }
 }
