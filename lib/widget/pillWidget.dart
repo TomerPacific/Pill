@@ -93,8 +93,10 @@ class PillWidgetState extends State<PillWidget> {
                       new Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: widget.pillToTake.lastTaken != null ?
-                          [new Text(
-                              "Last time pill was taken: " + DateService().getHourFromDate(widget.pillToTake.lastTaken!),
+                          [
+                            Icon(Icons.access_time),
+                            new Text(
+                              DateService().getHourFromDate(widget.pillToTake.lastTaken!),
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
