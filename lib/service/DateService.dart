@@ -13,6 +13,9 @@ class DateService {
   }
 
   String getHourFromDate(DateTime dateTime) {
-    return "${dateTime.hour}:${dateTime.minute}:${dateTime.second}";
+    String hour = dateTime.hour < 10 ? "0${dateTime.hour}" : "${dateTime.hour}";
+    String minutes = dateTime.minute < 10 ? "0${dateTime.minute}" : "${dateTime.minute}";
+    String seconds = dateTime.second < 10 ? "0${dateTime.second}" : "${dateTime.second}";
+    return "$hour:$minutes:$seconds";
   }
 }
