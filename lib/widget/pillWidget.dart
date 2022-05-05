@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill_event.dart';
 import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/model/PillToTake.dart';
+import 'package:pill/service/DateService.dart';
 
 class PillWidget extends StatefulWidget {
 
@@ -27,7 +28,7 @@ class PillWidgetState extends State<PillWidget> {
     setState(() {
       _amountOfPillsLeftToTakeToday = --_amountOfPillsLeftToTakeToday;
     });
-
+    widget.pillToTake.lastTaken = DateTime.now();
     widget.pillToTake.pillRegiment = _amountOfPillsLeftToTakeToday;
 
     if (_amountOfPillsLeftToTakeToday == 0) {
@@ -88,7 +89,20 @@ class PillWidgetState extends State<PillWidget> {
                               )
                           )
                         ],
+                      ),
+                      new Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: widget.pillToTake.lastTaken != null ?
+                          [new Text(
+                              "Last time pill was taken: " + DateService().getHourFromDate(widget.pillToTake.lastTaken!),
+                              style:  new TextStyle(
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold
+                              )
+                          )
+                          ] : []
                       )
+
                     ]
                 )
             ),
