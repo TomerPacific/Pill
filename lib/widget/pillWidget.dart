@@ -4,43 +4,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill_event.dart';
 import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/model/PillToTake.dart';
+import 'package:pill/service/DateService.dart';
 
-class PillWidget extends StatefulWidget {
+class PillWidget extends StatelessWidget {
 
   const PillWidget({
     required this.pillToTake}) : super();
 
   final PillToTake pillToTake;
 
-  @override
-  State<StatefulWidget> createState() {
-    return PillWidgetState();
-  }
-
-}
-
-class PillWidgetState extends State<PillWidget> {
-
-  int _amountOfPillsLeftToTakeToday = 0;
-
   void _handleOnTap(BuildContext context) {
-    setState(() {
-      _amountOfPillsLeftToTakeToday = --_amountOfPillsLeftToTakeToday;
-    });
-
-    widget.pillToTake.pillRegiment = _amountOfPillsLeftToTakeToday;
-
-    if (_amountOfPillsLeftToTakeToday == 0) {
-        context.read<PillBloc>().add(DeletePill(pillToTake: widget.pillToTake));
+    pillToTake.pillRegiment--;
+    if (pillToTake.pillRegiment == 0) {
+        context.read<PillBloc>().add(DeletePill(pillToTake: pillToTake));
     } else {
-      context.read<PillBloc>().add(UpdatePill(pillToTake: widget.pillToTake));
+      pillToTake.lastTaken = DateTime.now();
+      context.read<PillBloc>().add(UpdatePill(pillToTake: pillToTake));
     }
-  }
-
-  @override
-  void initState() {
-    _amountOfPillsLeftToTakeToday = widget.pillToTake.pillRegiment;
-    super.initState();
   }
 
   @override
@@ -59,7 +39,7 @@ class PillWidgetState extends State<PillWidget> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             new Text(
-                              widget.pillToTake.pillName,
+                              pillToTake.pillName,
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
@@ -71,7 +51,7 @@ class PillWidgetState extends State<PillWidget> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                              widget.pillToTake.pillImage,
+                              pillToTake.pillImage,
                               width: 100,
                               height: 100
                           )
@@ -81,14 +61,29 @@ class PillWidgetState extends State<PillWidget> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           new Text(
-                              "Pills left to take today: $_amountOfPillsLeftToTakeToday",
+                              "Pills left to take today: ${pillToTake.pillRegiment}",
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
                               )
                           )
                         ],
+                      ),
+                      new Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: pillToTake.lastTaken != null ?
+                          [
+                            Icon(Icons.access_time),
+                            new Text(
+                              DateService().getHourFromDate(pillToTake.lastTaken!),
+                              style:  new TextStyle(
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold
+                              )
+                          )
+                          ] : []
                       )
+
                     ]
                 )
             ),

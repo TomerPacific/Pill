@@ -8,22 +8,25 @@ class PillToTake {
   String pillImage = 'assets/images/defaultPill.png';
   String description;
   int amountOfDaysToTake;
+  DateTime? lastTaken;
 
   PillToTake({
     this.pillName = "Random Pill",
     this.pillWeight = 0,
     this.pillRegiment = 0,
     this.description = "Description",
-    this.amountOfDaysToTake = 0
+    this.amountOfDaysToTake = 0,
+    this.lastTaken
   });
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
     return PillToTake(
-      pillName: jsonData[PILL_NAME_KEY],
-      pillWeight: jsonData[PILL_WEIGHT_KEY],
-      pillRegiment: jsonData[PILL_REGIMENT_KEY],
-      description: jsonData[PILL_DESCRIPTION_KEY],
-      amountOfDaysToTake: jsonData[PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY]
+        pillName: jsonData[PILL_NAME_KEY],
+        pillWeight: jsonData[PILL_WEIGHT_KEY],
+        pillRegiment: jsonData[PILL_REGIMENT_KEY],
+        description: jsonData[PILL_DESCRIPTION_KEY],
+        amountOfDaysToTake: jsonData[PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY],
+        lastTaken: jsonData[PILL_LAST_TAKEN_KEY] == null ? null : DateTime.parse(jsonData[PILL_LAST_TAKEN_KEY])
     );
   }
 
@@ -32,7 +35,8 @@ class PillToTake {
     PILL_WEIGHT_KEY: pill.pillWeight,
     PILL_REGIMENT_KEY: pill.pillRegiment,
     PILL_DESCRIPTION_KEY: pill.description,
-    PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY: pill.amountOfDaysToTake
+    PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY: pill.amountOfDaysToTake,
+    PILL_LAST_TAKEN_KEY: pill.lastTaken == null ? null : pill.lastTaken!.toIso8601String()
   };
 
   static String encode(List<PillToTake> pills) => json.encode(
@@ -49,10 +53,10 @@ class PillToTake {
   bool equals(PillToTake otherPill) {
     return (
         this.pillRegiment == otherPill.pillRegiment &&
-        this.pillName == otherPill.pillName &&
-        this.pillWeight == otherPill.pillWeight &&
-        this.description == otherPill.description &&
-        this.pillImage == otherPill.pillImage &&
-        this.amountOfDaysToTake == otherPill.amountOfDaysToTake);
+            this.pillName == otherPill.pillName &&
+            this.pillWeight == otherPill.pillWeight &&
+            this.description == otherPill.description &&
+            this.pillImage == otherPill.pillImage &&
+            this.amountOfDaysToTake == otherPill.amountOfDaysToTake);
   }
 }
