@@ -8,15 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
 
-  late String date;
+  late String date = "5/6";
 
   setUp(() async {
     await SharedPreferencesService().init();
     SharedPreferences.setMockInitialValues({});
-    date = "5/6";
+    SharedPreferencesService().clearAllPillsFromDate(date);
   });
 
-  test("SharedPreferences Service get pills for date empty", () {
+  test("SharedPreferences Service get pills for empty date", () {
       List<PillToTake> pills = SharedPreferencesService().getPillsToTakeForDate(date);
       expect(pills.length, 0);
   });
@@ -34,5 +34,18 @@ void main() {
     expect(found.length, 1);
   });
 
+  test("SharedPreferences Service remove pill from date", () {
+    PillToTake pill = new PillToTake(pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+    SharedPreferencesService().addPillToDates(date, pill);
+    List<PillToTake> pills = SharedPreferencesService().getPillsToTakeForDate(date);
+
+    expect(pills.length, 1);
+
+    SharedPreferencesService().removePillFromDate(pill, date);
+
+    pills = SharedPreferencesService().getPillsToTakeForDate(date);
+
+    expect(pills.length, 0);
+  });
 
 }
