@@ -22,26 +22,17 @@ class PillWidget extends StatefulWidget {
 
 class PillWidgetState extends State<PillWidget> {
 
-  int _amountOfPillsLeftToTakeToday = 0;
-
   void _handleOnTap(BuildContext context) {
     setState(() {
-      _amountOfPillsLeftToTakeToday = --_amountOfPillsLeftToTakeToday;
+      widget.pillToTake.pillRegiment = --widget.pillToTake.pillRegiment;
     });
-    widget.pillToTake.lastTaken = DateTime.now();
-    widget.pillToTake.pillRegiment = _amountOfPillsLeftToTakeToday;
 
-    if (_amountOfPillsLeftToTakeToday == 0) {
+    if (widget.pillToTake.pillRegiment == 0) {
         context.read<PillBloc>().add(DeletePill(pillToTake: widget.pillToTake));
     } else {
+      widget.pillToTake.lastTaken = DateTime.now();
       context.read<PillBloc>().add(UpdatePill(pillToTake: widget.pillToTake));
     }
-  }
-
-  @override
-  void initState() {
-    _amountOfPillsLeftToTakeToday = widget.pillToTake.pillRegiment;
-    super.initState();
   }
 
   @override
@@ -82,7 +73,7 @@ class PillWidgetState extends State<PillWidget> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           new Text(
-                              "Pills left to take today: $_amountOfPillsLeftToTakeToday",
+                              "Pills left to take today: ${widget.pillToTake.pillRegiment}",
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
