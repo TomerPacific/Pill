@@ -6,32 +6,20 @@ import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/model/PillToTake.dart';
 import 'package:pill/service/DateService.dart';
 
-class PillWidget extends StatefulWidget {
+class PillWidget extends StatelessWidget {
 
   const PillWidget({
     required this.pillToTake}) : super();
 
   final PillToTake pillToTake;
 
-  @override
-  State<StatefulWidget> createState() {
-    return PillWidgetState();
-  }
-
-}
-
-class PillWidgetState extends State<PillWidget> {
-
   void _handleOnTap(BuildContext context) {
-    setState(() {
-      widget.pillToTake.pillRegiment = --widget.pillToTake.pillRegiment;
-    });
-
-    if (widget.pillToTake.pillRegiment == 0) {
-        context.read<PillBloc>().add(DeletePill(pillToTake: widget.pillToTake));
+    pillToTake.pillRegiment--;
+    if (pillToTake.pillRegiment == 0) {
+        context.read<PillBloc>().add(DeletePill(pillToTake: pillToTake));
     } else {
-      widget.pillToTake.lastTaken = DateTime.now();
-      context.read<PillBloc>().add(UpdatePill(pillToTake: widget.pillToTake));
+      pillToTake.lastTaken = DateTime.now();
+      context.read<PillBloc>().add(UpdatePill(pillToTake: pillToTake));
     }
   }
 
@@ -51,7 +39,7 @@ class PillWidgetState extends State<PillWidget> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             new Text(
-                              widget.pillToTake.pillName,
+                              pillToTake.pillName,
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
@@ -63,7 +51,7 @@ class PillWidgetState extends State<PillWidget> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset(
-                              widget.pillToTake.pillImage,
+                              pillToTake.pillImage,
                               width: 100,
                               height: 100
                           )
@@ -73,7 +61,7 @@ class PillWidgetState extends State<PillWidget> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           new Text(
-                              "Pills left to take today: ${widget.pillToTake.pillRegiment}",
+                              "Pills left to take today: ${pillToTake.pillRegiment}",
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
@@ -83,11 +71,11 @@ class PillWidgetState extends State<PillWidget> {
                       ),
                       new Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: widget.pillToTake.lastTaken != null ?
+                          children: pillToTake.lastTaken != null ?
                           [
                             Icon(Icons.access_time),
                             new Text(
-                              DateService().getHourFromDate(widget.pillToTake.lastTaken!),
+                              DateService().getHourFromDate(pillToTake.lastTaken!),
                               style:  new TextStyle(
                                   fontSize: 20.0,
                                   fontWeight: FontWeight.bold
