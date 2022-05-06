@@ -1,5 +1,5 @@
 
-import 'package:pill/model/PillToTake.dart';
+import 'package:pill/model/pill_to_take.dart';
 
 abstract class PillState {
   const PillState();

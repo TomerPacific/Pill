@@ -4,7 +4,7 @@ import 'package:pill/bloc/pill_event.dart';
 import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/page/main_page.dart';
-import 'package:pill/service/SharedPreferencesService.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

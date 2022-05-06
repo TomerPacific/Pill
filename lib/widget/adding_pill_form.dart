@@ -6,7 +6,7 @@ import 'package:pill/bloc/pill_state.dart';
 import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/custom_icons.dart';
-import 'package:pill/model/PillToTake.dart';
+import 'package:pill/model/pill_to_take.dart';
 
 class AddingPillForm extends StatefulWidget {
 
