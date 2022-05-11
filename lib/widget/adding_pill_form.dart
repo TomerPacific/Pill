@@ -79,6 +79,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                         child:  Container(
                           width: MediaQuery.of(context).size.width * 0.9,
                           child: TextFormField(
+                              key: ObjectKey("pillName"),
                               controller: pillNameTextEditingController,
                               decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
@@ -99,6 +100,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                       Container(
                         width: MediaQuery.of(context).size.width * 0.9,
                         child:  TextFormField(
+                            key: ObjectKey("pillRegiment"),
                             controller: pillRegimentController,
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
@@ -122,6 +124,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                           child:Container(
                             width: MediaQuery.of(context).size.width * 0.9,
                             child:  TextFormField(
+                                key: ObjectKey("pillDays"),
                                 controller: pillAmountOfDaysToTakeController,
                                 keyboardType: TextInputType.number,
                                 decoration: const InputDecoration(
