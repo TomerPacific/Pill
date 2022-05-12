@@ -34,4 +34,26 @@ void main() {
     expect(find.byType(AddingPillForm), findsNothing);
 
   });
+
+  testWidgets("Adding Pill Form - Trying to add a pill with an empty form", (WidgetTester tester) async {
+
+    await tester.pumpWidget(
+        MultiBlocProvider(
+            providers: [BlocProvider(
+                create: (context) => PillBloc())],
+            child: MaterialApp(
+                home: AddingPillForm(DateTime.now())
+            )
+        )
+    );
+
+    await tester.ensureVisible(find.byType(AddingPillForm));
+
+    await tester.tap(find.byIcon(Icons.check));
+
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    expect(find.text("Please enter a pill name"), findsOneWidget);
+
+  });
 }
