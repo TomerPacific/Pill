@@ -7,10 +7,18 @@ import 'package:pill/bloc/pill_event.dart';
 import 'package:pill/bloc/pill_state.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/pill_widget.dart';
 
 void main() {
 
+
+  String currentDate = DateService().getDateAsMonthAndDay(DateTime.now());
+
+  setUp(() async {
+    await SharedPreferencesService().init();
+    SharedPreferencesService().clearAllPillsFromDate(currentDate);
+  });
 
   Widget drawPills(BuildContext context, PillState state) {
     if (state is PillLoading) {
@@ -70,7 +78,7 @@ void main() {
                                       top:40.0
                                   ),
                                   child: new Text(
-                                      DateService().getDateAsMonthAndDay(DateTime.now()),
+                                      currentDate,
                                       style: new TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
                                   ),
                                 ),
@@ -94,13 +102,13 @@ void main() {
 
     await tester.pumpWidget(base);
 
-    await tester.pumpAndSettle(const Duration(seconds: 5));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     BuildContext context = tester.element(find.byType(Container));
 
     context.read<PillBloc>().add(AddPill(pillToTake: pillToTake));
 
-    await tester.pumpAndSettle(const Duration(seconds: 5));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     await tester.ensureVisible(find.byType(PillWidget));
 
@@ -119,13 +127,13 @@ void main() {
 
     await tester.pumpWidget(base);
 
-    await tester.pumpAndSettle(const Duration(seconds: 5));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     BuildContext context = tester.element(find.byType(Container));
 
     context.read<PillBloc>().add(AddPill(pillToTake: pillToTake));
 
-    await tester.pumpAndSettle(const Duration(seconds: 5));
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     await tester.ensureVisible(find.byType(PillWidget));
 
@@ -134,6 +142,31 @@ void main() {
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
     expect(find.text('Test Pill'), findsNothing);
+  });
+
+  testWidgets("PillWidget Take Pill And See Last Time Taken", (WidgetTester tester) async {
+    PillToTake pillToTake = new PillToTake(
+        pillRegiment: 2,
+        pillName: "Test Pill",
+        amountOfDaysToTake: 1);
+
+    await tester.pumpWidget(base);
+
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    BuildContext context = tester.element(find.byType(Container));
+
+    context.read<PillBloc>().add(AddPill(pillToTake: pillToTake));
+
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    await tester.ensureVisible(find.byType(PillWidget));
+
+    await tester.tap(find.byType(PillWidget));
+
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    expect(find.byIcon(Icons.access_time), findsOneWidget);
   });
 
 }
