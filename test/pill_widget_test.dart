@@ -50,6 +50,41 @@ void main() {
     }
   }
 
+  Widget base = MultiBlocProvider(
+      providers: [BlocProvider(
+        create: (context) => PillBloc()..add(LoadPill()),)],
+      child: MaterialApp(
+          home: BlocBuilder<PillBloc, PillState>(
+              builder: (context, state) {
+                return new Container(
+                    child:new SizedBox(
+                        height: double.infinity,
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              new Align(
+                                alignment: Alignment.topCenter,
+                                child:  new Padding(
+                                  padding: const EdgeInsets.only(
+                                      top:40.0
+                                  ),
+                                  child: new Text(
+                                      DateService().getDateAsMonthAndDay(DateTime.now()),
+                                      style: new TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
+                                  ),
+                                ),
+                              ),
+                              drawPills(context, state)
+                            ]
+                        )
+                    )
+                );
+              }
+          )
+      )
+  );
+
 
   testWidgets("PillWidget Click On Pill", (WidgetTester tester) async {
     PillToTake pillToTake = new PillToTake(
@@ -57,41 +92,7 @@ void main() {
         pillName: "Test Pill",
         amountOfDaysToTake: 1);
 
-    await tester.pumpWidget(
-        MultiBlocProvider(
-            providers: [BlocProvider(
-                create: (context) => PillBloc()..add(LoadPill()),)],
-            child: MaterialApp(
-                home: BlocBuilder<PillBloc, PillState>(
-                builder: (context, state) {
-                  return new Container(
-                      child:new SizedBox(
-                      height: double.infinity,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                      new Align(
-                      alignment: Alignment.topCenter,
-                      child:  new Padding(
-                        padding: const EdgeInsets.only(
-                            top:40.0
-                        ),
-                        child: new Text(
-                            DateService().getDateAsMonthAndDay(DateTime.now()),
-                            style: new TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)
-                        ),
-                      ),
-                    ),
-                    drawPills(context, state)
-                    ]
-                  )
-                    )
-                  );
-                }
-            )
-        )
-    ));
+    await tester.pumpWidget(base);
 
     await tester.pumpAndSettle(const Duration(seconds: 5));
 
