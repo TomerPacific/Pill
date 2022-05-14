@@ -110,4 +110,30 @@ void main() {
 
     expect(find.text('Test Pill'), findsNothing);
   });
+
+  testWidgets("PillWidget Dismiss Pill", (WidgetTester tester) async {
+    PillToTake pillToTake = new PillToTake(
+        pillRegiment: 1,
+        pillName: "Test Pill",
+        amountOfDaysToTake: 1);
+
+    await tester.pumpWidget(base);
+
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+
+    BuildContext context = tester.element(find.byType(Container));
+
+    context.read<PillBloc>().add(AddPill(pillToTake: pillToTake));
+
+    await tester.pumpAndSettle(const Duration(seconds: 5));
+
+    await tester.ensureVisible(find.byType(PillWidget));
+
+    await tester.drag(find.byType(Dismissible), const Offset(500.0, 0.0));
+
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    expect(find.text('Test Pill'), findsNothing);
+  });
+
 }
