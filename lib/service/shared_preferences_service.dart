@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:pill/model/PillToTake.dart';
-import 'package:pill/service/DateService.dart';
+import 'package:pill/model/pill_to_take.dart';
+import 'package:pill/service/date_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {

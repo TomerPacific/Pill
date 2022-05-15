@@ -1,7 +1,7 @@
 
-import 'package:pill/model/PillToTake.dart';
-import 'package:pill/service/DateService.dart';
-import 'package:pill/service/SharedPreferencesService.dart';
+import 'package:pill/model/pill_to_take.dart';
+import 'package:pill/service/date_service.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 
 abstract class PillEvent {
   const PillEvent();

@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill_state.dart';
 import 'package:pill/bloc/pill_bloc.dart';
 import 'package:pill/bloc/pill_event.dart';
-import 'package:pill/service/DateService.dart';
-import 'package:pill/widget/pillWidget.dart';
+import 'package:pill/service/date_service.dart';
+import 'package:pill/widget/pill_widget.dart';
 
 class DayWidget extends StatelessWidget {
 

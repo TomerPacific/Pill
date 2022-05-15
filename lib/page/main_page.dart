@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pill/widget/dayWidget.dart';
-import 'package:pill/widget/addingPillForm.dart';
+import 'package:pill/widget/day_widget.dart';
+import 'package:pill/widget/adding_pill_form.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({required this.title}) : super();
