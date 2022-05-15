@@ -1,13 +1,14 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/model/pill_to_take.dart';
+import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
 void main() {
 
-  late String date = "5/6";
+  final String date = DateService().getDateAsMonthAndDay(DateTime.now());
 
   setUp(() async {
     await SharedPreferencesService().init();
