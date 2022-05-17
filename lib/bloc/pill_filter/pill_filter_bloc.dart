@@ -54,7 +54,7 @@ class PillFilterBloc extends Bloc<PillFilterEvent, PillFilterState> {
       if (state is PillFilterLoaded) {
         final state = this.state as PillFilterLoaded;
         add(
-           UpdatePills(pillFilter: state.pillFilter);
+           UpdatePills(pillFilter: state.pillFilter)
         );
       }
   }
