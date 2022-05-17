@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'bloc/pill/pill_event.dart';
 import 'bloc/pill/pill_bloc.dart';
 import 'package:pill/constants.dart';
@@ -19,7 +20,12 @@ class MyApp extends StatelessWidget {
         providers: [BlocProvider(
           create: (context) => PillBloc()
             ..add(LoadPill(),),
-        )],
+        ),
+        BlocProvider(create:
+        (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)
+            ),
+          ),
+        ],
         child: MaterialApp(
       title: APP_TITLE,
       theme: ThemeData(
