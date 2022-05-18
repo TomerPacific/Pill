@@ -10,9 +10,10 @@ import 'package:pill/widget/pill_widget.dart';
 
 class DayWidget extends StatelessWidget {
 
-  DayWidget({required this.date});
+  DayWidget({required this.date, required this.title});
 
   final DateTime date;
+  final String title;
 
   Widget drawPills(BuildContext context, PillFilterState state) {
     if (state is PillFilterLoading) {
@@ -23,7 +24,7 @@ class DayWidget extends StatelessWidget {
       new Padding(
           padding: const EdgeInsets.only(top: 20),
           child: new Text(
-              "You do not have to take any pills today 😀",
+             title,
               style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
           )
       )

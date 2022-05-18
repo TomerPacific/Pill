@@ -50,7 +50,7 @@ class _MainPageState extends State<MainPage> {
                     }
                   }, tabs: [
                 Tab(icon: Icon(CustomIcons.pill)),
-                Tab(icon: Icon(CustomIcons.pill)),
+                Tab(icon: Icon(Icons.watch_later_rounded)),
               ]
               ),
             ),
@@ -60,13 +60,13 @@ class _MainPageState extends State<MainPage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new DayWidget(date: DateTime.now()),
+                  new DayWidget(date: DateTime.now(), title:  "You do not have to take any pills today 😀"),
                 ],
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new DayWidget(date: DateTime.now()),
+                  new DayWidget(date: DateTime.now(), title:  "You have not taken any pills today"),
                 ],
               ),
             ],
