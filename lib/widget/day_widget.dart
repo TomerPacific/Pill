@@ -1,9 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_event.dart';
+import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
+import 'package:pill/bloc/pill_filter/pill_filter_state.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/widget/pill_widget.dart';
 
@@ -13,12 +14,12 @@ class DayWidget extends StatelessWidget {
 
   final DateTime date;
 
-  Widget drawPills(BuildContext context, PillState state) {
-    if (state is PillLoading) {
+  Widget drawPills(BuildContext context, PillFilterState state) {
+    if (state is PillFilterLoading) {
       return const CircularProgressIndicator();
     }
-    if (state is PillLoaded) {
-      return state.pillsToTake.length == 0 ?
+    if (state is PillFilterLoaded) {
+      return state.filteredPills.length == 0 ?
       new Padding(
           padding: const EdgeInsets.only(top: 20),
           child: new Text(
@@ -31,14 +32,14 @@ class DayWidget extends StatelessWidget {
           child: SizedBox(
             height: 200.0,
             child:  ListView.builder(
-                itemCount: state.pillsToTake.length,
+                itemCount: state.filteredPills.length,
                 itemBuilder:
                     (_, index) =>
                 new Dismissible(
-                    key: ObjectKey(state.pillsToTake[index].pillName),
-                    child: new PillWidget(pillToTake: state.pillsToTake[index]),
+                    key: ObjectKey(state.filteredPills[index].pillName),
+                    child: new PillWidget(pillToTake: state.filteredPills[index]),
                     onDismissed: (direction) {
-                      context.read<PillBloc>().add(DeletePill(pillToTake: state.pillsToTake[index]));
+                      context.read<PillBloc>().add(DeletePill(pillToTake: state.filteredPills[index]));
                       //state.pillsToTake.removeAt(index);
                     }
                 )
@@ -53,7 +54,7 @@ class DayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PillBloc, PillState>(
+    return BlocBuilder<PillFilterBloc, PillFilterState>(
       builder: (context, state) {
         return new Container(
             child:
