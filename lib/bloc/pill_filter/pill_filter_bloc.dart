@@ -20,7 +20,7 @@ class PillFilterBloc extends Bloc<PillFilterEvent, PillFilterState> {
     on<UpdateFilter>(_onUpdateFiler);
 
     _pillSubscription = pillBloc.stream.listen((state) {
-      add(const UpdatePills(),);
+      add(const UpdateFilter(),);
     });
 
   }
