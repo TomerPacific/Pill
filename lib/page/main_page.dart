@@ -61,6 +61,14 @@ class _MainPageState extends State<MainPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   new DayWidget(date: DateTime.now(), title:  "You do not have to take any pills today 😀"),
+                  new Align(
+                    alignment: Alignment.bottomRight,
+                    child: new FloatingActionButton(
+                        onPressed: _handleAddPillButtonPressed,
+                        child: Icon(Icons.add)
+                    ),
+                  )
+
                 ],
               ),
               Column(
@@ -71,10 +79,6 @@ class _MainPageState extends State<MainPage> {
               ),
             ],
           ),
-          floatingActionButton: new FloatingActionButton(
-            onPressed: _handleAddPillButtonPressed,
-            child: Icon(Icons.add)
-        ),
         )
     );
   }
