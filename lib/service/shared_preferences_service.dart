@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
+import 'package:pill/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
@@ -21,6 +22,10 @@ class SharedPreferencesService {
     _sharedPreferences?.setString(currentDate, PillToTake.encode(pills));
   }
 
+  void _setPillsTaken(List<PillToTake> pillsTaken) {
+    _sharedPreferences?.setString(PILLS_TAKEN_KEY, PillToTake.encode(pillsTaken));
+  }
+
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
       String? encodedPills = _sharedPreferences?.getString(currentDate);
       List<PillToTake> pills = [];
@@ -29,6 +34,16 @@ class SharedPreferencesService {
       }
 
       return pills;
+  }
+
+  List<PillToTake> getPillsTaken() {
+    String? encodedPills = _sharedPreferences?.getString(PILLS_TAKEN_KEY);
+    List<PillToTake> pillsTaken = [];
+    if (encodedPills != null) {
+      pillsTaken = PillToTake.decode(encodedPills);
+    }
+
+    return pillsTaken;
   }
 
   void addPillToDates(String currentDate, PillToTake pill) {
@@ -45,9 +60,16 @@ class SharedPreferencesService {
 
   }
 
+  void addTakenPill(PillToTake pillTaken) {
+    List<PillToTake> pillsTaken = getPillsTaken();
+    pillsTaken.add(pillTaken);
+    _setPillsTaken(pillsTaken);
+  }
+
   void updatePillForDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     int index = pills.indexWhere((element) => element.pillName == pillToTake.pillName);
+    addTakenPill(pillToTake);
     pills.replaceRange(index, index+1, [pillToTake]);
     _setPillsForDate(currentDate, pills);
   }
