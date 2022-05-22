@@ -11,8 +11,9 @@ class PillLoading extends PillState {}
 
 class PillLoaded extends PillState {
   final List<PillToTake> pillsToTake;
+  final List<PillToTake> pillsTaken;
 
-  const PillLoaded({this.pillsToTake = const <PillToTake>[]});
+  const PillLoaded({this.pillsToTake = const <PillToTake>[], this.pillsTaken = const <PillToTake>[]});
 
-  List<Object> get props => [pillsToTake];
+  List<Object> get props => [pillsToTake, pillsTaken];
 }

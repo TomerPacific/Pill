@@ -11,11 +11,13 @@ abstract class PillEvent {
 
 class LoadPill extends PillEvent {
   List<PillToTake> pillsToTake;
+  List<PillToTake> pillsTaken;
 
-  LoadPill({this.pillsToTake = const <PillToTake>[]}) {
+  LoadPill({this.pillsToTake = const <PillToTake>[], this.pillsTaken = const <PillToTake>[]}) {
     DateTime date = DateTime.now();
     String converted = DateService().getDateAsMonthAndDay(date);
     pillsToTake = SharedPreferencesService().getPillsToTakeForDate(converted);
+    pillsTaken = SharedPreferencesService().getPillsTaken();
   }
 
   @override

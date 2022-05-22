@@ -1,5 +1,6 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 import 'pill_event.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/model/pill_to_take.dart';
@@ -13,13 +14,17 @@ class PillBloc extends Bloc<PillEvent, PillState> {
   }
 
   void _onLoadPills(LoadPill event, Emitter<PillState> emitter) {
-    emitter(PillLoaded(pillsToTake: event.pillsToTake), );
+    emitter(PillLoaded(
+        pillsToTake: event.pillsToTake,
+        pillsTaken: event.pillsTaken), );
   }
 
   void _onAddPill(AddPill event, Emitter<PillState> emitter) {
     final state = this.state;
     if (state is PillLoaded) {
-      emitter(PillLoaded(pillsToTake: List.from(state.pillsToTake)..add(event.pillToTake),
+      emitter(PillLoaded(
+          pillsToTake: List.from(state.pillsToTake)..add(event.pillToTake),
+          pillsTaken: state.pillsTaken
         )
       );
     }
@@ -29,7 +34,10 @@ class PillBloc extends Bloc<PillEvent, PillState> {
     final state = this.state;
     if (state is PillLoaded) {
     List<PillToTake> updatedPills = state.pillsToTake.map((pill) => pill.equals(event.pillToTake) ? event.pillToTake : pill).toList();
-        emitter(PillLoaded(pillsToTake: updatedPills),
+    List<PillToTake> pillsTaken = SharedPreferencesService().getPillsTaken();
+        emitter(PillLoaded(
+            pillsToTake: updatedPills,
+            pillsTaken: pillsTaken),
         );
     }
   }
@@ -38,7 +46,9 @@ class PillBloc extends Bloc<PillEvent, PillState> {
     final state = this.state;
     if (state is PillLoaded) {
       List<PillToTake> updatedPills = state.pillsToTake.where((pill) => !pill.equals(event.pillToTake)).toList();
-      emitter(PillLoaded(pillsToTake: updatedPills),
+      emitter(PillLoaded(
+          pillsToTake: updatedPills,
+          pillsTaken: state.pillsTaken),
       );
     }
   }

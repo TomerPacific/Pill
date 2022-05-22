@@ -29,14 +29,15 @@ class PillFilterBloc extends Bloc<PillFilterEvent, PillFilterState> {
     final state = _pillBloc.state;
 
     if (state is PillLoaded) {
-      List<PillToTake> pills = state.pillsToTake.where((pill) {
-        switch(event.pillFilter) {
-          case PillFilter.all:
-            return true;
-          case PillFilter.taken:
-            return pill.lastTaken != null;
-        }
-      }).toList();
+      List<PillToTake> pills = [];
+      switch(event.pillFilter) {
+        case PillFilter.all:
+          pills = state.pillsToTake;
+          break;
+        case PillFilter.taken:
+          pills = state.pillsTaken;
+          break;
+      }
 
       emitter(
           PillFilterLoaded(filteredPills: pills)
