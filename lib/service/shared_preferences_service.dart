@@ -77,6 +77,7 @@ class SharedPreferencesService {
   void removePillFromDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     List<PillToTake> updatedPills = pills.where((element) => element.pillName != pillToTake.pillName).toList();
+    addTakenPill(pillToTake);
     _setPillsForDate(currentDate, updatedPills);
   }
 

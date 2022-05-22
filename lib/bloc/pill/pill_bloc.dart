@@ -46,9 +46,10 @@ class PillBloc extends Bloc<PillEvent, PillState> {
     final state = this.state;
     if (state is PillLoaded) {
       List<PillToTake> updatedPills = state.pillsToTake.where((pill) => !pill.equals(event.pillToTake)).toList();
+      List<PillToTake> pillsTaken = SharedPreferencesService().getPillsTaken();
       emitter(PillLoaded(
           pillsToTake: updatedPills,
-          pillsTaken: state.pillsTaken),
+          pillsTaken: pillsTaken),
       );
     }
   }
