@@ -60,7 +60,10 @@ class _MainPageState extends State<MainPage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new DayWidget(date: DateTime.now(), title:  "You do not have to take any pills today 😀"),
+                  new DayWidget(
+                      date: DateTime.now(),
+                      title:  "You do not have to take any pills today 😀"
+                  ),
                   new Align(
                     alignment: Alignment.bottomRight,
                     child: new FloatingActionButton(
@@ -74,7 +77,9 @@ class _MainPageState extends State<MainPage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  new DayWidget(date: DateTime.now(), title:  "You have not taken any pills today"),
+                  new DayWidget(
+                      date: DateTime.now(),
+                      title:  "You have not taken any pills today"),
                 ],
               ),
             ],
