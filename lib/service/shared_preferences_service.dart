@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:pill/model/pill_taken.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/constants.dart';
@@ -22,8 +23,8 @@ class SharedPreferencesService {
     _sharedPreferences?.setString(currentDate, PillToTake.encode(pills));
   }
 
-  void _setPillsTaken(List<PillToTake> pillsTaken) {
-    _sharedPreferences?.setString(PILLS_TAKEN_KEY, PillToTake.encode(pillsTaken));
+  void _setPillsTaken(List<PillTaken> pillsTaken) {
+    _sharedPreferences?.setString(PILLS_TAKEN_KEY, PillTaken.encode(pillsTaken));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
@@ -36,11 +37,11 @@ class SharedPreferencesService {
       return pills;
   }
 
-  List<PillToTake> getPillsTaken() {
+  List<PillTaken> getPillsTaken() {
     String? encodedPills = _sharedPreferences?.getString(PILLS_TAKEN_KEY);
-    List<PillToTake> pillsTaken = [];
+    List<PillTaken> pillsTaken = [];
     if (encodedPills != null) {
-      pillsTaken = PillToTake.decode(encodedPills);
+      pillsTaken = PillTaken.decode(encodedPills);
     }
 
     return pillsTaken;
@@ -61,8 +62,9 @@ class SharedPreferencesService {
   }
 
   void addTakenPill(PillToTake pillTaken) {
-    List<PillToTake> pillsTaken = getPillsTaken();
-    pillsTaken.add(pillTaken);
+    PillTaken pill = PillTaken.extractFromPillToTake(pillTaken);
+    List<PillTaken> pillsTaken = getPillsTaken();
+    pillsTaken.add(pill);
     _setPillsTaken(pillsTaken);
   }
 

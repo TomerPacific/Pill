@@ -8,7 +8,7 @@ import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
-import 'package:pill/widget/pill_widget.dart';
+import 'package:pill/widget/pill_to_take_widget.dart';
 
 void main() {
 
