@@ -7,7 +7,6 @@ import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_event.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_state.dart';
 import 'package:pill/model/pill_filter.dart';
-import 'package:pill/model/pill_to_take.dart';
 
 class PillFilterBloc extends Bloc<PillFilterEvent, PillFilterState> {
   final PillBloc _pillBloc;
@@ -29,7 +28,7 @@ class PillFilterBloc extends Bloc<PillFilterEvent, PillFilterState> {
     final state = _pillBloc.state;
 
     if (state is PillLoaded) {
-      List<PillToTake> pills = [];
+      List<dynamic> pills = [];
       switch(event.pillFilter) {
         case PillFilter.all:
           pills = state.pillsToTake;
