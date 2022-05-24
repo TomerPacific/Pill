@@ -16,13 +16,31 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin {
+
+  late TabController _controller;
 
   void _handleAddPillButtonPressed() {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TabController(length: 2, vsync: this);
+    _controller.addListener(() {
+      switch(_controller.index) {
+        case 0:
+          context.read<PillFilterBloc>().add(UpdatePills(pillFilter: PillFilter.all));
+          break;
+        case 1:
+          context.read<PillFilterBloc>().add(UpdatePills(pillFilter: PillFilter.taken));
+          break;
+      }
+    });
   }
 
   @override
@@ -49,13 +67,15 @@ class _MainPageState extends State<MainPage> {
                         break;
                     }
                   }, tabs: [
-                Tab(icon: Icon(CustomIcons.pill)),
-                Tab(icon: Icon(Icons.watch_later_rounded)),
-              ]
+                  Tab(icon: Icon(CustomIcons.pill)),
+                  Tab(icon: Icon(Icons.watch_later_rounded)),
+                ],
+                controller: _controller,
               ),
             ),
           ),
           body: TabBarView(
+            controller: _controller,
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
