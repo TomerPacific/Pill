@@ -1,4 +1,5 @@
 
+import 'package:pill/model/pill_taken.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
@@ -11,9 +12,9 @@ abstract class PillEvent {
 
 class LoadPill extends PillEvent {
   List<PillToTake> pillsToTake;
-  List<PillToTake> pillsTaken;
+  List<PillTaken> pillsTaken;
 
-  LoadPill({this.pillsToTake = const <PillToTake>[], this.pillsTaken = const <PillToTake>[]}) {
+  LoadPill({this.pillsToTake = const <PillToTake>[], this.pillsTaken = const <PillTaken>[]}) {
     DateTime date = DateTime.now();
     String converted = DateService().getDateAsMonthAndDay(date);
     pillsToTake = SharedPreferencesService().getPillsToTakeForDate(converted);

@@ -1,5 +1,6 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'pill_event.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
@@ -34,7 +35,7 @@ class PillBloc extends Bloc<PillEvent, PillState> {
     final state = this.state;
     if (state is PillLoaded) {
     List<PillToTake> updatedPills = state.pillsToTake.map((pill) => pill.equals(event.pillToTake) ? event.pillToTake : pill).toList();
-    List<PillToTake> pillsTaken = SharedPreferencesService().getPillsTaken();
+    List<PillTaken> pillsTaken = SharedPreferencesService().getPillsTaken();
         emitter(PillLoaded(
             pillsToTake: updatedPills,
             pillsTaken: pillsTaken),
@@ -46,7 +47,7 @@ class PillBloc extends Bloc<PillEvent, PillState> {
     final state = this.state;
     if (state is PillLoaded) {
       List<PillToTake> updatedPills = state.pillsToTake.where((pill) => !pill.equals(event.pillToTake)).toList();
-      List<PillToTake> pillsTaken = SharedPreferencesService().getPillsTaken();
+      List<PillTaken> pillsTaken = SharedPreferencesService().getPillsTaken();
       emitter(PillLoaded(
           pillsToTake: updatedPills,
           pillsTaken: pillsTaken),
