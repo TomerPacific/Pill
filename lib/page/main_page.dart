@@ -45,8 +45,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(length: 2,
-        child: Scaffold(
+    return Scaffold(
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(50),
             child: AppBar(
@@ -104,7 +103,6 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
               ),
             ],
           ),
-        )
-    );
+        );
   }
 }
