@@ -14,8 +14,12 @@ class DateService {
 
   String getHourFromDate(DateTime dateTime) {
     String hour = dateTime.hour < 10 ? "0${dateTime.hour}" : "${dateTime.hour}";
-    String minutes = dateTime.minute < 10 ? "0${dateTime.minute}" : "${dateTime.minute}";
-    String seconds = dateTime.second < 10 ? "0${dateTime.second}" : "${dateTime.second}";
+    String minutes = _convertDigitToStringWithPadding(dateTime.minute);
+    String seconds = _convertDigitToStringWithPadding(dateTime.second);
     return "$hour:$minutes:$seconds";
+  }
+
+  String _convertDigitToStringWithPadding(int digit) {
+    return digit < 10 ? "0$digit" : "$digit";
   }
 }
