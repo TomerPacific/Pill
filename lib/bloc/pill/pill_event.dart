@@ -18,7 +18,7 @@ class LoadPill extends PillEvent {
     DateTime date = DateTime.now();
     String converted = DateService().getDateAsMonthAndDay(date);
     pillsToTake = SharedPreferencesService().getPillsToTakeForDate(converted);
-    pillsTaken = SharedPreferencesService().getPillsTaken();
+    pillsTaken = SharedPreferencesService().getPillsTakenForDate(converted);
   }
 
   @override
