@@ -23,8 +23,8 @@ class SharedPreferencesService {
     _sharedPreferences?.setString(currentDate, PillToTake.encode(pills));
   }
 
-  void _setPillsTaken(List<PillTaken> pillsTaken) {
-    _sharedPreferences?.setString(PILLS_TAKEN_KEY, PillTaken.encode(pillsTaken));
+  void _setPillsTakenForDate(List<PillTaken> pillsTaken, String date) {
+    _sharedPreferences?.setString(PILLS_TAKEN_KEY+date, PillTaken.encode(pillsTaken));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
@@ -37,8 +37,8 @@ class SharedPreferencesService {
       return pills;
   }
 
-  List<PillTaken> getPillsTaken() {
-    String? encodedPills = _sharedPreferences?.getString(PILLS_TAKEN_KEY);
+  List<PillTaken> getPillsTakenForDate(String date) {
+    String? encodedPills = _sharedPreferences?.getString(PILLS_TAKEN_KEY+date);
     List<PillTaken> pillsTaken = [];
     if (encodedPills != null) {
       pillsTaken = PillTaken.decode(encodedPills);
@@ -61,17 +61,17 @@ class SharedPreferencesService {
 
   }
 
-  void addTakenPill(PillToTake pillTaken) {
+  void addTakenPill(PillToTake pillTaken, String date) {
     PillTaken pill = PillTaken.extractFromPillToTake(pillTaken);
-    List<PillTaken> pillsTaken = getPillsTaken();
+    List<PillTaken> pillsTaken = getPillsTakenForDate(date);
     pillsTaken.add(pill);
-    _setPillsTaken(pillsTaken);
+    _setPillsTakenForDate(pillsTaken, date);
   }
 
   void updatePillForDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     int index = pills.indexWhere((element) => element.pillName == pillToTake.pillName);
-    addTakenPill(pillToTake);
+    addTakenPill(pillToTake, currentDate);
     pills.replaceRange(index, index+1, [pillToTake]);
     _setPillsForDate(currentDate, pills);
   }
@@ -79,7 +79,7 @@ class SharedPreferencesService {
   void removePillFromDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     List<PillToTake> updatedPills = pills.where((element) => element.pillName != pillToTake.pillName).toList();
-    addTakenPill(pillToTake);
+    addTakenPill(pillToTake, currentDate);
     _setPillsForDate(currentDate, updatedPills);
   }
 
