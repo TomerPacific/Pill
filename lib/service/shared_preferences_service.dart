@@ -84,6 +84,9 @@ class SharedPreferencesService {
   }
 
   void clearAllPillsFromDate(String dateToRemovePillsFrom) {
+
+    DateTime date = DateTime.now();
+
     List<PillToTake> pillsToTake = getPillsToTakeForDate(dateToRemovePillsFrom);
     List<PillTaken> pillsTaken = getPillsTakenForDate(dateToRemovePillsFrom);
     pillsToTake.clear();
@@ -100,6 +103,18 @@ class SharedPreferencesService {
   DateTime? getTimeWhenApplicationWasOpened() {
     String? timeApplicationWasOpened = _sharedPreferences?.getString("timeAppOpened");
     return timeApplicationWasOpened != null ? DateTime.parse(timeApplicationWasOpened) : null;
+  }
+
+  void clearAllPills() {
+    Set<String>? keys = _sharedPreferences?.getKeys();
+    if (keys != null) {
+      for(String key in keys) {
+        if (key.contains("timeAppOpened")) {
+          continue;
+        }
+        _sharedPreferences?.remove(key);
+      }
+    }
   }
 
 }
