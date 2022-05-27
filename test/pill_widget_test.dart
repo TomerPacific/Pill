@@ -17,7 +17,7 @@ void main() {
 
   setUp(() async {
     await SharedPreferencesService().init();
-    SharedPreferencesService().clearAllPillsFromDate(currentDate);
+    SharedPreferencesService().clearAllPills();
   });
 
   Widget drawPills(BuildContext context, PillState state) {
