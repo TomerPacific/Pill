@@ -23,7 +23,7 @@ class SharedPreferencesService {
     _sharedPreferences?.setString(currentDate, PillToTake.encode(pills));
   }
 
-  void _setPillsTakenForDate(List<PillTaken> pillsTaken, String date) {
+  void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken, ) {
     _sharedPreferences?.setString(PILLS_TAKEN_KEY+date, PillTaken.encode(pillsTaken));
   }
 
@@ -65,7 +65,7 @@ class SharedPreferencesService {
     PillTaken pill = PillTaken.extractFromPillToTake(pillTaken);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
     pillsTaken.add(pill);
-    _setPillsTakenForDate(pillsTaken, date);
+    _setPillsTakenForDate(date, pillsTaken);
   }
 
   void updatePillForDate(PillToTake pillToTake, String currentDate) {
@@ -84,9 +84,22 @@ class SharedPreferencesService {
   }
 
   void clearAllPillsFromDate(String dateToRemovePillsFrom) {
-    List<PillToTake> pills = getPillsToTakeForDate(dateToRemovePillsFrom);
-    pills.clear();
-    _setPillsForDate(dateToRemovePillsFrom, pills);
+    List<PillToTake> pillsToTake = getPillsToTakeForDate(dateToRemovePillsFrom);
+    List<PillTaken> pillsTaken = getPillsTakenForDate(dateToRemovePillsFrom);
+    pillsToTake.clear();
+    pillsTaken.clear();
+    _setPillsForDate(dateToRemovePillsFrom, pillsToTake);
+    _setPillsTakenForDate(dateToRemovePillsFrom, pillsTaken);
+  }
+
+  void setTimeWhenApplicationWasOpened() {
+    DateTime now = DateTime.now();
+    _sharedPreferences?.setString("timeAppOpened", now.toIso8601String());
+  }
+
+  DateTime? getTimeWhenApplicationWasOpened() {
+    String? timeApplicationWasOpened = _sharedPreferences?.getString("timeAppOpened");
+    return timeApplicationWasOpened != null ? DateTime.parse(timeApplicationWasOpened) : null;
   }
 
 }
