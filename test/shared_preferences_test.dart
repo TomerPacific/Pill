@@ -13,7 +13,7 @@ void main() {
   setUp(() async {
     await SharedPreferencesService().init();
     SharedPreferences.setMockInitialValues({});
-    SharedPreferencesService().clearAllPillsFromDate(date);
+    SharedPreferencesService().clearAllPills();
   });
 
   test("SharedPreferences Service get pills for date (where no pills exist)", () {
