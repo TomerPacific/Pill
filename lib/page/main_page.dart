@@ -4,6 +4,7 @@ import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_event.dart';
 import 'package:pill/custom_icons.dart';
 import 'package:pill/model/pill_filter.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/day_widget.dart';
 import 'package:pill/widget/adding_pill_form.dart';
 
@@ -27,9 +28,23 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     );
   }
 
+  void _checkIfDayHasPassed() {
+    DateTime? timeWhenApplicationWasOpened = SharedPreferencesService().getTimeWhenApplicationWasOpened();
+    if (timeWhenApplicationWasOpened == null) {
+      SharedPreferencesService().setTimeWhenApplicationWasOpened();
+    } else {
+      DateTime now = DateTime.now();
+      if (now.difference(timeWhenApplicationWasOpened).inDays >= 1) {
+        SharedPreferencesService().clearAllPillsFromDate(timeWhenApplicationWasOpened);
+        SharedPreferencesService().setTimeWhenApplicationWasOpened();
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _checkIfDayHasPassed();
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(() {
       switch(_controller.index) {

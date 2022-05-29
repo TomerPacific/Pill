@@ -83,16 +83,23 @@ class SharedPreferencesService {
     _setPillsForDate(currentDate, updatedPills);
   }
 
-  void clearAllPillsFromDate(String dateToRemovePillsFrom) {
+  void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
 
     DateTime date = DateTime.now();
+    DateTime runningDate = dateToRemovePillsFrom;
 
-    List<PillToTake> pillsToTake = getPillsToTakeForDate(dateToRemovePillsFrom);
-    List<PillTaken> pillsTaken = getPillsTakenForDate(dateToRemovePillsFrom);
-    pillsToTake.clear();
-    pillsTaken.clear();
-    _setPillsForDate(dateToRemovePillsFrom, pillsToTake);
-    _setPillsTakenForDate(dateToRemovePillsFrom, pillsTaken);
+    while (runningDate.difference(date).inDays >= 1) {
+      String converted = DateService().getDateAsMonthAndDay(runningDate);
+      List<PillToTake> pillsToTake = getPillsToTakeForDate(converted);
+      List<PillTaken> pillsTaken = getPillsTakenForDate(converted);
+
+      pillsToTake.clear();
+      pillsTaken.clear();
+
+      _setPillsForDate(converted, pillsToTake);
+      _setPillsTakenForDate(converted, pillsTaken);
+      runningDate = runningDate.add(Duration(days: 1));
+    }
   }
 
   void setTimeWhenApplicationWasOpened() {
