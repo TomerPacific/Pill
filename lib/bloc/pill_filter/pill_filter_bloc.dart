@@ -1,6 +1,4 @@
 
-import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
@@ -10,7 +8,6 @@ import 'package:pill/model/pill_filter.dart';
 
 class PillFilterBloc extends Bloc<PillFilterEvent, PillFilterState> {
   final PillBloc _pillBloc;
-  late StreamSubscription _pillSubscription;
 
   PillFilterBloc({ required PillBloc pillBloc }) :
         _pillBloc = pillBloc,
@@ -18,10 +15,9 @@ class PillFilterBloc extends Bloc<PillFilterEvent, PillFilterState> {
     on<UpdatePills>(_onUpdatePills);
     on<UpdateFilter>(_onUpdateFiler);
 
-    _pillSubscription = pillBloc.stream.listen((state) {
+    pillBloc.stream.listen((state) {
       add(const UpdateFilter(),);
     });
-
   }
 
   void _onUpdatePills(UpdatePills event, Emitter<PillFilterState> emitter) {
