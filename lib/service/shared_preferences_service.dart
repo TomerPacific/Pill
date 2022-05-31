@@ -124,4 +124,17 @@ class SharedPreferencesService {
     }
   }
 
+  void clearPillsOfPastDays() {
+    DateTime? timeWhenApplicationWasOpened = getTimeWhenApplicationWasOpened();
+    if (timeWhenApplicationWasOpened == null) {
+      setTimeWhenApplicationWasOpened();
+    } else {
+      DateTime now = DateTime.now();
+      if (now.difference(timeWhenApplicationWasOpened).inDays >= 1) {
+        clearAllPillsFromDate(timeWhenApplicationWasOpened);
+        setTimeWhenApplicationWasOpened();
+      }
+    }
+  }
+
 }

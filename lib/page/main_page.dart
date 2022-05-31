@@ -28,23 +28,10 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     );
   }
 
-  void _checkIfDayHasPassed() {
-    DateTime? timeWhenApplicationWasOpened = SharedPreferencesService().getTimeWhenApplicationWasOpened();
-    if (timeWhenApplicationWasOpened == null) {
-      SharedPreferencesService().setTimeWhenApplicationWasOpened();
-    } else {
-      DateTime now = DateTime.now();
-      if (now.difference(timeWhenApplicationWasOpened).inDays >= 1) {
-        SharedPreferencesService().clearAllPillsFromDate(timeWhenApplicationWasOpened);
-        SharedPreferencesService().setTimeWhenApplicationWasOpened();
-      }
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    _checkIfDayHasPassed();
+    SharedPreferencesService().clearPillsOfPastDays();
     _controller = TabController(length: 2, vsync: this);
     _controller.addListener(() {
       switch(_controller.index) {
