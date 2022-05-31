@@ -104,11 +104,11 @@ class SharedPreferencesService {
 
   void setTimeWhenApplicationWasOpened() {
     DateTime now = DateTime.now();
-    _sharedPreferences?.setString("timeAppOpened", now.toIso8601String());
+    _sharedPreferences?.setString(TIME_APP_OPENED_KEY, now.toIso8601String());
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
-    String? timeApplicationWasOpened = _sharedPreferences?.getString("timeAppOpened");
+    String? timeApplicationWasOpened = _sharedPreferences?.getString(TIME_APP_OPENED_KEY);
     return timeApplicationWasOpened != null ? DateTime.parse(timeApplicationWasOpened) : null;
   }
 
@@ -116,7 +116,7 @@ class SharedPreferencesService {
     Set<String>? keys = _sharedPreferences?.getKeys();
     if (keys != null) {
       for(String key in keys) {
-        if (key.contains("timeAppOpened")) {
+        if (key.contains(TIME_APP_OPENED_KEY)) {
           continue;
         }
         _sharedPreferences?.remove(key);
