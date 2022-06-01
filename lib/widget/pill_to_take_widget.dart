@@ -16,11 +16,7 @@ class PillWidget extends StatelessWidget {
   void _handleOnTap(BuildContext context) {
     pillToTake.pillRegiment--;
     pillToTake.lastTaken = DateTime.now();
-    if (pillToTake.pillRegiment == 0) {
-        context.read<PillBloc>().add(DeletePill(pillToTake: pillToTake));
-    } else {
-      context.read<PillBloc>().add(UpdatePill(pillToTake: pillToTake));
-    }
+    context.read<PillBloc>().add(UpdatePill(pillToTake: pillToTake));
   }
 
   @override
