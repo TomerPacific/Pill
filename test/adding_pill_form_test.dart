@@ -2,22 +2,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import '../lib/bloc/pill/pill_bloc.dart';
+import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
+import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/widget/adding_pill_form.dart';
 
 
 void main() {
+
+  Widget base = MultiBlocProvider(
+          providers: [
+            BlocProvider(
+                create: (context) => PillBloc()
+            ),
+            BlocProvider(create: (context) =>
+                PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context))
+            )
+          ],
+          child: MaterialApp(
+              home: AddingPillForm(DateTime.now())
+          )
+      );
+
   testWidgets("Adding Pill Form - Add A Pill", (WidgetTester tester) async {
 
-    await tester.pumpWidget(
-      MultiBlocProvider(
-    providers: [BlocProvider(
-    create: (context) => PillBloc())],
-        child: MaterialApp(
-          home: AddingPillForm(DateTime.now())
-        )
-      )
-    );
+    await tester.pumpWidget(base);
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
@@ -35,15 +43,7 @@ void main() {
 
   testWidgets("Adding Pill Form - Trying to add a pill with an empty form", (WidgetTester tester) async {
 
-    await tester.pumpWidget(
-        MultiBlocProvider(
-            providers: [BlocProvider(
-                create: (context) => PillBloc())],
-            child: MaterialApp(
-                home: AddingPillForm(DateTime.now())
-            )
-        )
-    );
+    await tester.pumpWidget(base);
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
@@ -57,15 +57,7 @@ void main() {
 
   testWidgets("Adding Pill Form - Trying to add a pill with only a pill name", (WidgetTester tester) async {
 
-    await tester.pumpWidget(
-        MultiBlocProvider(
-            providers: [BlocProvider(
-                create: (context) => PillBloc())],
-            child: MaterialApp(
-                home: AddingPillForm(DateTime.now())
-            )
-        )
-    );
+    await tester.pumpWidget(base);
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
@@ -83,15 +75,7 @@ void main() {
 
   testWidgets("Adding Pill Form - Trying to add a pill without amount of days", (WidgetTester tester) async {
 
-    await tester.pumpWidget(
-        MultiBlocProvider(
-            providers: [BlocProvider(
-                create: (context) => PillBloc())],
-            child: MaterialApp(
-                home: AddingPillForm(DateTime.now())
-            )
-        )
-    );
+    await tester.pumpWidget(base);
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
