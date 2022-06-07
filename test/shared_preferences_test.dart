@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
 
-  final String date = DateService().getDateAsMonthAndDay(DateTime.now());
+  final String date = DateService().getCurrentDateAsMonthAndDay();
 
   setUp(() async {
     await SharedPreferencesService().init();
