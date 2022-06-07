@@ -15,10 +15,9 @@ class LoadPill extends PillEvent {
   List<PillTaken> pillsTaken;
 
   LoadPill({this.pillsToTake = const <PillToTake>[], this.pillsTaken = const <PillTaken>[]}) {
-    DateTime date = DateTime.now();
-    String converted = DateService().getDateAsMonthAndDay(date);
-    pillsToTake = SharedPreferencesService().getPillsToTakeForDate(converted);
-    pillsTaken = SharedPreferencesService().getPillsTakenForDate(converted);
+    String date = DateService().getCurrentDateAsMonthAndDay()
+    pillsToTake = SharedPreferencesService().getPillsToTakeForDate(date);
+    pillsTaken = SharedPreferencesService().getPillsTakenForDate(date);
   }
 
   @override
@@ -29,9 +28,8 @@ class AddPill extends PillEvent {
   final PillToTake pillToTake;
 
   AddPill({required this.pillToTake}) {
-    DateTime date = DateTime.now();
     SharedPreferencesService().addPillToDates(
-        DateService().getDateAsMonthAndDay(date), pillToTake);
+        DateService().getCurrentDateAsMonthAndDay(), pillToTake);
   }
 
   @override
@@ -42,9 +40,7 @@ class UpdatePill extends PillEvent {
   final PillToTake pillToTake;
 
   UpdatePill({required this.pillToTake}) {
-    DateTime date = DateTime.now();
-    String converted = DateService().getDateAsMonthAndDay(date);
-    SharedPreferencesService().updatePillForDate(pillToTake, converted);
+    SharedPreferencesService().updatePillForDate(pillToTake, DateService().getCurrentDateAsMonthAndDay());
   }
 
   @override
@@ -55,9 +51,7 @@ class DeletePill extends PillEvent {
   final PillToTake pillToTake;
 
   DeletePill({required this.pillToTake}) {
-    DateTime date = DateTime.now();
-    String converted = DateService().getDateAsMonthAndDay(date);
-    SharedPreferencesService().removePillFromDate(pillToTake, converted);
+    SharedPreferencesService().removePillFromDate(pillToTake, DateService().getCurrentDateAsMonthAndDay());
   }
 
   @override
