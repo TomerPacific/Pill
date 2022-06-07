@@ -22,4 +22,8 @@ class DateService {
   String _convertDigitToStringWithPadding(int digit) {
     return digit < 10 ? "0$digit" : "$digit";
   }
+
+  String getCurrentDateAsMonthAndDay() {
+    return getDateAsMonthAndDay(DateTime.now());
+  }
 }
