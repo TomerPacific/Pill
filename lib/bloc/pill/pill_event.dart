@@ -15,7 +15,7 @@ class LoadPill extends PillEvent {
   List<PillTaken> pillsTaken;
 
   LoadPill({this.pillsToTake = const <PillToTake>[], this.pillsTaken = const <PillTaken>[]}) {
-    String date = DateService().getCurrentDateAsMonthAndDay()
+    String date = DateService().getCurrentDateAsMonthAndDay();
     pillsToTake = SharedPreferencesService().getPillsToTakeForDate(date);
     pillsTaken = SharedPreferencesService().getPillsTakenForDate(date);
   }
