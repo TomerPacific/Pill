@@ -35,14 +35,22 @@ class PillBloc extends Bloc<PillEvent, PillState> {
   void _onUpdatePill(UpdatePill event, Emitter<PillState> emitter) {
     final state = this.state;
     if (state is PillLoaded) {
-    List<PillToTake> updatedPills = state.pillsToTake.map((pill) => pill.equals(event.pillToTake) ? event.pillToTake : pill).toList();
+      List<PillToTake> updatedPills;
+      if (event.pillToTake.pillRegiment == 0) {
+        updatedPills = state.pillsToTake.where((pill) => !pill.equals(event.pillToTake)).toList();
+      } else {
+        updatedPills = state.pillsToTake.map((pill) =>
+        pill.equals(event.pillToTake)
+            ? event.pillToTake
+            : pill).toList();
+      }
 
     String date = DateService().getCurrentDateAsMonthAndDay();
     List<PillTaken> pillsTaken = SharedPreferencesService().getPillsTakenForDate(date);
-        emitter(PillLoaded(
-            pillsToTake: updatedPills,
-            pillsTaken: pillsTaken),
-        );
+    emitter(PillLoaded(
+        pillsToTake: updatedPills,
+        pillsTaken: pillsTaken),
+    );
     }
   }
 
