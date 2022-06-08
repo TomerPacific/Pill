@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/pill/pill_event.dart';
+import 'package:pill/bloc/pill/pill_event.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/constants.dart';
