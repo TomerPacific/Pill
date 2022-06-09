@@ -1,0 +1,1 @@
+enum PillFilter { all, taken }

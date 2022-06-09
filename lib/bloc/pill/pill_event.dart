@@ -1,4 +1,5 @@
 
+import 'package:pill/model/pill_taken.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
@@ -11,11 +12,12 @@ abstract class PillEvent {
 
 class LoadPill extends PillEvent {
   List<PillToTake> pillsToTake;
+  List<PillTaken> pillsTaken;
 
-  LoadPill({this.pillsToTake = const <PillToTake>[]}) {
-    DateTime date = DateTime.now();
-    String converted = DateService().getDateAsMonthAndDay(date);
-    pillsToTake = SharedPreferencesService().getPillsToTakeForDate(converted);
+  LoadPill({this.pillsToTake = const <PillToTake>[], this.pillsTaken = const <PillTaken>[]}) {
+    String date = DateService().getCurrentDateAsMonthAndDay();
+    pillsToTake = SharedPreferencesService().getPillsToTakeForDate(date);
+    pillsTaken = SharedPreferencesService().getPillsTakenForDate(date);
   }
 
   @override
@@ -26,9 +28,8 @@ class AddPill extends PillEvent {
   final PillToTake pillToTake;
 
   AddPill({required this.pillToTake}) {
-    DateTime date = DateTime.now();
     SharedPreferencesService().addPillToDates(
-        DateService().getDateAsMonthAndDay(date), pillToTake);
+        DateService().getCurrentDateAsMonthAndDay(), pillToTake);
   }
 
   @override
@@ -39,9 +40,7 @@ class UpdatePill extends PillEvent {
   final PillToTake pillToTake;
 
   UpdatePill({required this.pillToTake}) {
-    DateTime date = DateTime.now();
-    String converted = DateService().getDateAsMonthAndDay(date);
-    SharedPreferencesService().updatePillForDate(pillToTake, converted);
+    SharedPreferencesService().updatePillForDate(pillToTake, DateService().getCurrentDateAsMonthAndDay());
   }
 
   @override
@@ -52,9 +51,7 @@ class DeletePill extends PillEvent {
   final PillToTake pillToTake;
 
   DeletePill({required this.pillToTake}) {
-    DateTime date = DateTime.now();
-    String converted = DateService().getDateAsMonthAndDay(date);
-    SharedPreferencesService().removePillFromDate(pillToTake, converted);
+    SharedPreferencesService().removePillFromDate(pillToTake, DateService().getCurrentDateAsMonthAndDay());
   }
 
   @override
