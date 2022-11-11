@@ -17,12 +17,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-        providers: [BlocProvider(
+        providers: [
+          BlocProvider(
           create: (context) => PillBloc()
             ..add(LoadPill(),),
-        ),
-        BlocProvider(create:
-        (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)
+          ),
+          BlocProvider(
+            create: (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)
             ),
           ),
         ],
