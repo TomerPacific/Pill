@@ -16,7 +16,30 @@ class SettingsPage extends StatelessWidget {
                           Icons.clear,
                           color: Colors.redAccent),
                       onTap: () {
-                        BlocProvider.of<PillBloc>(context).add(ClearAllPills());
+                        AlertDialog alertDialog = AlertDialog(
+                          title: const Text("Clear All Saved Pills"),
+                          content: const Text("Are you sure you want to remove all your saved pills?"),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  BlocProvider.of<PillBloc>(context).add(ClearAllPills());
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Yes")
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("No")
+                            ),
+                          ],
+                        );
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                            return alertDialog;
+                        });
                       }
                   ),
                 ]
