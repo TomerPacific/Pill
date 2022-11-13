@@ -109,22 +109,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                       title:  "You have not taken any pills today"),
                 ],
               ),
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    ListTile(
-                        title: const Text("Clear All Pills"),
-                        leading: const Icon(
-                            Icons.clear,
-                            color: Colors.redAccent),
-                        onTap: () {
-
-                        }
-                    ),
-                  ]
-              )
-            ],
-          ),
+              SettingsPage()
+            ]
+          )
         );
   }
 }
