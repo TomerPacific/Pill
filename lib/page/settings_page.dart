@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/bloc/pill/pill_bloc.dart';
+import 'package:pill/bloc/pill/pill_event.dart';
 
 class SettingsPage extends StatelessWidget {
 
@@ -13,7 +16,7 @@ class SettingsPage extends StatelessWidget {
                           Icons.clear,
                           color: Colors.redAccent),
                       onTap: () {
-
+                        BlocProvider.of<PillBloc>(context).add(ClearAllPills());
                       }
                   ),
                 ]
