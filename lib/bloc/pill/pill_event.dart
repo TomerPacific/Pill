@@ -57,3 +57,9 @@ class DeletePill extends PillEvent {
   @override
   List<Object> get props => [pillToTake];
 }
+
+class ClearAllPills extends PillEvent {
+  ClearAllPills() {
+    SharedPreferencesService().clearAllPills();
+  }
+}
