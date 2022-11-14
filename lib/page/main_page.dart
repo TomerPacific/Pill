@@ -42,8 +42,6 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         case 1:
           context.read<PillFilterBloc>().add(UpdatePills(pillFilter: PillFilter.taken));
           break;
-        case 2:
-          break;
       }
     });
   }
@@ -69,8 +67,6 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                             pillFilter: PillFilter.taken
                         ));
                         break;
-                      case 2:
-                          break;
                     }
                   }, tabs: [
                   Tab(icon: Icon(CustomIcons.pill)),
