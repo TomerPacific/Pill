@@ -141,4 +141,11 @@ class SharedPreferencesService {
     }
   }
 
+  bool areThereAnyPillsToTake() {
+    Set<String>? keys = _sharedPreferences?.getKeys();
+    if (keys == null) return false;
+    if (keys.length == 1 && keys.first.contains(TIME_APP_OPENED_KEY)) return false;
+    return true;
+  }
+
 }
