@@ -4,6 +4,7 @@ import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_event.dart';
 import 'package:pill/custom_icons.dart';
 import 'package:pill/model/pill_filter.dart';
+import 'package:pill/page/settings_page.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/day_widget.dart';
 import 'package:pill/widget/adding_pill_form.dart';
@@ -32,7 +33,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   void initState() {
     super.initState();
     SharedPreferencesService().clearPillsOfPastDays();
-    _controller = TabController(length: 2, vsync: this);
+    _controller = TabController(length: 3, vsync: this);
     _controller.addListener(() {
       switch(_controller.index) {
         case 0:
@@ -70,6 +71,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                   }, tabs: [
                   Tab(icon: Icon(CustomIcons.pill)),
                   Tab(icon: Icon(Icons.watch_later_rounded)),
+                  Tab(icon: Icon(Icons.settings)),
                 ],
                 controller: _controller,
               ),
@@ -103,8 +105,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                       title:  "You have not taken any pills today"),
                 ],
               ),
-            ],
-          ),
+              SettingsPage()
+            ]
+          )
         );
   }
 }

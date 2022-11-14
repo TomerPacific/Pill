@@ -13,6 +13,7 @@ class PillBloc extends Bloc<PillEvent, PillState> {
     on<AddPill>(_onAddPill);
     on<UpdatePill>(_onUpdatePill);
     on<DeletePill>(_onDeletePill);
+    on<ClearAllPills>(_onClearAllPills);
   }
 
   void _onLoadPills(LoadPill event, Emitter<PillState> emitter) {
@@ -64,6 +65,18 @@ class PillBloc extends Bloc<PillEvent, PillState> {
           pillsToTake: updatedPills,
           pillsTaken: pillsTaken),
       );
+    }
+  }
+
+  void _onClearAllPills(ClearAllPills event, Emitter<PillState> emitter) {
+    final state = this.state;
+    if (state is PillLoaded) {
+      String date = DateService().getCurrentDateAsMonthAndDay();
+      List<PillTaken> pillsTaken = SharedPreferencesService().getPillsTakenForDate(date);
+        emitter(PillLoaded(
+          pillsToTake: const <PillToTake>[],
+          pillsTaken: pillsTaken),
+        );
     }
   }
 
