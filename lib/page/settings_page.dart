@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_event.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 
 class SettingsPage extends StatelessWidget {
 
@@ -15,6 +16,7 @@ class SettingsPage extends StatelessWidget {
                       leading: const Icon(
                           Icons.clear,
                           color: Colors.redAccent),
+                      enabled: SharedPreferencesService().areThereAnyPillsToTake(),
                       onTap: () {
                         AlertDialog alertDialog = AlertDialog(
                           title: const Text("Clear All Saved Pills"),
