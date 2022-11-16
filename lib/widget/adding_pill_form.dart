@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_event.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
@@ -86,9 +87,17 @@ class AddingPillFormState extends State<AddingPillForm> {
                                   hintText: 'What is the pill\'s name?',
                                   prefixIcon: Icon(CustomIcons.pill)
                               ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'^[\p{L}\s]*$',
+                                      multiLine: false,
+                                      caseSensitive: true,
+                                      unicode: true
+                                    )),
+                                FilteringTextInputFormatter.singleLineFormatter
+                              ],
                               validator: (value) {
-                                RegExp onlyLetters = RegExp('[a-zA-Z]');
-                                if (value == null || value.isEmpty || !value.startsWith(onlyLetters)) {
+                                if (value == null || value.isEmpty) {
                                   return 'Please enter a pill name';
                                 }
                                 return null;

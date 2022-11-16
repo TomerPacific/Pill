@@ -95,4 +95,24 @@ void main() {
 
   });
 
+  testWidgets("Adding Pill Form - Try to add pill with numbers as pill name", (WidgetTester tester) async {
+
+    await tester.pumpWidget(base);
+
+    await tester.ensureVisible(find.byType(AddingPillForm));
+
+    await tester.enterText(find.byKey(ObjectKey("pillName")), "1234");
+
+    await tester.tap(find.byIcon(Icons.check));
+
+    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+
+    expect(find.text("Please enter a pill name"), findsOneWidget);
+
+    TextFormField pillName = tester.widget<TextFormField>(find.byKey(ObjectKey("pillName")));
+
+    expect(pillName.controller?.text.length, 0);
+
+  });
+
 }
