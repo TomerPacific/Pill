@@ -89,7 +89,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                               ),
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                    RegExp(r'^\p{L}*$',
+                                    RegExp(r'^[\p{L}\s]*$',
                                       multiLine: false,
                                       caseSensitive: true,
                                       unicode: true
