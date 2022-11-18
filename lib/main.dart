@@ -38,9 +38,7 @@ class MyApp extends StatelessWidget {
           builder: (context, state) {
             return MaterialApp(
               title: APP_TITLE,
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-              ),
+              theme: ThemeData(primarySwatch: Colors.blue),
               darkTheme: ThemeData.dark(),
               themeMode:  state.isDarkModeEnabled ? ThemeMode.dark : ThemeMode.light,
               home: MainPage(title: APP_TITLE),
