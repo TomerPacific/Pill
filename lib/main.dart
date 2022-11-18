@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
-import 'package:pill/bloc/theme/theme_event.dart';
 import 'package:pill/bloc/theme/theme_state.dart';
 import 'bloc/pill/pill_event.dart';
 import 'bloc/pill/pill_bloc.dart';
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
-            create: (context) => ThemeBloc()..add(ChangeTheme(darkThemeEnabled: false))
+            create: (context) => ThemeBloc()
         ),
       ],
       child:
