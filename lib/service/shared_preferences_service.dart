@@ -148,4 +148,15 @@ class SharedPreferencesService {
     return true;
   }
 
+  void saveThemeStatus(bool isDarkModeEnabled) {
+    _sharedPreferences?.setBool(DARK_MODE_KEY, isDarkModeEnabled);
+  }
+
+  bool getThemeStatus() {
+    bool? darkMode = _sharedPreferences?.getBool(DARK_MODE_KEY);
+    return darkMode != null ?
+      darkMode :
+      false;
+  }
+
 }

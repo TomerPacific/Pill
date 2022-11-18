@@ -51,143 +51,139 @@ class AddingPillFormState extends State<AddingPillForm> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body:
-          BlocListener<PillBloc, PillState>(
-            listener: (context, state) {
-              if (state is PillLoaded) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content:
-                    const Text("Pill Added!")
-                  ),
-                );
-              }
-            },
-            child:  Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(ADDING_A_PILL_TITLE,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)
+        body:
+        BlocListener<PillBloc, PillState>(
+          listener: (context, state) {
+            if (state is PillLoaded) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content:
+                const Text("Pill Added!")
                 ),
-                SizedBox(height: 25.0),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      Theme(
-                        data: ThemeData(colorScheme:
-                        ThemeData().colorScheme.copyWith(primary:Colors.red)
-                        ),
-                        child:  Container(
-                          width: MediaQuery.of(context).size.width * 0.9,
-                          child: TextFormField(
-                              key: ObjectKey("pillName"),
-                              controller: pillNameTextEditingController,
-                              decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  hintText: 'What is the pill\'s name?',
-                                  prefixIcon: Icon(CustomIcons.pill)
+              );
+            }
+          },
+          child:  Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(ADDING_A_PILL_TITLE,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)
+              ),
+              SizedBox(height: 25.0),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: TextFormField(
+                          key: ObjectKey("pillName"),
+                          controller: pillNameTextEditingController,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.red, width: 1),
                               ),
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'^[\p{L}\s]*$',
-                                      multiLine: false,
-                                      caseSensitive: true,
-                                      unicode: true
-                                    )),
-                                FilteringTextInputFormatter.singleLineFormatter
-                              ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a pill name';
-                                }
-                                return null;
-                              }
+                              hintText: 'What is the pill\'s name?',
+                              prefixIcon: Icon(CustomIcons.pill, color: Colors.red)
                           ),
-                        ),
-                      ),
-                      SizedBox(height: 25.0),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        child:  TextFormField(
-                            key: ObjectKey("pillRegiment"),
-                            controller: pillRegimentController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                hintText: 'How many pills to take per day?',
-                                prefixIcon: Icon(Icons.confirmation_number)
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty || !_isNumberGreaterThanZero(value)) {
-                                return 'Please enter a number representing the amount of pills to take';
-                              }
-                              return null;
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'^[\p{L}\s]*$',
+                                    multiLine: false,
+                                    caseSensitive: true,
+                                    unicode: true
+                                )),
+                            FilteringTextInputFormatter.singleLineFormatter
+                          ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a pill name';
                             }
-                        ),
+                            return null;
+                          }
                       ),
-                      SizedBox(height: 25.0),
-                      Theme(
-                          data: ThemeData(colorScheme:
-                          ThemeData().colorScheme.copyWith(primary:Colors.green)
+                    ),
+                    SizedBox(height: 25.0),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child:  TextFormField(
+                          key: ObjectKey("pillRegiment"),
+                          controller: pillRegimentController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'How many pills to take per day?',
+                              prefixIcon: Icon(Icons.confirmation_number, color: Colors.blue)
                           ),
-                          child:Container(
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            child:  TextFormField(
-                                key: ObjectKey("pillDays"),
-                                controller: pillAmountOfDaysToTakeController,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'For How Many Days?',
-                                    prefixIcon: Icon(Icons.calendar_today)
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty || !_isNumberGreaterThanZero(value)) {
-                                    return 'Please enter a number representing the number of days';
-                                  }
-                                  return null;
-                                }
-                            ),
-                          )
-                      ),
-                      SizedBox(height: 25.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton.icon(onPressed: () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              PillToTake pill = new PillToTake(
-                                  pillName: pillNameTextEditingController.text,
-                                  pillWeight: 0.0,
-                                  pillRegiment: int.parse(pillRegimentController.text),
-                                  description: '',
-                                  amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
-
-                              context.read<PillBloc>().add(AddPill(pillToTake: pill));
-
-                              FocusScope.of(context).unfocus();
-                              Navigator.pop(context);
+                          validator: (value) {
+                            if (value == null || value.isEmpty || !_isNumberGreaterThanZero(value)) {
+                              return 'Please enter a number representing the amount of pills to take';
                             }
-                          } ,
-                              icon: Icon(Icons.check, color: Colors.lightGreen),
-                              label: const Text(ADD_PILL_FORM_CONFIRM)
+                            return null;
+                          }
+                      ),
+                    ),
+                    SizedBox(height: 25.0),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child:  TextFormField(
+                          key: ObjectKey("pillDays"),
+                          controller: pillAmountOfDaysToTakeController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.green, width: 1),
+                              ),
+                              hintText: 'For How Many Days?',
+                              prefixIcon: Icon(Icons.calendar_today, color: Colors.green)
                           ),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              FocusScope.of(context).unfocus();
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(Icons.clear, color: Colors.red),
-                            label: const Text(ADD_PILL_FORM_CANCEL),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty || !_isNumberGreaterThanZero(value)) {
+                              return 'Please enter a number representing the number of days';
+                            }
+                            return null;
+                          }
+                      ),
+                    ),
+                    SizedBox(height: 25.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton.icon(onPressed: () {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            PillToTake pill = new PillToTake(
+                                pillName: pillNameTextEditingController.text,
+                                pillWeight: 0.0,
+                                pillRegiment: int.parse(pillRegimentController.text),
+                                description: '',
+                                amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
+
+                            context.read<PillBloc>().add(AddPill(pillToTake: pill));
+
+                            FocusScope.of(context).unfocus();
+                            Navigator.pop(context);
+                          }
+                        } ,
+                            icon: Icon(Icons.check, color: Colors.lightGreen),
+                            label: const Text(ADD_PILL_FORM_CONFIRM)
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            Navigator.pop(context);
+                          },
+                          icon: Icon(Icons.clear, color: Colors.red),
+                          label: const Text(ADD_PILL_FORM_CANCEL),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-              ],
-            ),
-          )
+              ),
+            ],
+          ),
+        )
     );
   }
 }
