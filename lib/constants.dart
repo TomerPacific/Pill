@@ -11,3 +11,4 @@ const String ADD_PILL_FORM_CONFIRM = "Apply";
 const String ADD_PILL_FORM_CANCEL = "Cancel";
 const String PILLS_TAKEN_KEY = "pillsTaken";
 const String TIME_APP_OPENED_KEY = "timeAppOpened";
+const String DARK_MODE_KEY = "darkMode";
