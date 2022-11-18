@@ -4,7 +4,7 @@ import 'package:pill/bloc/theme/theme_event.dart';
 import 'package:pill/bloc/theme/theme_state.dart';
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
-  ThemeBloc(): super(LightMode()) {
+  ThemeBloc(): super(InitialTheme()) {
     on<ChangeTheme>(_onThemeChange);
   }
 
@@ -15,6 +15,4 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
       emitter(LightMode());
     }
   }
-
-
 }
