@@ -10,8 +10,9 @@ void main() {
   final String date = DateService().getCurrentDateAsMonthAndDay();
 
   setUp(() async {
-    await SharedPreferencesService().init();
+    TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
+    await SharedPreferencesService().init();
     SharedPreferencesService().clearAllPills();
   });
 
