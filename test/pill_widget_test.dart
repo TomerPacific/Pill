@@ -11,6 +11,7 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 void main() {
@@ -18,6 +19,8 @@ void main() {
   String currentDate = DateService().getDateAsMonthAndDay(DateTime.now());
 
   setUp(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
     await SharedPreferencesService().init();
     SharedPreferencesService().clearAllPillsFromDate(DateTime.now());
   });
