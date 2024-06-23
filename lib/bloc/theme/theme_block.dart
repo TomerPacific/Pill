@@ -1,18 +1,16 @@
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/theme/theme_event.dart';
-import 'package:pill/bloc/theme/theme_state.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 
-class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
-  ThemeBloc(): super(InitialTheme()) {
-    on<ChangeTheme>(_onThemeChange);
-  }
+enum ThemeEvent { toggleDark, toggleLight }
 
-  void _onThemeChange(ChangeTheme event, Emitter<ThemeState> emitter) {
-    if (event.isDarkThemeEnabled) {
-      emitter(DarkMode());
-    } else {
-      emitter(LightMode());
-    }
+class ThemeBloc extends Bloc<ThemeEvent, ThemeMode> {
+  ThemeBloc(SharedPreferencesService sharedPreferencesService, bool isDarkMode) : super(isDarkMode ? ThemeMode.dark : ThemeMode.light) {
+    on<ThemeEvent>((event, emit) {
+      ThemeMode themeMode = event == ThemeEvent.toggleDark ? ThemeMode.dark : ThemeMode.light;
+      emit(themeMode);
+      sharedPreferencesService.saveThemeStatus(themeMode == ThemeMode.dark ? true : false);
+    });
   }
 }
