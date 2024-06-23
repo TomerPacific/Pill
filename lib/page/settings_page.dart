@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_event.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
-import 'package:pill/bloc/theme/theme_event.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -18,13 +17,17 @@ class SettingsPage extends StatelessWidget {
               title: const Text("Dark Mode"),
               secondary: new Icon(
                   Icons.dark_mode,
-                  color: BlocProvider.of<ThemeBloc>(context).state.isDarkModeEnabled ?
+                  color: context.read<ThemeBloc>().state == ThemeMode.dark ?
                   Color.fromARGB(200, 243, 231, 106) :
                   Color(0xFF642ef3)
               ),
-              value: BlocProvider.of<ThemeBloc>(context).state.isDarkModeEnabled,
+              value: context.read<ThemeBloc>().state == ThemeMode.dark ? true : false,
               onChanged: (bool isDarkModeEnabled) {
-                BlocProvider.of<ThemeBloc>(context).add(ChangeTheme(darkThemeEnabled: isDarkModeEnabled));
+                ThemeEvent event =
+                context.read<ThemeBloc>().state == ThemeMode.dark
+                    ? ThemeEvent.toggleLight
+                    : ThemeEvent.toggleDark;
+                BlocProvider.of<ThemeBloc>(context).add(event);
               }),
           ListTile(
               title: const Text("Clear All Pills"),
