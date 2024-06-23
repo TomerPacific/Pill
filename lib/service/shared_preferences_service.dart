@@ -148,12 +148,14 @@ class SharedPreferencesService {
     return true;
   }
 
-  void saveThemeStatus(bool isDarkModeEnabled) {
-    _sharedPreferences?.setBool(DARK_MODE_KEY, isDarkModeEnabled);
+  void saveThemeStatus(bool isDarkModeEnabled) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool(DARK_MODE_KEY, isDarkModeEnabled);
   }
 
-  bool getThemeStatus() {
-    bool? darkMode = _sharedPreferences?.getBool(DARK_MODE_KEY);
+  Future<bool> getThemeStatus() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    bool? darkMode = sharedPreferences.getBool(DARK_MODE_KEY);
     return darkMode != null ?
       darkMode :
       false;
