@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_event.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
@@ -7,6 +8,11 @@ import 'package:pill/service/shared_preferences_service.dart';
 
 class SettingsPage extends StatelessWidget {
 
+  SettingsPage({
+    required this.sharedPreferencesService
+  });
+
+  final SharedPreferencesService sharedPreferencesService;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +40,7 @@ class SettingsPage extends StatelessWidget {
               leading: const Icon(
                   Icons.clear,
                   color: Colors.redAccent),
-              enabled: SharedPreferencesService().areThereAnyPillsToTake(),
+              enabled: context.read<ClearPillsBloc>().state,
               onTap: () {
                 AlertDialog alertDialog = AlertDialog(
                   title: const Text("Clear All Saved Pills"),
@@ -42,7 +48,7 @@ class SettingsPage extends StatelessWidget {
                   actions: [
                     TextButton(
                         onPressed: () {
-                          BlocProvider.of<PillBloc>(context).add(ClearAllPills());
+                          BlocProvider.of<ClearPillsBloc>(context).add(ClearPillsEvent.ClearedPills);
                           Navigator.pop(context);
                         },
                         child: const Text("Yes")
