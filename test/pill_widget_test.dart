@@ -17,12 +17,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
 
   String currentDate = DateService().getDateAsMonthAndDay(DateTime.now());
+  SharedPreferencesService sharedPreferencesService = new SharedPreferencesService();
 
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     SharedPreferences.setMockInitialValues({});
-    await SharedPreferencesService().init();
-    SharedPreferencesService().clearAllPillsFromDate(DateTime.now());
+    sharedPreferencesService.clearAllPillsFromDate(DateTime.now());
   });
 
   Widget _buildPillList(BuildContext context, List<dynamic> pills) {
