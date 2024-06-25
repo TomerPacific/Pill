@@ -40,7 +40,7 @@ android {
 
     defaultConfig {
         applicationId "com.tomerpacific.pill"
-        minSdkVersion 16
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
