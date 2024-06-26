@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
-import 'bloc/pill/pill_event.dart';
 import 'bloc/pill/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/page/main_page.dart';
@@ -32,8 +32,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => PillBloc()
-            ..add(LoadPill(),),
+          create: (context) => PillBloc(sharedPreferencesService),
         ),
         BlocProvider(
           create: (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)
@@ -41,6 +40,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
             create: (context) => ThemeBloc(sharedPreferencesService, isDarkMode)
+        ),
+        BlocProvider(
+        create: (context) => ClearPillsBloc(sharedPreferencesService)
         ),
       ],
       child:
@@ -51,7 +53,7 @@ class MyApp extends StatelessWidget {
               theme: ThemeData(primarySwatch: Colors.blue),
               darkTheme: ThemeData.dark(),
               themeMode:  state,
-              home: MainPage(title: APP_TITLE),
+              home: MainPage(title: APP_TITLE, sharedPreferencesService: sharedPreferencesService),
             );
           }
       ),
