@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
-import 'package:pill/bloc/pill/pill_event.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_state.dart';
 import 'package:pill/model/pill_taken.dart';
@@ -38,7 +37,7 @@ void main() {
                     key: ObjectKey(pills[index].pillName),
                     child: new PillWidget(pillToTake: pills[index]),
                     onDismissed: (direction) {
-                      context.read<PillBloc>().add(DeletePill(pillToTake: pills[index]));
+                      context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.removePill, pillToTake: pills[index]));
                       //state.pillsToTake.removeAt(index);
                     }
                 )
@@ -86,7 +85,7 @@ void main() {
 
   Widget base = MultiBlocProvider(
       providers: [BlocProvider(
-        create: (context) => PillBloc()..add(LoadPill()),),
+        create: (context) => PillBloc(sharedPreferencesService)..add(LoadPill()),),
         BlocProvider(create: (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)))
       ],
       child: MaterialApp(
@@ -134,7 +133,7 @@ void main() {
 
     BuildContext context = tester.element(find.byType(Container));
 
-    context.read<PillBloc>().add(AddPill(pillToTake: pillToTake));
+    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, pillToTake: pillToTake));
 
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
@@ -159,7 +158,7 @@ void main() {
 
     BuildContext context = tester.element(find.byType(Container));
 
-    context.read<PillBloc>().add(AddPill(pillToTake: pillToTake));
+    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, pillToTake: pillToTake));
 
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
@@ -184,7 +183,7 @@ void main() {
 
     BuildContext context = tester.element(find.byType(Container));
 
-    context.read<PillBloc>().add(AddPill(pillToTake: pillToTake));
+    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, pillToTake: pillToTake));
 
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 

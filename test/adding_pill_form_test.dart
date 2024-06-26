@@ -4,15 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/adding_pill_form.dart';
 
 
 void main() {
 
+  SharedPreferencesService sharedPreferencesService = new SharedPreferencesService();
+
   Widget base = MultiBlocProvider(
           providers: [
             BlocProvider(
-                create: (context) => PillBloc()
+                create: (context) => PillBloc(sharedPreferencesService)
             ),
             BlocProvider(create: (context) =>
                 PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context))
