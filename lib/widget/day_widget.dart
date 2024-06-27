@@ -2,9 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
-import 'package:pill/bloc/pill/pill_event.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_state.dart';
+import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
@@ -31,7 +29,10 @@ class DayWidget extends StatelessWidget {
                     key: ObjectKey(pills[index].pillName),
                     child: new PillWidget(pillToTake: pills[index]),
                     onDismissed: (direction) {
-                      context.read<PillBloc>().add(DeletePill(pillToTake: pills[index]));
+                      context.read<PillBloc>().add(PillsEvent(
+                          eventName: PillEvent.removePill,
+                          date: date.toString(),
+                          pillToTake: pills[index]));
                       //state.pillsToTake.removeAt(index);
                     }
                 )
@@ -55,31 +56,9 @@ class DayWidget extends StatelessWidget {
     }
   }
 
-  Widget _drawPills(BuildContext context, PillFilterState state) {
-    if (state is PillFilterLoading) {
-      return const CircularProgressIndicator();
-    }
-    if (state is PillFilterLoaded) {
-      List<dynamic> pills = state.filteredPills;
-      return pills.length == 0 ?
-      new Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: new Text(
-             title,
-              style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
-          )
-      )
-          :
-      _buildPillList(context, pills);
-    }
-    else {
-      return const Text("Something went wrong");
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PillFilterBloc, PillFilterState>(
+    return BlocBuilder<PillBloc, PillState>(
       builder: (context, state) {
         return new Container(
             child:
@@ -102,7 +81,36 @@ class DayWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      _drawPills(context, state),
+                      (state.pillsToTake == null || state.pillsToTake!.isEmpty) ?
+                        new Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: new Text(
+                                title,
+                                style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+                            )
+                        )
+                      :
+                      Expanded(
+                          child: SizedBox(
+                            height: 200.0,
+                            child:  ListView.builder(
+                                itemCount: state.pillsToTake!.length,
+                                itemBuilder:
+                                    (_, index) =>
+                                new Dismissible(
+                                    key: ObjectKey(state.pillsToTake![index].pillName),
+                                    child: new PillWidget(pillToTake: state.pillsToTake![index]),
+                                    onDismissed: (direction) {
+                                      context.read<PillBloc>().add(PillsEvent(
+                                          eventName: PillEvent.removePill,
+                                          date: date.toString(),
+                                          pillToTake: state.pillsToTake![index]));
+                                      //state.pillsToTake.removeAt(index);
+                                    }
+                                )
+                            ),
+                          )
+                      )
                     ],
                   ),
                 )
