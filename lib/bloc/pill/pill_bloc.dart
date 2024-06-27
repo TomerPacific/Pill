@@ -11,12 +11,14 @@ enum PillEvent {loadPills, addPill, removePill, updatePill}
 
 class PillsEvent {
   final PillEvent eventName;
+  final String date;
   final PillToTake? pillToTake;
   final List<PillToTake>? pillsToTake;
   final List<PillTaken>? pillsTaken;
 
   PillsEvent({
     required this.eventName,
+    required this.date,
     this.pillToTake,
     this.pillsToTake,
     this.pillsTaken
@@ -31,7 +33,12 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     on<PillsEvent>((event, emit) async {
       switch(event.eventName) {
         case PillEvent.loadPills:
-          _onLoadPills(event, emit);
+          List<PillToTake> pillsToTake = await sharedPreferencesService.getPillsToTakeForDate(event.date);
+          List<PillTaken> pillsTaken = await sharedPreferencesService.getPillsTakenForDate(event.date);
+          emit(new PillState(
+              pillsToTake: pillsToTake,
+              pillsTaken: pillsTaken),
+          );
           break;
         case PillEvent.addPill:
           _onAddPill(event, emit);
@@ -44,15 +51,6 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           break;
       }
     });
-  }
-
-  void _onLoadPills(PillsEvent event, Emitter<PillState> emitter) {
-    if (event.pillsTaken != null && event.pillsToTake != null) {
-      emitter(new PillState(
-          pillsToTake: event.pillsToTake!,
-          pillsTaken: event.pillsTaken!),
-      );
-    }
   }
 
   void _onAddPill(PillsEvent event, Emitter<PillState> emitter) {
