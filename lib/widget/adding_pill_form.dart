@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/pill/pill_event.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/custom_icons.dart';
 import 'package:pill/model/pill_to_take.dart';
+import 'package:pill/service/date_service.dart';
 
 class AddingPillForm extends StatefulWidget {
 
@@ -54,13 +54,11 @@ class AddingPillFormState extends State<AddingPillForm> {
         body:
         BlocListener<PillBloc, PillState>(
           listener: (context, state) {
-            if (state is PillLoaded) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content:
-                const Text("Pill Added!")
-                ),
-              );
-            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content:
+              const Text("Pill Added!")
+              ),
+            );
           },
           child:  Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -159,8 +157,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                                 description: '',
                                 amountOfDaysToTake: int.parse(pillAmountOfDaysToTakeController.text));
 
-                            context.read<PillBloc>().add(AddPill(pillToTake: pill));
-
+                            context.read<PillBloc>().add(PillsEvent(
+                                eventName: PillEvent.addPill,
+                                date: DateService().getCurrentDateAsMonthAndDay(),
+                                pillToTake: pill)
+                            );
                             FocusScope.of(context).unfocus();
                             Navigator.pop(context);
                           }
