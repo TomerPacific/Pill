@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
+import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_state.dart';
-import 'package:pill/model/pill_taken.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
@@ -17,6 +16,7 @@ void main() {
 
   String currentDate = DateService().getDateAsMonthAndDay(DateTime.now());
   SharedPreferencesService sharedPreferencesService = new SharedPreferencesService();
+  String title = "You do not have to take any pills today 😀";
 
   setUp(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,75 +24,13 @@ void main() {
     sharedPreferencesService.clearAllPillsFromDate(DateTime.now());
   });
 
-  Widget _buildPillList(BuildContext context, List<dynamic> pills) {
-    if (pills is List<PillToTake> && pills.length > 0) {
-      return Expanded(
-          child: SizedBox(
-            height: 200.0,
-            child:  ListView.builder(
-                itemCount: pills.length,
-                itemBuilder:
-                    (_, index) =>
-                new Dismissible(
-                    key: ObjectKey(pills[index].pillName),
-                    child: new PillWidget(pillToTake: pills[index]),
-                    onDismissed: (direction) {
-                      context.read<PillBloc>().add(PillsEvent(
-                          eventName: PillEvent.removePill,
-                          date: currentDate,
-                          pillToTake: pills[index]));
-                      //state.pillsToTake.removeAt(index);
-                    }
-                )
-            ),
-          )
-      );
-    } else if (pills is List<PillTaken> && pills.length > 0) {
-      return Expanded(
-        child: SizedBox(
-            height: 200.0,
-            child:  ListView.builder(
-              itemCount: pills.length,
-              itemBuilder:
-                  (_, index) =>
-              new PillTakenWidget(pillToTake: pills[index]),
-            )
-        ),
-      );
-    } else {
-      return SizedBox.shrink();
-    }
-  }
-
-  Widget drawPills(BuildContext context, PillFilterState state) {
-    if (state is PillFilterLoading) {
-      return const CircularProgressIndicator();
-    }
-    if (state is PillFilterLoaded) {
-      List<dynamic> pills = state.filteredPills;
-      return pills.length == 0 ?
-      new Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: new Text(
-              "title",
-              style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
-          )
-      )
-          :
-      _buildPillList(context, pills);
-    }
-    else {
-      return const Text("Something went wrong");
-    }
-  }
-
   Widget base = MultiBlocProvider(
       providers: [BlocProvider(
         create: (context) => PillBloc(sharedPreferencesService)..add(PillsEvent(eventName: PillEvent.loadPills, date: currentDate))),
-        BlocProvider(create: (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)))
+        BlocProvider(create: (context) => PillFilterBloc(sharedPreferencesService))
       ],
       child: MaterialApp(
-          home: BlocBuilder<PillFilterBloc, PillFilterState>(
+          home:  BlocBuilder<PillBloc, PillState>(
               builder: (context, state) {
                 return new Container(
                     child:new SizedBox(
@@ -113,7 +51,59 @@ void main() {
                                   ),
                                 ),
                               ),
-                              drawPills(context, state)
+                              (title == "You do not have to take any pills today 😀") ?
+                              (state.pillsToTake == null || state.pillsToTake!.isEmpty) ?
+                              new Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: new Text(
+                                      title,
+                                      style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+                                  )
+                              )
+                                  :
+                              Expanded(
+                                  child: SizedBox(
+                                    height: 200.0,
+                                    child:  ListView.builder(
+                                        itemCount: state.pillsToTake!.length,
+                                        itemBuilder:
+                                            (_, index) =>
+                                        new Dismissible(
+                                            key: ObjectKey(state.pillsToTake![index].pillName),
+                                            child: new PillWidget(pillToTake: state.pillsToTake![index]),
+                                            onDismissed: (direction) {
+                                              context.read<PillBloc>().add(PillsEvent(
+                                                  eventName: PillEvent.removePill,
+                                                  date: currentDate,
+                                                  pillToTake: state.pillsToTake![index],
+                                                  pillsToTake: state.pillsToTake!,
+                                                  pillsTaken: state.pillsTaken!));
+                                            }
+                                        )
+                                    ),
+                                  )
+                              )
+                                  :
+                              (state.pillsTaken == null || state.pillsTaken!.isEmpty) ?
+                              new Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: new Text(
+                                      title,
+                                      style: new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+                                  )
+                              )
+                                  :
+                              Expanded(
+                                child: SizedBox(
+                                    height: 200.0,
+                                    child:  ListView.builder(
+                                      itemCount: state.pillsTaken!.length,
+                                      itemBuilder:
+                                          (_, index) =>
+                                      new PillTakenWidget(pillToTake: state.pillsTaken![index]),
+                                    )
+                                ),
+                              )
                             ]
                         )
                     )
