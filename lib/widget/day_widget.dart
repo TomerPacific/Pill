@@ -104,8 +104,9 @@ class DayWidget extends StatelessWidget {
                                       context.read<PillBloc>().add(PillsEvent(
                                           eventName: PillEvent.removePill,
                                           date: date.toString(),
-                                          pillToTake: state.pillsToTake![index]));
-                                      //state.pillsToTake.removeAt(index);
+                                          pillToTake: state.pillsToTake![index],
+                                          pillsToTake: state.pillsToTake!,
+                                          pillsTaken: state.pillsTaken!));
                                     }
                                 )
                             ),
