@@ -18,7 +18,7 @@ void main() {
                 create: (context) => PillBloc(sharedPreferencesService)
             ),
             BlocProvider(create: (context) =>
-                PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context))
+                PillFilterBloc(sharedPreferencesService)
             )
           ],
           child: MaterialApp(
