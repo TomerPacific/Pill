@@ -37,7 +37,10 @@ void main() {
                     key: ObjectKey(pills[index].pillName),
                     child: new PillWidget(pillToTake: pills[index]),
                     onDismissed: (direction) {
-                      context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.removePill, pillToTake: pills[index]));
+                      context.read<PillBloc>().add(PillsEvent(
+                          eventName: PillEvent.removePill,
+                          date: currentDate,
+                          pillToTake: pills[index]));
                       //state.pillsToTake.removeAt(index);
                     }
                 )
@@ -85,7 +88,7 @@ void main() {
 
   Widget base = MultiBlocProvider(
       providers: [BlocProvider(
-        create: (context) => PillBloc(sharedPreferencesService)..add(LoadPill()),),
+        create: (context) => PillBloc(sharedPreferencesService)..add(PillsEvent(eventName: PillEvent.loadPills, date: currentDate))),
         BlocProvider(create: (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)))
       ],
       child: MaterialApp(
@@ -133,7 +136,7 @@ void main() {
 
     BuildContext context = tester.element(find.byType(Container));
 
-    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, pillToTake: pillToTake));
+    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, date: currentDate, pillToTake: pillToTake));
 
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
@@ -158,7 +161,7 @@ void main() {
 
     BuildContext context = tester.element(find.byType(Container));
 
-    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, pillToTake: pillToTake));
+    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, date: currentDate, pillToTake: pillToTake));
 
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
@@ -183,7 +186,7 @@ void main() {
 
     BuildContext context = tester.element(find.byType(Container));
 
-    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, pillToTake: pillToTake));
+    context.read<PillBloc>().add(PillsEvent(eventName: PillEvent.addPill, date: currentDate, pillToTake: pillToTake));
 
     await tester.pumpAndSettle(const Duration(milliseconds: 100));
 
