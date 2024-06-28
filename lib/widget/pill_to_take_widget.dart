@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/pill/pill_event.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
@@ -16,7 +15,11 @@ class PillWidget extends StatelessWidget {
   void _handleOnTap(BuildContext context) {
     pillToTake.pillRegiment--;
     pillToTake.lastTaken = DateTime.now();
-    context.read<PillBloc>().add(UpdatePill(pillToTake: pillToTake));
+    context.read<PillBloc>().add(PillsEvent(
+      eventName: PillEvent.updatePill,
+        date: DateService().getCurrentDateAsMonthAndDay(),
+        pillToTake: pillToTake)
+    );
   }
 
   @override
