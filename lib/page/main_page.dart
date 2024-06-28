@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_event.dart';
 import 'package:pill/custom_icons.dart';
-import 'package:pill/model/pill_filter.dart';
 import 'package:pill/page/settings_page.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
@@ -46,10 +44,15 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     _controller.addListener(() {
       switch(_controller.index) {
         case 0:
-          context.read<PillFilterBloc>().add(UpdatePills(pillFilter: PillFilter.all));
+          context.read<PillFilterBloc>().add(PillsFilterEvent(
+              eventName: PillFilterEvent.pillsToTake,
+              date: DateTime.now().toString())
+          );
           break;
         case 1:
-          context.read<PillFilterBloc>().add(UpdatePills(pillFilter: PillFilter.taken));
+          context.read<PillFilterBloc>().add(PillsFilterEvent(
+      eventName: PillFilterEvent.pillTaken,
+      date: DateTime.now().toString()));
           break;
       }
     });
@@ -66,15 +69,16 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                       switch(tabIndex) {
                         case 0:
                           BlocProvider.of<PillFilterBloc>(context)
-                              .add(const UpdatePills(
-                              pillFilter: PillFilter.all
-                          ));
+                              .add(PillsFilterEvent(
+                              eventName: PillFilterEvent.pillsToTake,
+                              date: DateTime.now().toString())
+                          );
                           break;
                         case 1:
                           BlocProvider.of<PillFilterBloc>(context)
-                              .add(const UpdatePills(
-                              pillFilter: PillFilter.taken
-                          ));
+                              .add(PillsFilterEvent(
+                      eventName: PillFilterEvent.pillTaken,
+                      date: DateTime.now().toString()));
                           break;
                       }
                     }, tabs: [
