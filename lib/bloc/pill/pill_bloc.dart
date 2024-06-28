@@ -47,7 +47,24 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           _onDeletePill(event, emit, sharedPreferencesService);
           break;
         case PillEvent.updatePill:
-          _onUpdatePill(event, emit, sharedPreferencesService);
+
+          List<PillToTake> pillsToTake = await sharedPreferencesService.getPillsToTakeForDate(event.date);
+
+          PillToTake storedPill = pillsToTake.firstWhere((pill) => pill.pillName == event.pillToTake!.pillName);
+          pillsToTake.remove(storedPill);
+
+          storedPill.lastTaken = event.pillToTake!.lastTaken;
+          storedPill.pillRegiment = event.pillToTake!.pillRegiment;
+
+          pillsToTake.add(storedPill);
+
+          sharedPreferencesService.updatePillForDate(storedPill, event.date);
+
+          List<PillTaken> pillsTaken = await sharedPreferencesService.getPillsTakenForDate(event.date);
+          emit(PillState(
+              pillsToTake: pillsToTake,
+              pillsTaken: pillsTaken),
+          );
           break;
       }
     });
@@ -61,29 +78,6 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
         pillsToTake: pills,
         pillsTaken: state.pillsTaken
       )
-    );
-  }
-
-  void _onUpdatePill(
-      PillsEvent event,
-      Emitter<PillState> emitter,
-      SharedPreferencesService sharedPreferencesService) async {
-
-      List<PillToTake> updatedPills;
-      if (event.pillToTake!.pillRegiment == 0) {
-        updatedPills = event.pillsToTake!.where((pill) => !pill.equals(event.pillToTake!)).toList();
-      } else {
-        updatedPills = event.pillsToTake!.map((pill) =>
-        pill.equals(event.pillToTake!)
-            ? event.pillToTake!
-            : pill).toList();
-      }
-
-    String date = DateService().getCurrentDateAsMonthAndDay();
-    List<PillTaken> pillsTaken = await sharedPreferencesService.getPillsTakenForDate(date);
-    emitter(PillState(
-        pillsToTake: updatedPills,
-        pillsTaken: pillsTaken),
     );
   }
 
