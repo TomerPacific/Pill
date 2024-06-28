@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
           create: (context) => PillBloc(sharedPreferencesService),
         ),
         BlocProvider(
-          create: (context) => PillFilterBloc(pillBloc: BlocProvider.of<PillBloc>(context)
+          create: (context) => PillFilterBloc(sharedPreferencesService
           ),
         ),
         BlocProvider(
