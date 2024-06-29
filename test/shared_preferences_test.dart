@@ -25,7 +25,7 @@ void main() {
 
   test("SharedPreferences Service add pill to date", () async {
     PillToTake pill = new PillToTake(pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    SharedPreferencesService().addPillToDates(date, pill);
+    await sharedPreferencesService.addPillToDates(date, pill);
     List<PillToTake> pills = await sharedPreferencesService.getPillsToTakeForDate(date);
 
     expect(pills.length, 1);
@@ -37,12 +37,12 @@ void main() {
 
   test("SharedPreferences Service remove pill from date", () async {
     PillToTake pill = new PillToTake(pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    SharedPreferencesService().addPillToDates(date, pill);
+    await sharedPreferencesService.addPillToDates(date, pill);
     List<PillToTake> pills = await sharedPreferencesService.getPillsToTakeForDate(date);
 
     expect(pills.length, 1);
 
-    SharedPreferencesService().removePillFromDate(pill, date);
+    await sharedPreferencesService.removePillFromDate(pill, date);
 
     pills = await sharedPreferencesService.getPillsToTakeForDate(date);
 
@@ -51,14 +51,14 @@ void main() {
 
   test("SharedPreferences Service update pill from date", () async {
     PillToTake pill = new PillToTake(pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    SharedPreferencesService().addPillToDates(date, pill);
+    await sharedPreferencesService.addPillToDates(date, pill);
     List<PillToTake> pills = await sharedPreferencesService.getPillsToTakeForDate(date);
 
     expect(pills.length, 1);
 
     pill.pillRegiment = 10;
 
-    SharedPreferencesService().updatePillForDate(pill, date);
+    await sharedPreferencesService.updatePillForDate(pill, date);
 
     pills = await sharedPreferencesService.getPillsToTakeForDate(date);
 
@@ -69,7 +69,7 @@ void main() {
 
   test("SharedPreferences Service Clearing All Pills", () async {
     PillToTake pill = new PillToTake(pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    SharedPreferencesService().addPillToDates(date, pill);
+    await sharedPreferencesService.addPillToDates(date, pill);
     List<PillToTake> pills = await sharedPreferencesService.getPillsToTakeForDate(date);
 
     expect(pills.length, 1);
@@ -78,7 +78,7 @@ void main() {
 
     expect(areTherePillsToTake, true);
 
-    SharedPreferencesService().clearAllPills();
+    await sharedPreferencesService.clearAllPills();
 
     areTherePillsToTake = await sharedPreferencesService.areThereAnyPillsToTake();
 
