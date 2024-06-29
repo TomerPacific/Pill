@@ -41,7 +41,7 @@ class SharedPreferencesService {
     return pillsTaken;
   }
 
-  void addPillToDates(String currentDate, PillToTake pill) async {
+  Future<void> addPillToDates(String currentDate, PillToTake pill) async {
     DateTime runningDate = DateTime.now();
 
     while(pill.amountOfDaysToTake > 0) {
@@ -62,7 +62,7 @@ class SharedPreferencesService {
     _setPillsTakenForDate(date, pillsTaken);
   }
 
-  void updatePillForDate(PillToTake pillToTake, String currentDate) async {
+  Future<void> updatePillForDate(PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = await getPillsToTakeForDate(currentDate);
     addTakenPill(pillToTake, currentDate);
 
@@ -75,7 +75,7 @@ class SharedPreferencesService {
     }
   }
 
-  void removePillFromDate(PillToTake pillToTake, String currentDate) async {
+  Future<void> removePillFromDate(PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = await getPillsToTakeForDate(currentDate);
     List<PillToTake> updatedPills = pills.where((element) => element.pillName != pillToTake.pillName).toList();
     _setPillsForDate(currentDate, updatedPills);
@@ -114,7 +114,7 @@ class SharedPreferencesService {
     return timeApplicationWasOpened != null ? DateTime.parse(timeApplicationWasOpened) : null;
   }
 
-  void clearAllPills() async {
+  Future<void> clearAllPills() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     Set<String> keys = sharedPreferences.getKeys();
