@@ -28,7 +28,7 @@ void main() {
         create: (context) => PillBloc(
             sharedPreferencesService)..add(
             PillsEvent(
-                eventName: PillEvent.loadPills,
+                eventName: PillEvent.loadPillsToTake,
                 date: currentDate)
         )),
       ],

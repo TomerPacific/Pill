@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<PillBloc>(context).add(new PillsEvent(eventName: PillEvent.loadPills,
+    BlocProvider.of<PillBloc>(context).add(new PillsEvent(eventName: PillEvent.loadPillsToTake,
         date: DateService().getCurrentDateAsMonthAndDay()));
     widget.sharedPreferencesService.clearPillsOfPastDays();
     BlocProvider.of<ClearPillsBloc>(context).add(ClearPillsEvent.Init);
