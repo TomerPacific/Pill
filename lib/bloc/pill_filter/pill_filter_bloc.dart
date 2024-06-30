@@ -28,19 +28,20 @@ class PillFilterBloc extends Bloc<PillsFilterEvent, PillState> {
       : super(PillState()) {
     on<PillsFilterEvent>((event, emit) async {
       if (event.eventName == PillFilterEvent.pillsToTake) {
-        List<PillTaken> pillsTaken = await sharedPreferencesService
-            .getPillsTakenForDate(event.date);
-        emit(PillState(
-            pillsTaken: pillsTaken,
-            pillsToTake: event.pillsToTake
-        ));
-      } else {
         List<PillToTake> pillsToTake = await sharedPreferencesService
             .getPillsToTakeForDate(event.date);
         emit(PillState(
             pillsTaken: event.pillsTaken,
             pillsToTake: pillsToTake
         ));
+      } else {
+        List<PillTaken> pillsTaken = await sharedPreferencesService
+            .getPillsTakenForDate(event.date);
+        emit(PillState(
+            pillsTaken: pillsTaken,
+            pillsToTake: event.pillsToTake
+        ));
+      // TODO pill state is correct here, but when rebuilding in day_widget, the list of taken pills is empty
       };
     });
   }
