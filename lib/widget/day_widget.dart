@@ -63,7 +63,7 @@ class DayWidget extends StatelessWidget {
                                     onDismissed: (direction) {
                                       context.read<PillBloc>().add(PillsEvent(
                                           eventName: PillEvent.removePill,
-                                          date: date.toString(),
+                                          date: DateService().getDateAsMonthAndDay(date),
                                           pillToTake: state.pillsToTake![index],
                                           pillsToTake: state.pillsToTake!,
                                           pillsTaken: state.pillsTaken!));

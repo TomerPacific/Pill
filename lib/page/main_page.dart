@@ -46,13 +46,13 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         case 0:
           context.read<PillFilterBloc>().add(PillsFilterEvent(
               eventName: PillFilterEvent.pillsToTake,
-              date: DateTime.now().toString())
+              date: DateService().getCurrentDateAsMonthAndDay())
           );
           break;
         case 1:
           context.read<PillFilterBloc>().add(PillsFilterEvent(
       eventName: PillFilterEvent.pillTaken,
-      date: DateTime.now().toString()));
+      date: DateService().getCurrentDateAsMonthAndDay()));
           break;
       }
     });
@@ -71,14 +71,14 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                           BlocProvider.of<PillFilterBloc>(context)
                               .add(PillsFilterEvent(
                               eventName: PillFilterEvent.pillsToTake,
-                              date: DateTime.now().toString())
+                              date: DateService().getCurrentDateAsMonthAndDay())
                           );
                           break;
                         case 1:
                           BlocProvider.of<PillFilterBloc>(context)
                               .add(PillsFilterEvent(
                       eventName: PillFilterEvent.pillTaken,
-                      date: DateTime.now().toString()));
+                      date: DateService().getCurrentDateAsMonthAndDay()));
                           break;
                       }
                     }, tabs: [
