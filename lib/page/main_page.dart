@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/custom_icons.dart';
 import 'package:pill/page/settings_page.dart';
 import 'package:pill/service/date_service.dart';
@@ -44,14 +43,14 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     _controller.addListener(() {
       switch(_controller.index) {
         case 0:
-          context.read<PillFilterBloc>().add(PillsFilterEvent(
-              eventName: PillFilterEvent.pillsToTake,
+          context.read<PillBloc>().add(PillsEvent(
+              eventName: PillEvent.loadPillsToTake,
               date: DateService().getCurrentDateAsMonthAndDay())
           );
           break;
         case 1:
-          context.read<PillFilterBloc>().add(PillsFilterEvent(
-      eventName: PillFilterEvent.pillTaken,
+          context.read<PillBloc>().add(PillsEvent(
+      eventName: PillEvent.loadTakenPills,
       date: DateService().getCurrentDateAsMonthAndDay()));
           break;
       }
@@ -68,17 +67,17 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                     onTap: (tabIndex) {
                       switch(tabIndex) {
                         case 0:
-                          BlocProvider.of<PillFilterBloc>(context)
-                              .add(PillsFilterEvent(
-                              eventName: PillFilterEvent.pillsToTake,
-                              date: DateService().getCurrentDateAsMonthAndDay())
-                          );
+                          BlocProvider.of<PillBloc>(context)
+                              .add(PillsEvent(
+                                  eventName: PillEvent.loadPillsToTake,
+                                  date: DateService().getCurrentDateAsMonthAndDay()
+                          ));
                           break;
                         case 1:
-                          BlocProvider.of<PillFilterBloc>(context)
-                              .add(PillsFilterEvent(
-                      eventName: PillFilterEvent.pillTaken,
-                      date: DateService().getCurrentDateAsMonthAndDay()));
+                          BlocProvider.of<PillBloc>(context)
+                              .add(PillsEvent(
+                                  eventName: PillEvent.loadTakenPills,
+                                  date: DateService().getCurrentDateAsMonthAndDay()));
                           break;
                       }
                     }, tabs: [
