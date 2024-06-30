@@ -7,7 +7,7 @@ import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/model/pill_to_take.dart';
 
 
-enum PillEvent {loadPills, addPill, removePill, updatePill}
+enum PillEvent {loadPills, addPill, removePill, updatePill, loadTakenPills, loadPillsToTake}
 
 class PillsEvent {
   final PillEvent eventName;
@@ -67,6 +67,22 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           List<PillTaken> pillsTaken = await sharedPreferencesService.getPillsTakenForDate(event.date);
           emit(PillState(
               pillsToTake: pillsToTake,
+              pillsTaken: pillsTaken),
+          );
+          break;
+        case PillEvent.loadPillsToTake:
+          List<PillToTake> pillsToTake = await sharedPreferencesService.getPillsToTakeForDate(event.date);
+
+          emit(PillState(
+              pillsToTake: pillsToTake,
+              pillsTaken: null),
+          );
+          break;
+        case PillEvent.loadTakenPills:
+          List<PillTaken> pillsTaken = await sharedPreferencesService.getPillsTakenForDate(event.date);
+
+          emit(PillState(
+              pillsToTake: null,
               pillsTaken: pillsTaken),
           );
           break;
