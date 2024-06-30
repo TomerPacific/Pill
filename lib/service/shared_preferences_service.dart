@@ -12,7 +12,7 @@ class SharedPreferencesService {
     sharedPreferences.setString(currentDate, PillToTake.encode(pills));
   }
 
-  void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken, ) async {
+  Future<void> _setPillsTakenForDate(String date, List<PillTaken> pillsTaken, ) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setString(PILLS_TAKEN_KEY+date, PillTaken.encode(pillsTaken));
   }
@@ -55,16 +55,16 @@ class SharedPreferencesService {
 
   }
 
-  void addTakenPill(PillToTake pillTaken, String date) async {
+  Future<void> addTakenPill(PillToTake pillTaken, String date) async {
     PillTaken pill = PillTaken.extractFromPillToTake(pillTaken);
     List<PillTaken> pillsTaken = await getPillsTakenForDate(date);
     pillsTaken.add(pill);
-    _setPillsTakenForDate(date, pillsTaken);
+    await _setPillsTakenForDate(date, pillsTaken);
   }
 
   Future<void> updatePillForDate(PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = await getPillsToTakeForDate(currentDate);
-    addTakenPill(pillToTake, currentDate);
+    await addTakenPill(pillToTake, currentDate);
 
     if (pillToTake.pillRegiment == 0) {
       removePillFromDate(pillToTake, currentDate);
