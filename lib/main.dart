@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
 import 'bloc/pill/pill_bloc.dart';
 import 'package:pill/constants.dart';
@@ -33,10 +32,6 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => PillBloc(sharedPreferencesService),
-        ),
-        BlocProvider(
-          create: (context) => PillFilterBloc(sharedPreferencesService
-          ),
         ),
         BlocProvider(
             create: (context) => ThemeBloc(sharedPreferencesService, isDarkMode)

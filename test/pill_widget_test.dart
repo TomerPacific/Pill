@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
@@ -26,8 +25,12 @@ void main() {
 
   Widget base = MultiBlocProvider(
       providers: [BlocProvider(
-        create: (context) => PillBloc(sharedPreferencesService)..add(PillsEvent(eventName: PillEvent.loadPills, date: currentDate))),
-        BlocProvider(create: (context) => PillFilterBloc(sharedPreferencesService))
+        create: (context) => PillBloc(
+            sharedPreferencesService)..add(
+            PillsEvent(
+                eventName: PillEvent.loadPills,
+                date: currentDate)
+        )),
       ],
       child: MaterialApp(
           home:  BlocBuilder<PillBloc, PillState>(

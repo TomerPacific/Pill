@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pill/bloc/pill_filter/pill_filter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/adding_pill_form.dart';
@@ -17,9 +16,6 @@ void main() {
             BlocProvider(
                 create: (context) => PillBloc(sharedPreferencesService)
             ),
-            BlocProvider(create: (context) =>
-                PillFilterBloc(sharedPreferencesService)
-            )
           ],
           child: MaterialApp(
               home: AddingPillForm(DateTime.now())
