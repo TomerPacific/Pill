@@ -45,16 +45,14 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           PillToTake storedPill = pillsToTake.firstWhere((pill) => pill.pillName == event.pillToTake!.pillName);
           pillsToTake.remove(storedPill);
 
-          if (event.pillToTake!.pillRegiment != 0) {
-            storedPill.lastTaken = event.pillToTake!.lastTaken;
-            storedPill.pillRegiment = event.pillToTake!.pillRegiment;
+          storedPill.lastTaken = event.pillToTake!.lastTaken;
+          storedPill.pillRegiment = event.pillToTake!.pillRegiment;
 
+          if (storedPill.pillRegiment != 0) {
             pillsToTake.add(storedPill);
-
-            sharedPreferencesService.updatePillForDate(storedPill, event.date);
-          } else {
-            sharedPreferencesService.removePillFromDate(storedPill, event.date);
           }
+
+          sharedPreferencesService.updatePillForDate(storedPill, event.date);
 
           List<PillTaken> pillsTaken = await sharedPreferencesService.getPillsTakenForDate(event.date);
           emit(PillState(
