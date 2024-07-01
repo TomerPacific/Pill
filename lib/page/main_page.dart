@@ -64,23 +64,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 preferredSize: Size.fromHeight(50),
                 child: AppBar(
                   bottom: TabBar(
-                    onTap: (tabIndex) {
-                      switch(tabIndex) {
-                        case 0:
-                          BlocProvider.of<PillBloc>(context)
-                              .add(PillsEvent(
-                                  eventName: PillEvent.loadPillsToTake,
-                                  date: DateService().getCurrentDateAsMonthAndDay()
-                          ));
-                          break;
-                        case 1:
-                          BlocProvider.of<PillBloc>(context)
-                              .add(PillsEvent(
-                                  eventName: PillEvent.loadTakenPills,
-                                  date: DateService().getCurrentDateAsMonthAndDay()));
-                          break;
-                      }
-                    }, tabs: [
+                    tabs: [
                     Tab(icon: Icon(CustomIcons.pill)),
                     Tab(icon: Icon(Icons.watch_later_rounded)),
                     Tab(icon: Icon(Icons.settings)),
