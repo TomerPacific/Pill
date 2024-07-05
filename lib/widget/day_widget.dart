@@ -56,8 +56,8 @@ class DayWidget extends StatelessWidget {
                                         date: DateService()
                                             .getDateAsMonthAndDay(date),
                                         pillToTake: state.pillsToTake![index],
-                                        pillsToTake: state.pillsToTake!,
-                                        pillsTaken: state.pillsTaken!));
+                                        pillsToTake: state.pillsToTake,
+                                        pillsTaken: state.pillsTaken));
                                   })),
                         ))
                   : (state.pillsTaken == null || state.pillsTaken!.isEmpty)
