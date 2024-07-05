@@ -145,8 +145,9 @@ class SharedPreferencesService {
     Set<String> keys = sharedPreferences.getKeys();
     if (keys.isEmpty) return false;
     for (String key in keys) {
-      if (key.contains(new RegExp('[0-9]'))) {
-        return true;
+      if (key.contains(new RegExp('[0-9]')) && !key.contains(PILLS_TAKEN_KEY)) {
+        List<PillToTake> pills = await getPillsToTakeForDate(key);
+        if (pills.isNotEmpty) return true;
       }
     }
 
