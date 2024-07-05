@@ -38,7 +38,6 @@ class _MainPageState extends State<MainPage>
         eventName: PillEvent.loadPillsToTake,
         date: DateService().getCurrentDateAsMonthAndDay()));
     widget.sharedPreferencesService.clearPillsOfPastDays();
-    BlocProvider.of<ClearPillsBloc>(context).add(ClearPillsEvent.Init);
     _controller = TabController(length: 3, vsync: this);
     _controller.addListener(() {
       switch (_controller.index) {
@@ -51,6 +50,9 @@ class _MainPageState extends State<MainPage>
           context.read<PillBloc>().add(PillsEvent(
               eventName: PillEvent.loadTakenPills,
               date: DateService().getCurrentDateAsMonthAndDay()));
+          break;
+        case 2:
+          context.read<ClearPillsBloc>().add(ClearPillsEvent.PillsUpdated);
           break;
       }
     });
