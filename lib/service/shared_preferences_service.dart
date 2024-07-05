@@ -144,8 +144,13 @@ class SharedPreferencesService {
 
     Set<String> keys = sharedPreferences.getKeys();
     if (keys.isEmpty) return false;
-    if (keys.isNotEmpty && keys.first.contains(TIME_APP_OPENED_KEY)) return false;
-    return true;
+    for (String key in keys) {
+      if (key.contains(new RegExp('[0-9]'))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   void saveThemeStatus(bool isDarkModeEnabled) async {
