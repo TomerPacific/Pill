@@ -1,7 +1,6 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/model/pill_taken.dart';
-import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/model/pill_to_take.dart';
@@ -95,12 +94,11 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
       PillsEvent event,
       Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) async {
+    await sharedPreferencesService.removePillFromDate(event.pillToTake!, event.date);
     List<PillToTake> updatedPills = event.pillsToTake!.where((pill) => !pill.equals(event.pillToTake!)).toList();
-    String date = DateService().getCurrentDateAsMonthAndDay();
-    List<PillTaken> pillsTaken = await sharedPreferencesService.getPillsTakenForDate(date);
     emitter(PillState(
         pillsToTake: updatedPills,
-        pillsTaken: pillsTaken),
+        pillsTaken: event.pillsTaken),
     );
   }
 
