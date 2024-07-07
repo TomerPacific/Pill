@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
+import 'package:pill/service/date_service.dart';
 import 'bloc/pill/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/page/main_page.dart';
@@ -9,10 +10,13 @@ import 'package:pill/service/shared_preferences_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferencesService sharedPreferencesService = SharedPreferencesService();
+  DateService dateService = new DateService();
+  SharedPreferencesService sharedPreferencesService = new SharedPreferencesService(dateService: dateService);
   bool isDarkMode = await sharedPreferencesService.getThemeStatus();
   runApp(
-      MyApp(sharedPreferencesService: sharedPreferencesService, isDarkMode: isDarkMode)
+      MyApp(sharedPreferencesService: sharedPreferencesService,
+          dateService: dateService,
+          isDarkMode: isDarkMode)
   );
 }
 
@@ -20,10 +24,12 @@ class MyApp extends StatelessWidget {
 
   MyApp({
     required this.sharedPreferencesService,
+    required this.dateService,
     required this.isDarkMode
   });
 
   final SharedPreferencesService sharedPreferencesService;
+  final DateService dateService;
   final bool isDarkMode;
 
   @override
@@ -48,7 +54,10 @@ class MyApp extends StatelessWidget {
               theme: ThemeData(primarySwatch: Colors.blue),
               darkTheme: ThemeData.dark(),
               themeMode:  state,
-              home: MainPage(title: APP_TITLE, sharedPreferencesService: sharedPreferencesService),
+              home: MainPage(
+                  title: APP_TITLE,
+                  sharedPreferencesService: sharedPreferencesService,
+                  dateService: dateService),
             );
           }
       ),
