@@ -5,9 +5,11 @@ import 'package:pill/service/date_service.dart';
 class PillTakenWidget extends StatelessWidget {
 
   const PillTakenWidget({
-    required this.pillToTake}) : super();
+    required this.pillToTake,
+    required this.dateService}) : super();
 
   final PillTaken pillToTake;
+  final DateService dateService;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,7 @@ class PillTakenWidget extends StatelessWidget {
                       [
                         Icon(Icons.access_time),
                         new Text(
-                            DateService().getHourFromDate(pillToTake.lastTaken!),
+                            dateService.getHourFromDate(pillToTake.lastTaken!),
                             style:  new TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold

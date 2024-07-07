@@ -7,10 +7,12 @@ import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
 
 class DayWidget extends StatelessWidget {
-  DayWidget({required this.date, required this.title});
+  DayWidget(
+      {required this.date, required this.title, required this.dateService});
 
   final DateTime date;
   final String title;
+  final DateService dateService;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +30,7 @@ class DayWidget extends StatelessWidget {
                 alignment: Alignment.topCenter,
                 child: new Padding(
                   padding: const EdgeInsets.only(top: 40.0),
-                  child: new Text(DateService().getDateAsMonthAndDay(date),
+                  child: new Text(dateService.getDateAsMonthAndDay(date),
                       style: new TextStyle(
                           fontSize: 25.0, fontWeight: FontWeight.bold)),
                 ),
@@ -49,11 +51,13 @@ class DayWidget extends StatelessWidget {
                                   key: ObjectKey(
                                       state.pillsToTake![index].pillName),
                                   child: new PillWidget(
-                                      pillToTake: state.pillsToTake![index]),
+                                    pillToTake: state.pillsToTake![index],
+                                    dateService: dateService,
+                                  ),
                                   onDismissed: (direction) {
                                     context.read<PillBloc>().add(PillsEvent(
                                         eventName: PillEvent.removePill,
-                                        date: DateService()
+                                        date: dateService
                                             .getDateAsMonthAndDay(date),
                                         pillToTake: state.pillsToTake![index],
                                         pillsToTake: state.pillsToTake,
@@ -72,7 +76,8 @@ class DayWidget extends StatelessWidget {
                               child: ListView.builder(
                                 itemCount: state.pillsTaken!.length,
                                 itemBuilder: (_, index) => new PillTakenWidget(
-                                    pillToTake: state.pillsTaken![index]),
+                                    pillToTake: state.pillsTaken![index],
+                                    dateService: dateService),
                               )),
                         )
             ],

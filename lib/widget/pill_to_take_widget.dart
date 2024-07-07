@@ -6,16 +6,17 @@ import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 
 class PillWidget extends StatelessWidget {
-  const PillWidget({required this.pillToTake}) : super();
+  const PillWidget({required this.pillToTake, required this.dateService}) : super();
 
   final PillToTake pillToTake;
+  final DateService dateService;
 
   void _handleOnTap(BuildContext context) {
     pillToTake.pillRegiment--;
     pillToTake.lastTaken = DateTime.now();
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.updatePill,
-        date: DateService().getCurrentDateAsMonthAndDay(),
+        date: dateService.getCurrentDateAsMonthAndDay(),
         pillToTake: pillToTake));
   }
 
@@ -67,7 +68,7 @@ class PillWidget extends StatelessWidget {
                           ? [
                               Icon(Icons.access_time),
                               new Text(
-                                  DateService()
+                                  dateService
                                       .getHourFromDate(pillToTake.lastTaken!),
                                   style: new TextStyle(
                                       fontSize: 20.0,
