@@ -7,6 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
 
+  SharedPreferencesService({
+    required this.dateService
+  });
+
+  final DateService dateService;
+
   void _setPillsForDate(String currentDate, List<PillToTake> pills) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setString(currentDate, PillToTake.encode(pills));
@@ -49,7 +55,7 @@ class SharedPreferencesService {
       pills.add(pill);
       _setPillsForDate(currentDate, pills);
       runningDate = runningDate.add(new Duration(days: 1));
-      currentDate = DateService().getDateAsMonthAndDay(runningDate);
+      currentDate = dateService.getDateAsMonthAndDay(runningDate);
       pill.amountOfDaysToTake--;
     }
 
@@ -87,7 +93,7 @@ class SharedPreferencesService {
     DateTime runningDate = dateToRemovePillsFrom;
 
     while (runningDate.difference(date).inDays >= 1) {
-      String converted = DateService().getDateAsMonthAndDay(runningDate);
+      String converted = dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pillsToTake = await getPillsToTakeForDate(converted);
       List<PillTaken> pillsTaken = await getPillsTakenForDate(converted);
 
