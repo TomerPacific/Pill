@@ -13,7 +13,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
 
-  String currentDate = DateService().getDateAsMonthAndDay(DateTime.now());
+  DateService dateService = new DateService();
+
+  String currentDate = dateService.getDateAsMonthAndDay(DateTime.now());
   SharedPreferencesService sharedPreferencesService = new SharedPreferencesService();
   String title = "You do not have to take any pills today 😀";
 
