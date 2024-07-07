@@ -10,11 +10,15 @@ import 'package:pill/widget/day_widget.dart';
 import 'package:pill/widget/adding_pill_form.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({required this.title, required this.sharedPreferencesService})
+  MainPage({
+    required this.title,
+    required this.sharedPreferencesService,
+    required this.dateService})
       : super();
 
   final String title;
   final SharedPreferencesService sharedPreferencesService;
+  final DateService dateService;
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -36,7 +40,7 @@ class _MainPageState extends State<MainPage>
     super.initState();
     BlocProvider.of<PillBloc>(context).add(new PillsEvent(
         eventName: PillEvent.loadPillsToTake,
-        date: DateService().getCurrentDateAsMonthAndDay()));
+        date: widget.dateService.getCurrentDateAsMonthAndDay()));
     widget.sharedPreferencesService.clearPillsOfPastDays();
     _controller = TabController(length: 3, vsync: this);
     _controller.addListener(() {
@@ -44,12 +48,12 @@ class _MainPageState extends State<MainPage>
         case 0:
           context.read<PillBloc>().add(PillsEvent(
               eventName: PillEvent.loadPillsToTake,
-              date: DateService().getCurrentDateAsMonthAndDay()));
+              date: widget.dateService.getCurrentDateAsMonthAndDay()));
           break;
         case 1:
           context.read<PillBloc>().add(PillsEvent(
               eventName: PillEvent.loadTakenPills,
-              date: DateService().getCurrentDateAsMonthAndDay()));
+              date: widget.dateService.getCurrentDateAsMonthAndDay()));
           break;
         case 2:
           context.read<ClearPillsBloc>().add(ClearPillsEvent.PillsUpdated);
@@ -80,7 +84,8 @@ class _MainPageState extends State<MainPage>
             children: <Widget>[
               new DayWidget(
                   date: DateTime.now(),
-                  title: "You do not have to take any pills today 😀"),
+                  title: "You do not have to take any pills today 😀",
+                  dateService: widget.dateService),
               new Align(
                 alignment: Alignment.bottomRight,
                 child: new FloatingActionButton(
@@ -94,7 +99,8 @@ class _MainPageState extends State<MainPage>
             children: <Widget>[
               new DayWidget(
                   date: DateTime.now(),
-                  title: "You have not taken any pills today"),
+                  title: "You have not taken any pills today",
+                  dateService: widget.dateService),
             ],
           ),
           BlocProvider.value(
