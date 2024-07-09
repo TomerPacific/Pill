@@ -89,9 +89,13 @@ class _MainPageState extends State<MainPage>
                   dateService: widget.dateService),
               new Align(
                 alignment: Alignment.bottomRight,
-                child: new FloatingActionButton(
+                child: new Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child:
+                    new FloatingActionButton(
                     onPressed: _handleAddPillButtonPressed,
-                    child: Icon(Icons.add)),
+                  child: Icon(Icons.add)),
+                ),
               )
             ],
           ),
@@ -104,11 +108,8 @@ class _MainPageState extends State<MainPage>
                   dateService: widget.dateService),
             ],
           ),
-          BlocProvider.value(
-            value: BlocProvider.of<ClearPillsBloc>(context),
-            child: SettingsPage(
-                sharedPreferencesService: widget.sharedPreferencesService),
-          )
+           SettingsPage(
+                sharedPreferencesService: widget.sharedPreferencesService)
         ]));
   }
 }
