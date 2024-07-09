@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/custom_icons.dart';
 import 'package:pill/page/settings_page.dart';
 import 'package:pill/service/date_service.dart';
@@ -84,7 +85,7 @@ class _MainPageState extends State<MainPage>
             children: <Widget>[
               new DayWidget(
                   date: DateTime.now(),
-                  title: "You do not have to take any pills today 😀",
+                  title: PILLS_TO_TAKE_HEADER,
                   dateService: widget.dateService),
               new Align(
                 alignment: Alignment.bottomRight,
@@ -99,7 +100,7 @@ class _MainPageState extends State<MainPage>
             children: <Widget>[
               new DayWidget(
                   date: DateTime.now(),
-                  title: "You have not taken any pills today",
+                  title: PILLS_TAKEN_HEADER,
                   dateService: widget.dateService),
             ],
           ),
