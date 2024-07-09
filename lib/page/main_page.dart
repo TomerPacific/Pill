@@ -85,7 +85,7 @@ class _MainPageState extends State<MainPage>
             children: <Widget>[
               new DayWidget(
                   date: DateTime.now(),
-                  title: PILLS_TO_TAKE_HEADER,
+                  header: PILLS_TO_TAKE_HEADER,
                   dateService: widget.dateService),
               new Align(
                 alignment: Alignment.bottomRight,
@@ -100,7 +100,7 @@ class _MainPageState extends State<MainPage>
             children: <Widget>[
               new DayWidget(
                   date: DateTime.now(),
-                  title: PILLS_TAKEN_HEADER,
+                  header: PILLS_TAKEN_HEADER,
                   dateService: widget.dateService),
             ],
           ),

@@ -9,10 +9,10 @@ import 'package:pill/widget/pill_to_take_widget.dart';
 
 class DayWidget extends StatelessWidget {
   DayWidget(
-      {required this.date, required this.title, required this.dateService});
+      {required this.date, required this.header, required this.dateService});
 
   final DateTime date;
-  final String title;
+  final String header;
   final DateService dateService;
 
   @override
@@ -36,11 +36,11 @@ class DayWidget extends StatelessWidget {
                           fontSize: 25.0, fontWeight: FontWeight.bold)),
                 ),
               ),
-              (this.title == PILLS_TO_TAKE_HEADER)
+              (this.header == PILLS_TO_TAKE_HEADER)
                   ? (state.pillsToTake == null || state.pillsToTake!.isEmpty)
                       ? new Padding(
                           padding: const EdgeInsets.only(top: 20),
-                          child: new Text(title,
+                          child: new Text(header,
                               style: new TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold)))
                       : Expanded(
@@ -68,7 +68,7 @@ class DayWidget extends StatelessWidget {
                   : (state.pillsTaken == null || state.pillsTaken!.isEmpty)
                       ? new Padding(
                           padding: const EdgeInsets.only(top: 20),
-                          child: new Text(title,
+                          child: new Text(header,
                               style: new TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold)))
                       : Expanded(
