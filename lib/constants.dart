@@ -9,6 +9,9 @@ const String APP_TITLE = "Pill";
 const String ADDING_A_PILL_TITLE = "Adding A Pill";
 const String ADD_PILL_FORM_CONFIRM = "Apply";
 const String ADD_PILL_FORM_CANCEL = "Cancel";
+
+
+//SharedPreferences Keys
 const String PILLS_TAKEN_KEY = "pillsTaken";
 const String TIME_APP_OPENED_KEY = "timeAppOpened";
 const String DARK_MODE_KEY = "darkMode";
