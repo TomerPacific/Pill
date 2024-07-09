@@ -5,15 +5,15 @@ import 'package:pill/model/pill_to_take.dart';
 
 class PillTaken {
   String pillName;
-  double pillWeight;
+  double? pillWeight;
   String pillImage = 'assets/images/defaultPill.png';
-  String description;
+  String? description;
   DateTime? lastTaken;
 
   PillTaken(
       {required this.pillName,
-      required this.pillWeight,
-      required this.description,
+       this.pillWeight,
+      this.description,
       required this.lastTaken});
 
   factory PillTaken.fromJson(Map<String, dynamic> jsonData) {
@@ -29,8 +29,6 @@ class PillTaken {
   static PillTaken extractFromPillToTake(PillToTake pillToTake) {
     return PillTaken(
         pillName: pillToTake.pillName,
-        pillWeight: pillToTake.pillWeight,
-        description: pillToTake.description,
         lastTaken: pillToTake.lastTaken);
   }
 

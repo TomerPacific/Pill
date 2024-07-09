@@ -3,18 +3,18 @@ import 'package:pill/constants.dart';
 
 class PillToTake {
   String pillName;
-  double pillWeight;
+  double? pillWeight;
   int pillRegiment;
   String pillImage = 'assets/images/defaultPill.png';
-  String description;
+  String? description;
   int amountOfDaysToTake;
   DateTime? lastTaken;
 
   PillToTake(
       {required this.pillName,
-        required this.pillWeight,
+        this.pillWeight,
         required this.pillRegiment,
-        required this.description,
+        this.description,
         required this.amountOfDaysToTake,
         this.lastTaken});
 
