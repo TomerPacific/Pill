@@ -15,6 +15,57 @@ class DayWidget extends StatelessWidget {
   final String header;
   final DateService dateService;
 
+
+  Widget _pillsToTakeList(BuildContext context, PillState state) {
+    return (state.pillsToTake == null || state.pillsToTake!.isEmpty)
+        ? new Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: new Text(header,
+            style: new TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold)))
+        : Expanded(
+        child: SizedBox(
+          height: 200.0,
+          child: ListView.builder(
+              itemCount: state.pillsToTake!.length,
+              itemBuilder: (_, index) => new Dismissible(
+                  key: ObjectKey(
+                      state.pillsToTake![index].pillName),
+                  child: new PillWidget(
+                    pillToTake: state.pillsToTake![index],
+                    dateService: dateService,
+                  ),
+                  onDismissed: (direction) {
+                    context.read<PillBloc>().add(PillsEvent(
+                        eventName: PillEvent.removePill,
+                        date: dateService
+                            .getDateAsMonthAndDay(date),
+                        pillToTake: state.pillsToTake![index],
+                        pillsToTake: state.pillsToTake,
+                        pillsTaken: state.pillsTaken));
+                  })),
+        ));
+  }
+
+  Widget _pillsTakenList(BuildContext context, PillState state) {
+    return (state.pillsTaken == null || state.pillsTaken!.isEmpty)
+        ? new Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: new Text(header,
+            style: new TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold)))
+        : Expanded(
+      child: SizedBox(
+          height: 200.0,
+          child: ListView.builder(
+            itemCount: state.pillsTaken!.length,
+            itemBuilder: (_, index) => new PillTakenWidget(
+                pillToTake: state.pillsTaken![index],
+                dateService: dateService),
+          )),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PillBloc, PillState>(
@@ -37,50 +88,8 @@ class DayWidget extends StatelessWidget {
                 ),
               ),
               (this.header == PILLS_TO_TAKE_HEADER)
-                  ? (state.pillsToTake == null || state.pillsToTake!.isEmpty)
-                      ? new Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: new Text(header,
-                              style: new TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)))
-                      : Expanded(
-                          child: SizedBox(
-                          height: 200.0,
-                          child: ListView.builder(
-                              itemCount: state.pillsToTake!.length,
-                              itemBuilder: (_, index) => new Dismissible(
-                                  key: ObjectKey(
-                                      state.pillsToTake![index].pillName),
-                                  child: new PillWidget(
-                                    pillToTake: state.pillsToTake![index],
-                                    dateService: dateService,
-                                  ),
-                                  onDismissed: (direction) {
-                                    context.read<PillBloc>().add(PillsEvent(
-                                        eventName: PillEvent.removePill,
-                                        date: dateService
-                                            .getDateAsMonthAndDay(date),
-                                        pillToTake: state.pillsToTake![index],
-                                        pillsToTake: state.pillsToTake,
-                                        pillsTaken: state.pillsTaken));
-                                  })),
-                        ))
-                  : (state.pillsTaken == null || state.pillsTaken!.isEmpty)
-                      ? new Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: new Text(header,
-                              style: new TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)))
-                      : Expanded(
-                          child: SizedBox(
-                              height: 200.0,
-                              child: ListView.builder(
-                                itemCount: state.pillsTaken!.length,
-                                itemBuilder: (_, index) => new PillTakenWidget(
-                                    pillToTake: state.pillsTaken![index],
-                                    dateService: dateService),
-                              )),
-                        )
+                  ? _pillsToTakeList(context, state)
+                  : _pillsTakenList(context, state)
             ],
           ),
         )));
