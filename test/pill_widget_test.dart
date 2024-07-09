@@ -32,40 +32,37 @@ void main() {
               ..add(PillsEvent(
                   eventName: PillEvent.loadPillsToTake, date: currentDate))),
         BlocProvider(
-            create: (context) => ThemeBloc(sharedPreferencesService, false)
-        ),
+            create: (context) => ThemeBloc(sharedPreferencesService, false)),
         BlocProvider(
-            create: (context) => ClearPillsBloc(sharedPreferencesService)
-        ),
+            create: (context) => ClearPillsBloc(sharedPreferencesService)),
       ],
-      child: MaterialApp(
-          home: BlocBuilder<PillBloc, PillState>(
-      builder: (context, state) {
-        return new Container(
-                child: new SizedBox(
-                  height: double.infinity,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      new Align(
-                        alignment: Alignment.topCenter,
-                        child: new Padding(
-                          padding: const EdgeInsets.only(top: 40.0),
-                          child: new Text(currentDate,
-                              style: new TextStyle(
-                                  fontSize: 25.0, fontWeight: FontWeight.bold)),
-                        ),
-                      ),
-                      (title == "You do not have to take any pills today 😀")
-                          ? (state.pillsToTake == null || state.pillsToTake!.isEmpty)
-                          ? new Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: new Text(title,
-                              style: new TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)))
-                          : Expanded(
-                          child: SizedBox(
+      child: MaterialApp(home: BlocBuilder<PillBloc, PillState>(
+        builder: (context, state) {
+          return new Container(
+              child: new SizedBox(
+            height: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                new Align(
+                  alignment: Alignment.topCenter,
+                  child: new Padding(
+                    padding: const EdgeInsets.only(top: 40.0),
+                    child: new Text(currentDate,
+                        style: new TextStyle(
+                            fontSize: 25.0, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                (title == "You do not have to take any pills today 😀")
+                    ? (state.pillsToTake == null || state.pillsToTake!.isEmpty)
+                        ? new Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: new Text(title,
+                                style: new TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold)))
+                        : Expanded(
+                            child: SizedBox(
                             height: 200.0,
                             child: ListView.builder(
                                 itemCount: state.pillsToTake!.length,
@@ -85,26 +82,27 @@ void main() {
                                           pillsTaken: state.pillsTaken));
                                     })),
                           ))
-                          : (state.pillsTaken == null || state.pillsTaken!.isEmpty)
-                          ? new Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: new Text(title,
-                              style: new TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)))
-                          : Expanded(
-                        child: SizedBox(
-                            height: 200.0,
-                            child: ListView.builder(
-                              itemCount: state.pillsTaken!.length,
-                              itemBuilder: (_, index) => new PillTakenWidget(
-                                  pillToTake: state.pillsTaken![index],
-                                  dateService: dateService),
-                            )),
-                      )
-                    ],
-                  ),
-                ));
-      },
+                    : (state.pillsTaken == null || state.pillsTaken!.isEmpty)
+                        ? new Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: new Text(title,
+                                style: new TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold)))
+                        : Expanded(
+                            child: SizedBox(
+                                height: 200.0,
+                                child: ListView.builder(
+                                  itemCount: state.pillsTaken!.length,
+                                  itemBuilder: (_, index) =>
+                                      new PillTakenWidget(
+                                          pillToTake: state.pillsTaken![index],
+                                          dateService: dateService),
+                                )),
+                          )
+              ],
+            ),
+          ));
+        },
       )));
 
   testWidgets("Pill Widget", (WidgetTester tester) async {
