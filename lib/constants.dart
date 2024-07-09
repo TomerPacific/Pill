@@ -10,6 +10,9 @@ const String ADDING_A_PILL_TITLE = "Adding A Pill";
 const String ADD_PILL_FORM_CONFIRM = "Apply";
 const String ADD_PILL_FORM_CANCEL = "Cancel";
 
+//Screen headers
+const String PILLS_TO_TAKE_HEADER = "You do not have to take any pills today 😀";
+const String PILLS_TAKEN_HEADER = "You have not taken any pills today";
 
 //SharedPreferences Keys
 const String PILLS_TAKEN_KEY = "pillsTaken";
