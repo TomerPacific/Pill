@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
@@ -35,7 +36,7 @@ class DayWidget extends StatelessWidget {
                           fontSize: 25.0, fontWeight: FontWeight.bold)),
                 ),
               ),
-              (this.title == "You do not have to take any pills today 😀")
+              (this.title == PILLS_TO_TAKE_HEADER)
                   ? (state.pillsToTake == null || state.pillsToTake!.isEmpty)
                       ? new Padding(
                           padding: const EdgeInsets.only(top: 20),
