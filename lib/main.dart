@@ -11,22 +11,20 @@ import 'package:pill/service/shared_preferences_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DateService dateService = new DateService();
-  SharedPreferencesService sharedPreferencesService = new SharedPreferencesService(dateService: dateService);
+  SharedPreferencesService sharedPreferencesService =
+      new SharedPreferencesService(dateService: dateService);
   bool isDarkMode = await sharedPreferencesService.getThemeStatus();
-  runApp(
-      MyApp(sharedPreferencesService: sharedPreferencesService,
-          dateService: dateService,
-          isDarkMode: isDarkMode)
-  );
+  runApp(MyApp(
+      sharedPreferencesService: sharedPreferencesService,
+      dateService: dateService,
+      isDarkMode: isDarkMode));
 }
 
 class MyApp extends StatelessWidget {
-
-  MyApp({
-    required this.sharedPreferencesService,
-    required this.dateService,
-    required this.isDarkMode
-  });
+  MyApp(
+      {required this.sharedPreferencesService,
+      required this.dateService,
+      required this.isDarkMode});
 
   final SharedPreferencesService sharedPreferencesService;
   final DateService dateService;
@@ -40,27 +38,23 @@ class MyApp extends StatelessWidget {
           create: (context) => PillBloc(sharedPreferencesService),
         ),
         BlocProvider(
-            create: (context) => ThemeBloc(sharedPreferencesService, isDarkMode)
-        ),
+            create: (context) =>
+                ThemeBloc(sharedPreferencesService, isDarkMode)),
         BlocProvider(
-        create: (context) => ClearPillsBloc(sharedPreferencesService)
-        ),
+            create: (context) => ClearPillsBloc(sharedPreferencesService)),
       ],
-      child:
-      BlocBuilder<ThemeBloc, ThemeMode>(
-          builder: (context, state) {
-            return MaterialApp(
+      child: BlocBuilder<ThemeBloc, ThemeMode>(builder: (context, state) {
+        return MaterialApp(
+          title: APP_TITLE,
+          theme: ThemeData(primarySwatch: Colors.blue),
+          darkTheme: ThemeData.dark(),
+          themeMode: state,
+          home: MainPage(
               title: APP_TITLE,
-              theme: ThemeData(primarySwatch: Colors.blue),
-              darkTheme: ThemeData.dark(),
-              themeMode:  state,
-              home: MainPage(
-                  title: APP_TITLE,
-                  sharedPreferencesService: sharedPreferencesService,
-                  dateService: dateService),
-            );
-          }
-      ),
+              sharedPreferencesService: sharedPreferencesService,
+              dateService: dateService),
+        );
+      }),
     );
   }
 }
