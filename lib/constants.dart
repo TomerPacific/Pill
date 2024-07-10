@@ -1,4 +1,3 @@
-
 const String PILL_NAME_KEY = "pillName";
 const String PILL_WEIGHT_KEY = "pillWeight";
 const String PILL_REGIMENT_KEY = "pillRegiment";
@@ -11,7 +10,8 @@ const String ADD_PILL_FORM_CONFIRM = "Apply";
 const String ADD_PILL_FORM_CANCEL = "Cancel";
 
 //Screen headers
-const String PILLS_TO_TAKE_HEADER = "You do not have to take any pills today 😀";
+const String PILLS_TO_TAKE_HEADER =
+    "You do not have to take any pills today 😀";
 const String PILLS_TAKEN_HEADER = "You have not taken any pills today";
 
 //SharedPreferences Keys
