@@ -11,10 +11,10 @@ import 'package:pill/widget/day_widget.dart';
 import 'package:pill/widget/adding_pill_form.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({
-    required this.title,
-    required this.sharedPreferencesService,
-    required this.dateService})
+  MainPage(
+      {required this.title,
+      required this.sharedPreferencesService,
+      required this.dateService})
       : super();
 
   final String title;
@@ -43,7 +43,7 @@ class _MainPageState extends State<MainPage>
         eventName: PillEvent.loadPillsToTake,
         date: widget.dateService.getCurrentDateAsMonthAndDay()));
     widget.sharedPreferencesService.clearPillsOfPastDays();
-    _controller = TabController(length: 3, vsync: this);
+    _controller = TabController(length: AMOUNT_OF_TABS, vsync: this);
     _controller.addListener(() {
       switch (_controller.index) {
         case 0:
@@ -91,10 +91,9 @@ class _MainPageState extends State<MainPage>
                 alignment: Alignment.bottomRight,
                 child: new Padding(
                   padding: EdgeInsets.all(10.0),
-                  child:
-                    new FloatingActionButton(
-                    onPressed: _handleAddPillButtonPressed,
-                  child: Icon(Icons.add)),
+                  child: new FloatingActionButton(
+                      onPressed: _handleAddPillButtonPressed,
+                      child: Icon(Icons.add)),
                 ),
               )
             ],
@@ -108,8 +107,8 @@ class _MainPageState extends State<MainPage>
                   dateService: widget.dateService),
             ],
           ),
-           SettingsPage(
-                sharedPreferencesService: widget.sharedPreferencesService)
+          SettingsPage(
+              sharedPreferencesService: widget.sharedPreferencesService)
         ]));
   }
 }
