@@ -6,39 +6,41 @@ import 'package:pill/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesService {
-
-  SharedPreferencesService({
-    required this.dateService
-  });
+  SharedPreferencesService({required this.dateService});
 
   final DateService dateService;
+  final int ONE_DAY = 1;
 
   void _setPillsForDate(String currentDate, List<PillToTake> pills) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.setString(currentDate, PillToTake.encode(pills));
   }
 
-  Future<void> _setPillsTakenForDate(String date, List<PillTaken> pillsTaken, ) async {
+  Future<void> _setPillsTakenForDate(
+    String date,
+    List<PillTaken> pillsTaken,
+  ) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.setString(PILLS_TAKEN_KEY+date, PillTaken.encode(pillsTaken));
+    sharedPreferences.setString(
+        PILLS_TAKEN_KEY + date, PillTaken.encode(pillsTaken));
   }
 
   Future<List<PillToTake>> getPillsToTakeForDate(String currentDate) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     String? encodedPills = sharedPreferences.getString(currentDate);
-      List<PillToTake> pills = [];
-      if (encodedPills != null) {
-        pills = PillToTake.decode(encodedPills);
-      }
+    List<PillToTake> pills = [];
+    if (encodedPills != null) {
+      pills = PillToTake.decode(encodedPills);
+    }
 
-      return pills;
+    return pills;
   }
 
   Future<List<PillTaken>> getPillsTakenForDate(String date) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    String? encodedPills = sharedPreferences.getString(PILLS_TAKEN_KEY+date);
+    String? encodedPills = sharedPreferences.getString(PILLS_TAKEN_KEY + date);
     List<PillTaken> pillsTaken = [];
     if (encodedPills != null) {
       pillsTaken = PillTaken.decode(encodedPills);
@@ -50,15 +52,14 @@ class SharedPreferencesService {
   Future<void> addPillToDates(String currentDate, PillToTake pill) async {
     DateTime runningDate = DateTime.now();
 
-    while(pill.amountOfDaysToTake > 0) {
+    while (pill.amountOfDaysToTake > 0) {
       List<PillToTake> pills = await getPillsToTakeForDate(currentDate);
       pills.add(pill);
       _setPillsForDate(currentDate, pills);
-      runningDate = runningDate.add(new Duration(days: 1));
+      runningDate = runningDate.add(new Duration(days: ONE_DAY));
       currentDate = dateService.getDateAsMonthAndDay(runningDate);
       pill.amountOfDaysToTake--;
     }
-
   }
 
   Future<void> addTakenPill(PillToTake pillTaken, String date) async {
@@ -68,31 +69,35 @@ class SharedPreferencesService {
     await _setPillsTakenForDate(date, pillsTaken);
   }
 
-  Future<void> updatePillForDate(PillToTake pillToTake, String currentDate) async {
+  Future<void> updatePillForDate(
+      PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = await getPillsToTakeForDate(currentDate);
     await addTakenPill(pillToTake, currentDate);
 
     if (pillToTake.pillRegiment == 0) {
       removePillFromDate(pillToTake, currentDate);
     } else {
-      int index = pills.indexWhere((element) => element.pillName == pillToTake.pillName);
-      pills.replaceRange(index, index+1, [pillToTake]);
+      int index = pills
+          .indexWhere((element) => element.pillName == pillToTake.pillName);
+      pills.replaceRange(index, index + 1, [pillToTake]);
       _setPillsForDate(currentDate, pills);
     }
   }
 
-  Future<void> removePillFromDate(PillToTake pillToTake, String currentDate) async {
+  Future<void> removePillFromDate(
+      PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = await getPillsToTakeForDate(currentDate);
-    List<PillToTake> updatedPills = pills.where((element) => element.pillName != pillToTake.pillName).toList();
+    List<PillToTake> updatedPills = pills
+        .where((element) => element.pillName != pillToTake.pillName)
+        .toList();
     _setPillsForDate(currentDate, updatedPills);
   }
 
   void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) async {
-
     DateTime date = DateTime.now();
     DateTime runningDate = dateToRemovePillsFrom;
 
-    while (runningDate.difference(date).inDays >= 1) {
+    while (runningDate.difference(date).inDays >= ONE_DAY) {
       String converted = dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pillsToTake = await getPillsToTakeForDate(converted);
       List<PillTaken> pillsTaken = await getPillsTakenForDate(converted);
@@ -102,7 +107,7 @@ class SharedPreferencesService {
 
       _setPillsForDate(converted, pillsToTake);
       _setPillsTakenForDate(converted, pillsTaken);
-      runningDate = runningDate.add(Duration(days: 1));
+      runningDate = runningDate.add(Duration(days: ONE_DAY));
     }
   }
 
@@ -116,15 +121,18 @@ class SharedPreferencesService {
   Future<DateTime?> getTimeWhenApplicationWasOpened() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
-    String? timeApplicationWasOpened = sharedPreferences.getString(TIME_APP_OPENED_KEY);
-    return timeApplicationWasOpened != null ? DateTime.parse(timeApplicationWasOpened) : null;
+    String? timeApplicationWasOpened =
+        sharedPreferences.getString(TIME_APP_OPENED_KEY);
+    return timeApplicationWasOpened != null
+        ? DateTime.parse(timeApplicationWasOpened)
+        : null;
   }
 
   Future<void> clearAllPills() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
     Set<String> keys = sharedPreferences.getKeys();
-    for(String key in keys) {
+    for (String key in keys) {
       if (key.contains(TIME_APP_OPENED_KEY)) {
         continue;
       }
@@ -133,12 +141,13 @@ class SharedPreferencesService {
   }
 
   void clearPillsOfPastDays() async {
-    DateTime? timeWhenApplicationWasOpened = await getTimeWhenApplicationWasOpened();
+    DateTime? timeWhenApplicationWasOpened =
+        await getTimeWhenApplicationWasOpened();
     if (timeWhenApplicationWasOpened == null) {
       setTimeWhenApplicationWasOpened();
     } else {
       DateTime now = DateTime.now();
-      if (now.difference(timeWhenApplicationWasOpened).inDays >= 1) {
+      if (now.difference(timeWhenApplicationWasOpened).inDays >= ONE_DAY) {
         clearAllPillsFromDate(timeWhenApplicationWasOpened);
         setTimeWhenApplicationWasOpened();
       }
@@ -168,9 +177,6 @@ class SharedPreferencesService {
   Future<bool> getThemeStatus() async {
     final sharedPreferences = await SharedPreferences.getInstance();
     bool? darkMode = sharedPreferences.getBool(DARK_MODE_KEY);
-    return darkMode != null ?
-      darkMode :
-      false;
+    return darkMode != null ? darkMode : false;
   }
-
 }
