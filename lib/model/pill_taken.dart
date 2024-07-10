@@ -12,7 +12,7 @@ class PillTaken {
 
   PillTaken(
       {required this.pillName,
-       this.pillWeight,
+      this.pillWeight,
       this.description,
       required this.lastTaken});
 
@@ -28,8 +28,7 @@ class PillTaken {
 
   static PillTaken extractFromPillToTake(PillToTake pillToTake) {
     return PillTaken(
-        pillName: pillToTake.pillName,
-        lastTaken: pillToTake.lastTaken);
+        pillName: pillToTake.pillName, lastTaken: pillToTake.lastTaken);
   }
 
   static Map<String, dynamic> toMap(PillTaken pill) => {

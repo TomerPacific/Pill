@@ -12,11 +12,11 @@ class PillToTake {
 
   PillToTake(
       {required this.pillName,
-        this.pillWeight,
-        required this.pillRegiment,
-        this.description,
-        required this.amountOfDaysToTake,
-        this.lastTaken});
+      this.pillWeight,
+      required this.pillRegiment,
+      this.description,
+      required this.amountOfDaysToTake,
+      this.lastTaken});
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
     return PillToTake(
