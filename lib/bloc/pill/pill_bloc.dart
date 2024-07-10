@@ -36,7 +36,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           _onAddPill(event, emit, sharedPreferencesService);
           break;
         case PillEvent.removePill:
-          _onDeletePill(event, emit, sharedPreferencesService);
+          _onRemovePill(event, emit, sharedPreferencesService);
           break;
         case PillEvent.updatePill:
           List<PillToTake> pillsToTake =
@@ -90,7 +90,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     emitter(new PillState(pillsToTake: pills, pillsTaken: state.pillsTaken));
   }
 
-  void _onDeletePill(PillsEvent event, Emitter<PillState> emitter,
+  void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) async {
     await sharedPreferencesService.removePillFromDate(
         event.pillToTake!, event.date);
