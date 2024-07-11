@@ -5,11 +5,12 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+const int ONE_DAY = 1;
+
 class SharedPreferencesService {
   SharedPreferencesService({required this.dateService});
 
   final DateService dateService;
-  final int ONE_DAY = 1;
 
   void _setPillsForDate(String currentDate, List<PillToTake> pills) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();

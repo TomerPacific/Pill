@@ -1,6 +1,6 @@
-class DateService {
-  final int TEN = 10;
+const int TEN = 10;
 
+class DateService {
   String getDateAsMonthAndDay(DateTime date) {
     return date.month.toString() + "/" + date.day.toString();
   }
