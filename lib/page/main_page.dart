@@ -87,9 +87,9 @@ class _MainPageState extends State<MainPage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
                     new DayWidget(
-                          date: DateTime.now(),
-                          header: PILLS_TO_TAKE_HEADER,
-                          dateService: widget.dateService),
+                        date: DateTime.now(),
+                        header: PILLS_TO_TAKE_HEADER,
+                        dateService: widget.dateService),
                     new Align(
                       alignment: Alignment.bottomRight,
                       child: new Padding(

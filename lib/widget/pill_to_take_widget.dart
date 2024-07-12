@@ -6,7 +6,8 @@ import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 
 class PillWidget extends StatelessWidget {
-  const PillWidget({required this.pillToTake, required this.dateService}) : super();
+  const PillWidget({required this.pillToTake, required this.dateService})
+      : super();
 
   final PillToTake pillToTake;
   final DateService dateService;
