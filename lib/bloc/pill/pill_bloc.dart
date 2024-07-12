@@ -96,7 +96,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
       pillsToTake.add(storedPill);
     }
 
-    sharedPreferencesService.updatePillForDate(storedPill, event.date);
+    await sharedPreferencesService.updatePillForDate(storedPill, event.date);
 
     List<PillTaken> pillsTaken =
         await sharedPreferencesService.getPillsTakenForDate(event.date);
