@@ -68,9 +68,7 @@ class DayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PillBloc, PillState>(
-      builder: (context, state) {
-        return new Container(
+        return  Container(
             child: new Expanded(
                 child: new SizedBox(
           height: double.infinity,
@@ -88,12 +86,10 @@ class DayWidget extends StatelessWidget {
                 ),
               ),
               (this.header == PILLS_TO_TAKE_HEADER)
-                  ? _pillsToTakeList(context, state)
-                  : _pillsTakenList(context, state)
+                  ? _pillsToTakeList(context, context.read<PillBloc>().state)
+                  : _pillsTakenList(context, context.read<PillBloc>().state)
             ],
           ),
         )));
-      },
-    );
-  }
+      }
 }
