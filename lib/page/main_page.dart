@@ -46,7 +46,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 3,
+        length: AMOUNT_OF_TABS,
         child: Scaffold(
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(50),
