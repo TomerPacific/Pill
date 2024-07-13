@@ -30,7 +30,7 @@ void main() {
         BlocProvider(
             create: (context) => PillBloc(sharedPreferencesService)
               ..add(PillsEvent(
-                  eventName: PillEvent.loadPillsToTake, date: currentDate))),
+                  eventName: PillEvent.loadPills, date: currentDate))),
         BlocProvider(
             create: (context) => ThemeBloc(sharedPreferencesService, false)),
         BlocProvider(
