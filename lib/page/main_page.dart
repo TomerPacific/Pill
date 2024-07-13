@@ -38,7 +38,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     BlocProvider.of<PillBloc>(context).add(new PillsEvent(
-        eventName: PillEvent.loadPillsToTake,
+        eventName: PillEvent.loadPills,
         date: widget.dateService.getCurrentDateAsMonthAndDay()));
     widget.sharedPreferencesService.clearPillsOfPastDays();
   }
@@ -60,14 +60,9 @@ class _MainPageState extends State<MainPage> {
                   onTap: (tabIndex) {
                     switch (tabIndex) {
                       case 0:
-                        context.read<PillBloc>().add(PillsEvent(
-                            eventName: PillEvent.loadPillsToTake,
-                            date: widget.dateService
-                                .getCurrentDateAsMonthAndDay()));
-                        break;
                       case 1:
                         context.read<PillBloc>().add(PillsEvent(
-                            eventName: PillEvent.loadTakenPills,
+                            eventName: PillEvent.loadPills,
                             date: widget.dateService
                                 .getCurrentDateAsMonthAndDay()));
                         break;

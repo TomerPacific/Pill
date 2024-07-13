@@ -8,8 +8,7 @@ enum PillEvent {
   addPill,
   removePill,
   updatePill,
-  loadTakenPills,
-  loadPillsToTake
+  loadPills,
 }
 
 class PillsEvent {
@@ -41,18 +40,13 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
         case PillEvent.updatePill:
           await _onUpdatePill(event, emit, sharedPreferencesService);
           break;
-        case PillEvent.loadPillsToTake:
-          List<PillToTake> pillsToTake =
-              await sharedPreferencesService.getPillsToTakeForDate(event.date);
-          emit(
-            PillState(pillsToTake: pillsToTake, pillsTaken: null),
-          );
-          break;
-        case PillEvent.loadTakenPills:
+        case PillEvent.loadPills:
           List<PillTaken> pillsTaken =
               await sharedPreferencesService.getPillsTakenForDate(event.date);
+          List<PillToTake> pillsToTake =
+          await sharedPreferencesService.getPillsToTakeForDate(event.date);
           emit(
-            PillState(pillsToTake: null, pillsTaken: pillsTaken),
+            PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken),
           );
           break;
       }
