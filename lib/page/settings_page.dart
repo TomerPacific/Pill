@@ -39,7 +39,7 @@ class SettingsPage extends StatelessWidget {
                 TextButton(
                     onPressed: () {
                       BlocProvider.of<ClearPillsBloc>(context)
-                          .add(ClearPillsEvent.ClearedPills);
+                          .add(ClearPillsEvent.ClearAllPills);
                       Navigator.pop(context);
                     },
                     child: const Text("Yes")),

@@ -69,7 +69,7 @@ class _MainPageState extends State<MainPage> {
                       case 2:
                         context
                             .read<ClearPillsBloc>()
-                            .add(ClearPillsEvent.PillsUpdated);
+                            .add(ClearPillsEvent.UpdatePillsStatus);
                     }
                   },
                   //controller: _controller,
