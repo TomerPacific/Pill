@@ -70,10 +70,18 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
 
   Future<void> _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) async {
+
+    PillToTake? pillToTake = event.pillToTake;
+    List<PillToTake>? pillsToTake = event.pillsToTake;
+
+    if (pillToTake == null || pillsToTake == null) {
+      return;
+    }
+
     await sharedPreferencesService.removePillFromDate(
-        event.pillToTake!, event.date);
-    List<PillToTake> updatedPills = event.pillsToTake!
-        .where((pill) => !pill.equals(event.pillToTake!))
+        pillToTake, event.date);
+    List<PillToTake> updatedPills = pillsToTake
+        .where((pill) => !pill.equals(pillToTake))
         .toList();
     emitter(
       PillState(pillsToTake: updatedPills, pillsTaken: event.pillsTaken),
