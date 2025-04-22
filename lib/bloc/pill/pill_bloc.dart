@@ -44,7 +44,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           List<PillTaken> pillsTaken =
               await sharedPreferencesService.getPillsTakenForDate(event.date);
           List<PillToTake> pillsToTake =
-          await sharedPreferencesService.getPillsToTakeForDate(event.date);
+              await sharedPreferencesService.getPillsToTakeForDate(event.date);
           emit(
             PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken),
           );
@@ -55,10 +55,16 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
 
   Future<void> _onAddPill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) async {
+    PillToTake? pillToTake = event.pillToTake;
+
+    if (pillToTake == null) {
+      return;
+    }
+
     List<PillToTake> pillsToTake =
         await sharedPreferencesService.getPillsToTakeForDate(event.date);
-    List<PillToTake> pills = List.from(pillsToTake)..add(event.pillToTake!);
-    sharedPreferencesService.addPillToDates(event.date, event.pillToTake!);
+    List<PillToTake> pills = List.from(pillsToTake)..add(pillToTake);
+    sharedPreferencesService.addPillToDates(event.date, pillToTake);
     emitter(new PillState(pillsToTake: pills, pillsTaken: state.pillsTaken));
   }
 
