@@ -12,7 +12,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeMode> {
           event == ThemeEvent.toggleDark ? ThemeMode.dark : ThemeMode.light;
       emit(themeMode);
       sharedPreferencesService
-          .saveThemeStatus(themeMode == ThemeMode.dark ? true : false);
+          .saveThemeStatus(themeMode == ThemeMode.dark);
     });
   }
 }
