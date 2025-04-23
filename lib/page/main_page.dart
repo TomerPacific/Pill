@@ -37,7 +37,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<PillBloc>(context).add(new PillsEvent(
+    BlocProvider.of<PillBloc>(context).add(PillsEvent(
         eventName: PillEvent.loadPills,
         date: widget.dateService.getCurrentDateAsMonthAndDay()));
     widget.sharedPreferencesService.clearPillsOfPastDays();
@@ -81,15 +81,15 @@ class _MainPageState extends State<MainPage> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    new DayWidget(
+                    DayWidget(
                         date: DateTime.now(),
                         header: PILLS_TO_TAKE_HEADER,
                         dateService: widget.dateService),
-                    new Align(
+                    Align(
                       alignment: Alignment.bottomRight,
-                      child: new Padding(
+                      child: Padding(
                         padding: EdgeInsets.all(10.0),
-                        child: new FloatingActionButton(
+                        child: FloatingActionButton(
                             onPressed: _handleAddPillButtonPressed,
                             child: Icon(Icons.add)),
                       ),
@@ -101,7 +101,7 @@ class _MainPageState extends State<MainPage> {
                 return Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
-                      new DayWidget(
+                      DayWidget(
                           date: DateTime.now(),
                           header: PILLS_TAKEN_HEADER,
                           dateService: widget.dateService),
