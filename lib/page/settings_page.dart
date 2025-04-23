@@ -22,8 +22,8 @@ class SettingsPage extends StatelessWidget {
               context.read<ThemeBloc>().state == ThemeMode.dark ? true : false,
           onChanged: (bool isDarkModeEnabled) {
             ThemeEvent event = context.read<ThemeBloc>().state == ThemeMode.dark
-                ? ThemeEvent.toggleLight
-                : ThemeEvent.toggleDark;
+                ? ThemeEvent.enableLightMode
+                : ThemeEvent.enableDarkMode;
             BlocProvider.of<ThemeBloc>(context).add(event);
           }),
       ListTile(
