@@ -45,9 +45,8 @@ class PillTaken {
         PILL_NAME_KEY: pill.pillName,
         PILL_WEIGHT_KEY: pill.pillWeight,
         PILL_DESCRIPTION_KEY: pill.description,
-        PILL_LAST_TAKEN_KEY:
-            pill.lastTaken == null ? null : pill.lastTaken!.toIso8601String()
-      };
+        PILL_LAST_TAKEN_KEY: pill.lastTaken?.toIso8601String()
+  };
 
   static String encode(List<PillTaken> pills) => json.encode(
         pills
