@@ -19,11 +19,11 @@ class PillTaken {
       required this.lastTaken});
 
   factory PillTaken.fromJson(Map<String, dynamic> jsonData) {
-    DateTime? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
-
+    String? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
+    DateTime? lastTakenDate;
     try {
       if (lastTaken != null) {
-        lastTaken = DateTime.parse(jsonData[PILL_LAST_TAKEN_KEY]);
+        lastTakenDate = DateTime.parse(lastTaken);
       }
     } catch (e) {
       print("Error parsing PillTaken lastTaken value: $e");
@@ -33,7 +33,7 @@ class PillTaken {
         pillName: jsonData[PILL_NAME_KEY],
         pillWeight: jsonData[PILL_WEIGHT_KEY],
         description: jsonData[PILL_DESCRIPTION_KEY],
-        lastTaken: lastTaken);
+        lastTaken: lastTakenDate);
   }
 
   static PillTaken extractFromPillToTake(PillToTake pillToTake) {

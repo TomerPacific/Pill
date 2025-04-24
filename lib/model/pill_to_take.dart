@@ -20,11 +20,12 @@ class PillToTake {
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
 
-    DateTime? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
+    String? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
+    DateTime? lastTakenDate;
 
     try {
       if (lastTaken != null) {
-        lastTaken = DateTime.parse(jsonData[PILL_LAST_TAKEN_KEY]);
+        lastTakenDate = DateTime.parse(lastTaken);
       }
     } catch (e) {
       print("Error parsing PillToTake lastTaken value: $e");
@@ -36,7 +37,7 @@ class PillToTake {
         pillRegiment: jsonData[PILL_REGIMENT_KEY],
         description: jsonData[PILL_DESCRIPTION_KEY],
         amountOfDaysToTake: jsonData[PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY],
-        lastTaken: lastTaken);
+        lastTaken: lastTakenDate);
   }
 
   static Map<String, dynamic> toMap(PillToTake pill) => {
