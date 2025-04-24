@@ -11,6 +11,10 @@ import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/day_widget.dart';
 import 'package:pill/widget/adding_pill_form.dart';
 
+const int PILLS_TO_TAKE_TAB_INDEX = 0;
+const int PILLS_TAKEN_TAB_INDEX = 1;
+const int SETTINGS_TAB_INDEX = 2;
+
 class MainPage extends StatefulWidget {
   MainPage(
       {required this.title,
@@ -59,14 +63,14 @@ class _MainPageState extends State<MainPage> {
                   ],
                   onTap: (tabIndex) {
                     switch (tabIndex) {
-                      case 0:
-                      case 1:
+                      case PILLS_TO_TAKE_TAB_INDEX:
+                      case PILLS_TAKEN_TAB_INDEX:
                         context.read<PillBloc>().add(PillsEvent(
                             eventName: PillEvent.loadPills,
                             date: widget.dateService
                                 .getCurrentDateAsMonthAndDay()));
                         break;
-                      case 2:
+                      case SETTINGS_TAB_INDEX:
                         context
                             .read<ClearPillsBloc>()
                             .add(ClearPillsEvent.UpdatePillsStatus);
