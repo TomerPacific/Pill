@@ -31,7 +31,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
   @override
   void initState() {
     super.initState();
@@ -47,16 +46,15 @@ class _MainPageState extends State<MainPage> {
         length: AMOUNT_OF_TABS,
         child: Scaffold(
             appBar: MainPageAppBar(context, widget.dateService),
-            body: MainPageTabBarView(widget.dateService, widget.sharedPreferencesService)
-        )
-    );
+            body: MainPageTabBarView(
+                widget.dateService, widget.sharedPreferencesService)));
   }
 }
 
 PreferredSizeWidget MainPageAppBar(
-    BuildContext context,
-    DateService dateService,
-    ) {
+  BuildContext context,
+  DateService dateService,
+) {
   return PreferredSize(
     preferredSize: Size.fromHeight(50),
     child: AppBar(
@@ -72,8 +70,7 @@ PreferredSizeWidget MainPageAppBar(
             case PILLS_TAKEN_TAB_INDEX:
               context.read<PillBloc>().add(PillsEvent(
                   eventName: PillEvent.loadPills,
-                  date: dateService
-                      .getCurrentDateAsMonthAndDay()));
+                  date: dateService.getCurrentDateAsMonthAndDay()));
               break;
             case SETTINGS_TAB_INDEX:
               context
@@ -105,7 +102,8 @@ TabBarView MainPageTabBarView(DateService dateService,
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
+                      MaterialPageRoute(
+                          builder: (context) => AddingPillForm(DateTime.now())),
                     );
                   },
                   child: Icon(Icons.add)),
@@ -125,8 +123,7 @@ TabBarView MainPageTabBarView(DateService dateService,
           ]);
     }),
     BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
-      return SettingsPage(
-          sharedPreferencesService: sharedPreferencesService);
+      return SettingsPage(sharedPreferencesService: sharedPreferencesService);
     })
   ]);
 }
