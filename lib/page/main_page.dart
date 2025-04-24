@@ -72,7 +72,6 @@ class _MainPageState extends State<MainPage> {
                             .add(ClearPillsEvent.UpdatePillsStatus);
                     }
                   },
-                  //controller: _controller,
                 ),
               ),
             ),
