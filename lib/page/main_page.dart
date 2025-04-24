@@ -31,12 +31,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  void _handleAddPillButtonPressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
-    );
-  }
 
   @override
   void initState() {
@@ -52,68 +46,87 @@ class _MainPageState extends State<MainPage> {
     return DefaultTabController(
         length: AMOUNT_OF_TABS,
         child: Scaffold(
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(50),
-              child: AppBar(
-                bottom: TabBar(
-                  tabs: [
-                    Tab(icon: Icon(CustomIcons.pill)),
-                    Tab(icon: Icon(Icons.watch_later_rounded)),
-                    Tab(icon: Icon(Icons.settings)),
-                  ],
-                  onTap: (tabIndex) {
-                    switch (tabIndex) {
-                      case PILLS_TO_TAKE_TAB_INDEX:
-                      case PILLS_TAKEN_TAB_INDEX:
-                        context.read<PillBloc>().add(PillsEvent(
-                            eventName: PillEvent.loadPills,
-                            date: widget.dateService
-                                .getCurrentDateAsMonthAndDay()));
-                        break;
-                      case SETTINGS_TAB_INDEX:
-                        context
-                            .read<ClearPillsBloc>()
-                            .add(ClearPillsEvent.UpdatePillsStatus);
-                    }
-                  },
-                ),
-              ),
-            ),
-            body: TabBarView(children: [
-              BlocBuilder<PillBloc, PillState>(builder: (context, state) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    DayWidget(
-                        date: DateTime.now(),
-                        header: PILLS_TO_TAKE_HEADER,
-                        dateService: widget.dateService),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: FloatingActionButton(
-                            onPressed: _handleAddPillButtonPressed,
-                            child: Icon(Icons.add)),
-                      ),
-                    )
-                  ],
-                );
-              }),
-              BlocBuilder<PillBloc, PillState>(builder: (context, state) {
-                return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      DayWidget(
-                          date: DateTime.now(),
-                          header: PILLS_TAKEN_HEADER,
-                          dateService: widget.dateService),
-                    ]);
-              }),
-              BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
-                return SettingsPage(
-                    sharedPreferencesService: widget.sharedPreferencesService);
-              })
-            ])));
+            appBar: MainPageAppBar(context, widget.dateService),
+            body: MainPageTabBarView(widget.dateService, widget.sharedPreferencesService)
+        )
+    );
   }
+}
+
+PreferredSizeWidget MainPageAppBar(
+    BuildContext context,
+    DateService dateService,
+    ) {
+  return PreferredSize(
+    preferredSize: Size.fromHeight(50),
+    child: AppBar(
+      bottom: TabBar(
+        tabs: [
+          Tab(icon: Icon(CustomIcons.pill)),
+          Tab(icon: Icon(Icons.watch_later_rounded)),
+          Tab(icon: Icon(Icons.settings)),
+        ],
+        onTap: (tabIndex) {
+          switch (tabIndex) {
+            case PILLS_TO_TAKE_TAB_INDEX:
+            case PILLS_TAKEN_TAB_INDEX:
+              context.read<PillBloc>().add(PillsEvent(
+                  eventName: PillEvent.loadPills,
+                  date: dateService
+                      .getCurrentDateAsMonthAndDay()));
+              break;
+            case SETTINGS_TAB_INDEX:
+              context
+                  .read<ClearPillsBloc>()
+                  .add(ClearPillsEvent.UpdatePillsStatus);
+          }
+        },
+      ),
+    ),
+  );
+}
+
+TabBarView MainPageTabBarView(DateService dateService,
+    SharedPreferencesService sharedPreferencesService) {
+  return TabBarView(children: [
+    BlocBuilder<PillBloc, PillState>(builder: (context, state) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          DayWidget(
+              date: DateTime.now(),
+              header: PILLS_TO_TAKE_HEADER,
+              dateService: dateService),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: EdgeInsets.all(10.0),
+              child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AddingPillForm(DateTime.now())),
+                    );
+                  },
+                  child: Icon(Icons.add)),
+            ),
+          )
+        ],
+      );
+    }),
+    BlocBuilder<PillBloc, PillState>(builder: (context, state) {
+      return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            DayWidget(
+                date: DateTime.now(),
+                header: PILLS_TAKEN_HEADER,
+                dateService: dateService),
+          ]);
+    }),
+    BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
+      return SettingsPage(
+          sharedPreferencesService: sharedPreferencesService);
+    })
+  ]);
 }
