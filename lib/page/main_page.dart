@@ -45,13 +45,13 @@ class _MainPageState extends State<MainPage> {
     return DefaultTabController(
         length: AMOUNT_OF_TABS,
         child: Scaffold(
-            appBar: MainPageAppBar(context, widget.dateService),
-            body: MainPageTabBarView(
+            appBar: _mainPageAppBar(context, widget.dateService),
+            body: _mainPageTabBarView(
                 widget.dateService, widget.sharedPreferencesService)));
   }
 }
 
-PreferredSizeWidget MainPageAppBar(
+PreferredSizeWidget _mainPageAppBar(
   BuildContext context,
   DateService dateService,
 ) {
@@ -83,7 +83,7 @@ PreferredSizeWidget MainPageAppBar(
   );
 }
 
-TabBarView MainPageTabBarView(DateService dateService,
+TabBarView _mainPageTabBarView(DateService dateService,
     SharedPreferencesService sharedPreferencesService) {
   return TabBarView(children: [
     BlocBuilder<PillBloc, PillState>(builder: (context, state) {
