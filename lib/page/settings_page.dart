@@ -15,9 +15,7 @@ class SettingsPage extends StatelessWidget {
       SwitchListTile(
           title: const Text("Dark Mode"),
           secondary: new Icon(Icons.dark_mode,
-              color: context.read<ThemeBloc>().state == ThemeMode.dark
-                  ? Color.fromARGB(200, 243, 231, 106)
-                  : Color(0xFF642ef3)),
+              color: _getThemeColorForDarkModeSetting(context)),
           value:
               context.read<ThemeBloc>().state == ThemeMode.dark ? true : false,
           onChanged: (bool isDarkModeEnabled) {
@@ -40,6 +38,12 @@ class SettingsPage extends StatelessWidget {
           }),
     ]);
   }
+}
+
+Color _getThemeColorForDarkModeSetting(BuildContext context) {
+  return context.read<ThemeBloc>().state == ThemeMode.dark
+      ? Color.fromARGB(200, 243, 231, 106)
+      : Color(0xFF642ef3);
 }
 
 AlertDialog _createClearAllPillsAlertDialog(BuildContext context) {
