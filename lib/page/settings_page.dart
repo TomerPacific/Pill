@@ -31,25 +31,7 @@ class SettingsPage extends StatelessWidget {
           leading: const Icon(Icons.clear, color: Colors.redAccent),
           enabled: context.read<ClearPillsBloc>().state,
           onTap: () {
-            AlertDialog alertDialog = AlertDialog(
-              title: const Text("Clear All Saved Pills"),
-              content: const Text(
-                  "Are you sure you want to remove all your saved pills?"),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      BlocProvider.of<ClearPillsBloc>(context)
-                          .add(ClearPillsEvent.ClearAllPills);
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Yes")),
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text("No")),
-              ],
-            );
+            AlertDialog alertDialog = _createClearAllPillsAlertDialog(context);
             showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -58,4 +40,26 @@ class SettingsPage extends StatelessWidget {
           }),
     ]);
   }
+}
+
+AlertDialog _createClearAllPillsAlertDialog(BuildContext context) {
+  return AlertDialog(
+    title: const Text("Clear All Saved Pills"),
+    content:
+        const Text("Are you sure you want to remove all your saved pills?"),
+    actions: [
+      TextButton(
+          onPressed: () {
+            BlocProvider.of<ClearPillsBloc>(context)
+                .add(ClearPillsEvent.ClearAllPills);
+            Navigator.pop(context);
+          },
+          child: const Text("Yes")),
+      TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text("No")),
+    ],
+  );
 }
