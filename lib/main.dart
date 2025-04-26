@@ -12,7 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DateService dateService = new DateService();
   SharedPreferencesService sharedPreferencesService =
-      new SharedPreferencesService(dateService: dateService);
+      await SharedPreferencesService.create(dateService);
   bool isDarkMode = await sharedPreferencesService.getThemeStatus();
   runApp(MyApp(
       sharedPreferencesService: sharedPreferencesService,
