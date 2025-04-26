@@ -12,16 +12,16 @@ import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
   DateService dateService = new DateService();
+  SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
-      new SharedPreferencesService(dateService: dateService);
+      await SharedPreferencesService.create(dateService);
   String currentDate = dateService.getDateAsMonthAndDay(DateTime.now());
   String title = "You do not have to take any pills today 😀";
 
   setUp(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    SharedPreferences.setMockInitialValues({});
     sharedPreferencesService.clearAllPillsFromDate(DateTime.now());
   });
 
