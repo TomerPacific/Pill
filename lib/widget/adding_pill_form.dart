@@ -10,9 +10,9 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/utils.dart';
 
 class AddingPillForm extends StatefulWidget {
-  final DateTime currentDate;
+  final DateTime _currentDate;
 
-  const AddingPillForm(this.currentDate);
+  const AddingPillForm(this._currentDate);
 
   @override
   AddingPillFormState createState() {
@@ -23,15 +23,15 @@ class AddingPillForm extends StatefulWidget {
 final _formKey = GlobalKey<FormState>();
 
 class AddingPillFormState extends State<AddingPillForm> {
-  final pillNameTextEditingController = TextEditingController();
-  final pillAmountOfDaysToTakeController = TextEditingController();
-  final pillRegimentController = TextEditingController();
+  final _pillNameTextEditingController = TextEditingController();
+  final _pillAmountOfDaysToTakeController = TextEditingController();
+  final _pillRegimentController = TextEditingController();
 
   @override
   void dispose() {
-    pillNameTextEditingController.dispose();
-    pillAmountOfDaysToTakeController.dispose();
-    pillRegimentController.dispose();
+    _pillNameTextEditingController.dispose();
+    _pillAmountOfDaysToTakeController.dispose();
+    _pillRegimentController.dispose();
     super.dispose();
   }
 
@@ -58,7 +58,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: TextFormField(
                       key: ObjectKey("pillName"),
-                      controller: pillNameTextEditingController,
+                      controller: _pillNameTextEditingController,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
@@ -87,7 +87,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: TextFormField(
                       key: ObjectKey("pillRegiment"),
-                      controller: pillRegimentController,
+                      controller: _pillRegimentController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -108,7 +108,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: TextFormField(
                       key: ObjectKey("pillDays"),
-                      controller: pillAmountOfDaysToTakeController,
+                      controller: _pillAmountOfDaysToTakeController,
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -136,18 +136,18 @@ class AddingPillFormState extends State<AddingPillForm> {
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
                             PillToTake pill = new PillToTake(
-                                pillName: pillNameTextEditingController.text,
+                                pillName: _pillNameTextEditingController.text,
                                 pillWeight: 0.0,
                                 pillRegiment:
-                                    int.parse(pillRegimentController.text),
+                                    int.parse(_pillRegimentController.text),
                                 description: '',
                                 amountOfDaysToTake: int.parse(
-                                    pillAmountOfDaysToTakeController.text));
+                                    _pillAmountOfDaysToTakeController.text));
 
                             context.read<PillBloc>().add(PillsEvent(
                                 eventName: PillEvent.addPill,
                                 date:
-                                    DateService().getCurrentDateAsMonthAndDay(),
+                                    DateService().getDateAsMonthAndDay(widget._currentDate),
                                 pillToTake: pill));
                             FocusScope.of(context).unfocus();
                             Navigator.pop(context);
