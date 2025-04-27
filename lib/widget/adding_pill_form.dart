@@ -137,7 +137,6 @@ class AddingPillFormState extends State<AddingPillForm> {
                           if (_formKey.currentState?.validate() ?? false) {
                             PillToTake pill = new PillToTake(
                                 pillName: _pillNameTextEditingController.text,
-                                pillWeight: 0.0,
                                 pillRegiment:
                                     int.parse(_pillRegimentController.text),
                                 description: '',

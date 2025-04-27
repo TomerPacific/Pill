@@ -7,14 +7,12 @@ const String DEFAULT_PILL_IMAGE = 'assets/images/defaultPill.png';
 
 class PillTaken {
   String pillName;
-  double? pillWeight;
   String pillImage = DEFAULT_PILL_IMAGE;
   String? description;
   DateTime? lastTaken;
 
   PillTaken(
       {required this.pillName,
-      this.pillWeight,
       this.description,
       required this.lastTaken});
 
@@ -31,7 +29,6 @@ class PillTaken {
 
     return PillTaken(
         pillName: jsonData[PILL_NAME_KEY],
-        pillWeight: jsonData[PILL_WEIGHT_KEY],
         description: jsonData[PILL_DESCRIPTION_KEY],
         lastTaken: lastTakenDate);
   }
@@ -43,7 +40,7 @@ class PillTaken {
 
   static Map<String, dynamic> toMap(PillTaken pill) => {
         PILL_NAME_KEY: pill.pillName,
-        PILL_WEIGHT_KEY: pill.pillWeight,
+    
         PILL_DESCRIPTION_KEY: pill.description,
         PILL_LAST_TAKEN_KEY: pill.lastTaken?.toIso8601String()
   };

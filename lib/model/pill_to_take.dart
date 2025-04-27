@@ -3,7 +3,6 @@ import 'package:pill/constants.dart';
 
 class PillToTake {
   String pillName;
-  double? pillWeight;
   int pillRegiment;
   String pillImage = 'assets/images/defaultPill.png';
   String? description;
@@ -12,7 +11,6 @@ class PillToTake {
 
   PillToTake(
       {required this.pillName,
-      this.pillWeight,
       required this.pillRegiment,
       this.description,
       required this.amountOfDaysToTake,
@@ -33,7 +31,6 @@ class PillToTake {
 
     return PillToTake(
         pillName: jsonData[PILL_NAME_KEY],
-        pillWeight: jsonData[PILL_WEIGHT_KEY],
         pillRegiment: jsonData[PILL_REGIMENT_KEY],
         description: jsonData[PILL_DESCRIPTION_KEY],
         amountOfDaysToTake: jsonData[PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY],
@@ -42,7 +39,6 @@ class PillToTake {
 
   static Map<String, dynamic> toMap(PillToTake pill) => {
         PILL_NAME_KEY: pill.pillName,
-        PILL_WEIGHT_KEY: pill.pillWeight,
         PILL_REGIMENT_KEY: pill.pillRegiment,
         PILL_DESCRIPTION_KEY: pill.description,
         PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY: pill.amountOfDaysToTake,
@@ -63,7 +59,6 @@ class PillToTake {
   bool equals(PillToTake otherPill) {
     return (this.pillRegiment == otherPill.pillRegiment &&
         this.pillName == otherPill.pillName &&
-        this.pillWeight == otherPill.pillWeight &&
         this.description == otherPill.description &&
         this.pillImage == otherPill.pillImage &&
         this.amountOfDaysToTake == otherPill.amountOfDaysToTake);
