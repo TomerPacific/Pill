@@ -4,6 +4,7 @@ import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/model/pill_taken.dart';
+import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
@@ -17,7 +18,8 @@ class DayWidget extends StatelessWidget {
   final DateService dateService;
 
   Widget _pillsToTakeList(BuildContext context, PillState state) {
-    return (state.pillsToTake == null || state.pillsToTake!.isEmpty)
+    List<PillToTake>? pillsToTake = state.pillsToTake;
+    return (pillsToTake == null || pillsToTake.isEmpty)
         ? new Padding(
             padding: const EdgeInsets.only(top: 20),
             child: new Text(header,
@@ -27,19 +29,19 @@ class DayWidget extends StatelessWidget {
             child: SizedBox(
             height: 200.0,
             child: ListView.builder(
-                itemCount: state.pillsToTake!.length,
+                itemCount: pillsToTake.length,
                 itemBuilder: (_, index) => new Dismissible(
-                    key: ObjectKey(state.pillsToTake![index].pillName),
+                    key: ObjectKey(pillsToTake[index].pillName),
                     child: new PillWidget(
-                      pillToTake: state.pillsToTake![index],
+                      pillToTake: pillsToTake[index],
                       dateService: dateService,
                     ),
                     onDismissed: (direction) {
                       context.read<PillBloc>().add(PillsEvent(
                           eventName: PillEvent.removePill,
                           date: dateService.getDateAsMonthAndDay(date),
-                          pillToTake: state.pillsToTake![index],
-                          pillsToTake: state.pillsToTake,
+                          pillToTake: pillsToTake[index],
+                          pillsToTake: pillsToTake,
                           pillsTaken: state.pillsTaken));
                     })),
           ));
