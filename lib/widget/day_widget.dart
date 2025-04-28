@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/constants.dart';
+import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
@@ -45,22 +46,23 @@ class DayWidget extends StatelessWidget {
   }
 
   Widget _pillsTakenList(BuildContext context, PillState state) {
-    return (state.pillsTaken == null || state.pillsTaken!.isEmpty)
-        ? new Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: new Text(header,
-                style:
-                    new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
-        : Expanded(
-            child: SizedBox(
-                height: 200.0,
-                child: ListView.builder(
-                  itemCount: state.pillsTaken!.length,
-                  itemBuilder: (_, index) => new PillTakenWidget(
-                      pillToTake: state.pillsTaken![index],
-                      dateService: dateService),
-                )),
-          );
+    List<PillTaken>? pillsTaken = state.pillsTaken;
+    if (pillsTaken == null || pillsTaken.isEmpty) {
+      return Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: Text(header,
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));
+    }
+
+    return Expanded(
+      child: SizedBox(
+          height: 200.0,
+          child: ListView.builder(
+            itemCount: pillsTaken.length,
+            itemBuilder: (_, index) => new PillTakenWidget(
+                pillToTake: pillsTaken[index], dateService: dateService),
+          )),
+    );
   }
 
   @override
