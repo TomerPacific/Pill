@@ -71,9 +71,8 @@ class DayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: new Expanded(
-            child: new SizedBox(
+    return new Expanded(
+        child: new SizedBox(
       height: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -93,6 +92,6 @@ class DayWidget extends StatelessWidget {
               : _pillsTakenList(context, context.read<PillBloc>().state)
         ],
       ),
-    )));
+    ));
   }
 }
