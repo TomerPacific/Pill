@@ -9,6 +9,8 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
 
+const double LIST_ITEM_HEIGHT = 200.0;
+
 class DayWidget extends StatelessWidget {
   DayWidget(
       {required this.date, required this.header, required this.dateService});
@@ -27,7 +29,7 @@ class DayWidget extends StatelessWidget {
                     new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
         : Expanded(
             child: SizedBox(
-            height: 200.0,
+            height: LIST_ITEM_HEIGHT,
             child: ListView.builder(
                 itemCount: pillsToTake.length,
                 itemBuilder: (_, index) => new Dismissible(
@@ -58,7 +60,7 @@ class DayWidget extends StatelessWidget {
 
     return Expanded(
       child: SizedBox(
-          height: 200.0,
+          height: LIST_ITEM_HEIGHT,
           child: ListView.builder(
             itemCount: pillsTaken.length,
             itemBuilder: (_, index) => new PillTakenWidget(
