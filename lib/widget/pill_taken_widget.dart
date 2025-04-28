@@ -4,6 +4,9 @@ import 'package:pill/bloc/theme/theme_block.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 
+const double PILL_IMAGE_WIDTH = 100.0;
+const double PILL_IMAGE_HEIGHT = 100.0;
+
 class PillTakenWidget extends StatelessWidget {
   const PillTakenWidget({required this.pillToTake, required this.dateService})
       : super();
@@ -28,14 +31,10 @@ class PillTakenWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    pillToTake.pillImage,
-                    width: 100,
-                    height: 100,
-                    color: context.read<ThemeBloc>().state == ThemeMode.light
-                        ? const Color(0xFF000000)
-                        : const Color(0xFFFFFFFF),
-                  )
+                  Image.asset(pillToTake.pillImage,
+                      width: PILL_IMAGE_WIDTH,
+                      height: PILL_IMAGE_HEIGHT,
+                      color: _getPillTakenImageColor(context))
                 ],
               ),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -47,5 +46,11 @@ class PillTakenWidget extends StatelessWidget {
             ])),
       ),
     );
+  }
+
+  Color _getPillTakenImageColor(BuildContext context) {
+    return context.read<ThemeBloc>().state == ThemeMode.light
+        ? const Color(0xFF000000)
+        : const Color(0xFFFFFFFF);
   }
 }
