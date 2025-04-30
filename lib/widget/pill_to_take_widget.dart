@@ -13,12 +13,12 @@ class PillWidget extends StatelessWidget {
   final DateService dateService;
 
   void _handleOnTap(BuildContext context) {
-    pillToTake.pillRegiment--;
-    pillToTake.lastTaken = DateTime.now();
+    PillToTake updatedPillToTake = pillToTake.copyWith(
+        pillRegiment: --pillToTake.pillRegiment, lastTaken: DateTime.now());
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.updatePill,
         date: dateService.getCurrentDateAsMonthAndDay(),
-        pillToTake: pillToTake));
+        pillToTake: updatedPillToTake));
   }
 
   @override
