@@ -23,60 +23,53 @@ class PillWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      child: new Card(
+    return Container(
+      child: Card(
         child: InkWell(
             splashColor: Colors.blue.withAlpha(30),
             onTap: () {
               _handleOnTap(context);
             },
-            child: new Column(
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Text(
+                  pillToTake.pillName,
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                )
+              ]),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  new Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        new Text(
-                          pillToTake.pillName,
-                          style: new TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.bold),
-                        )
-                      ]),
-                  new Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(pillToTake.pillImage,
-                          width: 100,
-                          height: 100,
-                          color:
-                              context.read<ThemeBloc>().state == ThemeMode.light
-                                  ? const Color(0xFF000000)
-                                  : const Color(0xFFFFFFFF))
-                    ],
-                  ),
-                  new Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      new Text(
-                          "Pills left to take today: ${pillToTake.pillRegiment}",
-                          style: new TextStyle(
-                              fontSize: 20.0, fontWeight: FontWeight.bold))
-                    ],
-                  ),
-                  new Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: pillToTake.lastTaken != null
-                          ? [
-                              Icon(Icons.access_time),
-                              new Text(
-                                  dateService
-                                      .getHourFromDate(pillToTake.lastTaken!),
-                                  style: new TextStyle(
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.bold))
-                            ]
-                          : [])
-                ])),
+                  Image.asset(pillToTake.pillImage,
+                      width: 100,
+                      height: 100,
+                      color: context.read<ThemeBloc>().state == ThemeMode.light
+                          ? const Color(0xFF000000)
+                          : const Color(0xFFFFFFFF))
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Pills left to take today: ${pillToTake.pillRegiment}",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.bold))
+                ],
+              ),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: pillToTake.lastTaken != null
+                      ? [
+                          Icon(Icons.access_time),
+                          Text(
+                              dateService
+                                  .getHourFromDate(pillToTake.lastTaken!),
+                              style: TextStyle(
+                                  fontSize: 20.0, fontWeight: FontWeight.bold))
+                        ]
+                      : [])
+            ])),
       ),
     );
   }
