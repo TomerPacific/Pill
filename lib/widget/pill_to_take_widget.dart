@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
-import 'package:pill/bloc/theme/theme_block.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
+import 'package:pill/utils.dart';
 
 class PillWidget extends StatelessWidget {
   const PillWidget({required this.pillToTake, required this.dateService})
@@ -44,9 +44,7 @@ class PillWidget extends StatelessWidget {
                   Image.asset(pillToTake.pillImage,
                       width: 100,
                       height: 100,
-                      color: context.read<ThemeBloc>().state == ThemeMode.light
-                          ? const Color(0xFF000000)
-                          : const Color(0xFFFFFFFF))
+                      color: Utils.getPillTakenImageColor(context))
                 ],
               ),
               Row(
