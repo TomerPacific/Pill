@@ -63,4 +63,20 @@ class PillToTake {
         this.pillImage == otherPill.pillImage &&
         this.amountOfDaysToTake == otherPill.amountOfDaysToTake);
   }
+
+  PillToTake copyWith({
+    String? pillName,
+    int? pillRegiment,
+    String? description,
+    int? amountOfDaysToTake,
+    DateTime? lastTaken,
+  }) {
+    return PillToTake(
+      pillName: pillName ?? this.pillName,
+      pillRegiment: pillRegiment ?? this.pillRegiment,
+      description: description ?? this.description,
+      amountOfDaysToTake: amountOfDaysToTake ?? this.amountOfDaysToTake,
+      lastTaken: lastTaken ?? this.lastTaken,
+    );
+  }
 }
