@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/utils.dart';
-
-const double PILL_IMAGE_WIDTH = 100.0;
-const double PILL_IMAGE_HEIGHT = 100.0;
 
 class PillTakenWidget extends StatelessWidget {
   const PillTakenWidget({required this.pillToTake, required this.dateService})

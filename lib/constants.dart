@@ -9,6 +9,8 @@ const String ADDING_A_PILL_TITLE = "Adding A Pill";
 const String ADD_PILL_FORM_CONFIRM = "Apply";
 const String ADD_PILL_FORM_CANCEL = "Cancel";
 const int AMOUNT_OF_TABS = 3;
+const double PILL_IMAGE_WIDTH = 100.0;
+const double PILL_IMAGE_HEIGHT = 100.0;
 
 //Screen headers
 const String PILLS_TO_TAKE_HEADER =

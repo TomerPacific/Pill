@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/utils.dart';
@@ -42,8 +43,8 @@ class PillWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(pillToTake.pillImage,
-                      width: 100,
-                      height: 100,
+                      width: PILL_IMAGE_WIDTH,
+                      height: PILL_IMAGE_HEIGHT,
                       color: Utils.getPillTakenImageColor(context))
                 ],
               ),
