@@ -65,7 +65,7 @@ class SharedPreferencesService {
       List<PillToTake> pills = getPillsToTakeForDate(currentDate);
       pills.add(pill);
       _setPillsForDate(currentDate, pills);
-      runningDate = runningDate.add(new Duration(days: ONE_DAY));
+      runningDate = runningDate.add(Duration(days: ONE_DAY));
       currentDate = _dateService.getDateAsMonthAndDay(runningDate);
       pill.amountOfDaysToTake--;
     }
@@ -158,7 +158,7 @@ class SharedPreferencesService {
     Set<String> keys = _sharedPreferences.getKeys();
     if (keys.isEmpty) return false;
     for (String key in keys) {
-      if (key.contains(new RegExp('[0-9]')) && !key.contains(PILLS_TAKEN_KEY)) {
+      if (key.contains(RegExp('[0-9]')) && !key.contains(PILLS_TAKEN_KEY)) {
         List<PillToTake> pills = getPillsToTakeForDate(key);
         if (pills.isNotEmpty) return true;
       }
