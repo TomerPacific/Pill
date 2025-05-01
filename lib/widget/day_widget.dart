@@ -22,19 +22,18 @@ class DayWidget extends StatelessWidget {
   Widget _pillsToTakeList(BuildContext context, PillState state) {
     List<PillToTake>? pillsToTake = state.pillsToTake;
     return (pillsToTake == null || pillsToTake.isEmpty)
-        ? new Padding(
+        ? Padding(
             padding: const EdgeInsets.only(top: 20),
-            child: new Text(header,
-                style:
-                    new TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
+            child: Text(header,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
         : Expanded(
             child: SizedBox(
             height: LIST_ITEM_HEIGHT,
             child: ListView.builder(
                 itemCount: pillsToTake.length,
-                itemBuilder: (_, index) => new Dismissible(
+                itemBuilder: (_, index) => Dismissible(
                     key: ObjectKey(pillsToTake[index].pillName),
-                    child: new PillWidget(
+                    child: PillWidget(
                       pillToTake: pillsToTake[index],
                       dateService: dateService,
                     ),
@@ -63,7 +62,7 @@ class DayWidget extends StatelessWidget {
           height: LIST_ITEM_HEIGHT,
           child: ListView.builder(
             itemCount: pillsTaken.length,
-            itemBuilder: (_, index) => new PillTakenWidget(
+            itemBuilder: (_, index) => PillTakenWidget(
                 pillToTake: pillsTaken[index], dateService: dateService),
           )),
     );
@@ -71,20 +70,20 @@ class DayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Expanded(
-        child: new SizedBox(
+    return Expanded(
+        child: SizedBox(
       height: double.infinity,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          new Align(
+          Align(
             alignment: Alignment.topCenter,
-            child: new Padding(
+            child: Padding(
               padding: const EdgeInsets.only(top: 40.0),
-              child: new Text(dateService.getDateAsMonthAndDay(date),
-                  style: new TextStyle(
-                      fontSize: 25.0, fontWeight: FontWeight.bold)),
+              child: Text(dateService.getDateAsMonthAndDay(date),
+                  style:
+                      TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)),
             ),
           ),
           (this.header == PILLS_TO_TAKE_HEADER)
