@@ -37,7 +37,7 @@ class AddingPillFormState extends State<AddingPillForm> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
         body: BlocListener<PillBloc, PillState>(
       listener: (context, state) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -135,7 +135,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                     ElevatedButton.icon(
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
-                            PillToTake pill = new PillToTake(
+                            PillToTake pill = PillToTake(
                                 pillName: _pillNameTextEditingController.text,
                                 pillRegiment:
                                     int.parse(_pillRegimentController.text),
@@ -145,8 +145,8 @@ class AddingPillFormState extends State<AddingPillForm> {
 
                             context.read<PillBloc>().add(PillsEvent(
                                 eventName: PillEvent.addPill,
-                                date:
-                                    DateService().getDateAsMonthAndDay(widget._currentDate),
+                                date: DateService()
+                                    .getDateAsMonthAndDay(widget._currentDate),
                                 pillToTake: pill));
                             FocusScope.of(context).unfocus();
                             Navigator.pop(context);
