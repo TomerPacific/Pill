@@ -10,9 +10,9 @@ import 'package:pill/service/shared_preferences_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  DateService dateService = new DateService();
+  DateService dateService = DateService();
   SharedPreferencesService sharedPreferencesService =
-      new SharedPreferencesService(dateService: dateService);
+      await SharedPreferencesService.create(dateService);
   bool isDarkMode = await sharedPreferencesService.getThemeStatus();
   runApp(MyApp(
       sharedPreferencesService: sharedPreferencesService,

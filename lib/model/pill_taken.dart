@@ -3,27 +3,34 @@ import 'dart:convert';
 import 'package:pill/constants.dart';
 import 'package:pill/model/pill_to_take.dart';
 
+const String DEFAULT_PILL_IMAGE = 'assets/images/defaultPill.png';
+
 class PillTaken {
   String pillName;
-  double? pillWeight;
-  String pillImage = 'assets/images/defaultPill.png';
+  String pillImage = DEFAULT_PILL_IMAGE;
   String? description;
   DateTime? lastTaken;
 
   PillTaken(
       {required this.pillName,
-      this.pillWeight,
       this.description,
       required this.lastTaken});
 
   factory PillTaken.fromJson(Map<String, dynamic> jsonData) {
+    String? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
+    DateTime? lastTakenDate;
+    try {
+      if (lastTaken != null) {
+        lastTakenDate = DateTime.parse(lastTaken);
+      }
+    } catch (e) {
+      print("Error parsing PillTaken lastTaken value: $e");
+    }
+
     return PillTaken(
         pillName: jsonData[PILL_NAME_KEY],
-        pillWeight: jsonData[PILL_WEIGHT_KEY],
         description: jsonData[PILL_DESCRIPTION_KEY],
-        lastTaken: jsonData[PILL_LAST_TAKEN_KEY] == null
-            ? null
-            : DateTime.parse(jsonData[PILL_LAST_TAKEN_KEY]));
+        lastTaken: lastTakenDate);
   }
 
   static PillTaken extractFromPillToTake(PillToTake pillToTake) {
@@ -33,11 +40,10 @@ class PillTaken {
 
   static Map<String, dynamic> toMap(PillTaken pill) => {
         PILL_NAME_KEY: pill.pillName,
-        PILL_WEIGHT_KEY: pill.pillWeight,
+    
         PILL_DESCRIPTION_KEY: pill.description,
-        PILL_LAST_TAKEN_KEY:
-            pill.lastTaken == null ? null : pill.lastTaken!.toIso8601String()
-      };
+        PILL_LAST_TAKEN_KEY: pill.lastTaken?.toIso8601String()
+  };
 
   static String encode(List<PillTaken> pills) => json.encode(
         pills

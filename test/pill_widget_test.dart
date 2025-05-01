@@ -12,16 +12,16 @@ import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  DateService dateService = new DateService();
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  DateService dateService = DateService();
+  SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
-      new SharedPreferencesService(dateService: dateService);
+      await SharedPreferencesService.create(dateService);
   String currentDate = dateService.getDateAsMonthAndDay(DateTime.now());
   String title = "You do not have to take any pills today 😀";
 
   setUp(() async {
-    TestWidgetsFlutterBinding.ensureInitialized();
-    SharedPreferences.setMockInitialValues({});
     sharedPreferencesService.clearAllPillsFromDate(DateTime.now());
   });
 
@@ -38,38 +38,38 @@ void main() {
       ],
       child: MaterialApp(home: BlocBuilder<PillBloc, PillState>(
         builder: (context, state) {
-          return new Container(
-              child: new SizedBox(
+          return Container(
+              child: SizedBox(
             height: double.infinity,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                new Align(
+                Align(
                   alignment: Alignment.topCenter,
-                  child: new Padding(
+                  child: Padding(
                     padding: const EdgeInsets.only(top: 40.0),
-                    child: new Text(currentDate,
-                        style: new TextStyle(
+                    child: Text(currentDate,
+                        style: TextStyle(
                             fontSize: 25.0, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 (title == "You do not have to take any pills today 😀")
                     ? (state.pillsToTake == null || state.pillsToTake!.isEmpty)
-                        ? new Padding(
+                        ? Padding(
                             padding: const EdgeInsets.only(top: 20),
-                            child: new Text(title,
-                                style: new TextStyle(
+                            child: Text(title,
+                                style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)))
                         : Expanded(
                             child: SizedBox(
                             height: 200.0,
                             child: ListView.builder(
                                 itemCount: state.pillsToTake!.length,
-                                itemBuilder: (_, index) => new Dismissible(
+                                itemBuilder: (_, index) => Dismissible(
                                     key: ObjectKey(
                                         state.pillsToTake![index].pillName),
-                                    child: new PillWidget(
+                                    child: PillWidget(
                                       pillToTake: state.pillsToTake![index],
                                       dateService: dateService,
                                     ),
@@ -83,20 +83,19 @@ void main() {
                                     })),
                           ))
                     : (state.pillsTaken == null || state.pillsTaken!.isEmpty)
-                        ? new Padding(
+                        ? Padding(
                             padding: const EdgeInsets.only(top: 20),
-                            child: new Text(title,
-                                style: new TextStyle(
+                            child: Text(title,
+                                style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)))
                         : Expanded(
                             child: SizedBox(
                                 height: 200.0,
                                 child: ListView.builder(
                                   itemCount: state.pillsTaken!.length,
-                                  itemBuilder: (_, index) =>
-                                      new PillTakenWidget(
-                                          pillToTake: state.pillsTaken![index],
-                                          dateService: dateService),
+                                  itemBuilder: (_, index) => PillTakenWidget(
+                                      pillToTake: state.pillsTaken![index],
+                                      dateService: dateService),
                                 )),
                           )
               ],
@@ -106,7 +105,7 @@ void main() {
       )));
 
   testWidgets("Pill Widget", (WidgetTester tester) async {
-    PillToTake pillToTake = new PillToTake(
+    PillToTake pillToTake = PillToTake(
         pillRegiment: 1, pillName: "Test Pill", amountOfDaysToTake: 1);
 
     await tester.pumpWidget(base);
@@ -132,7 +131,7 @@ void main() {
   });
 
   testWidgets("PillWidget Dismiss Pill", (WidgetTester tester) async {
-    PillToTake pillToTake = new PillToTake(
+    PillToTake pillToTake = PillToTake(
         pillRegiment: 1, pillName: "Test Pill", amountOfDaysToTake: 1);
 
     await tester.pumpWidget(base);
@@ -159,7 +158,7 @@ void main() {
 
   testWidgets("PillWidget Take Pill And See Last Time Taken",
       (WidgetTester tester) async {
-    PillToTake pillToTake = new PillToTake(
+    PillToTake pillToTake = PillToTake(
         pillRegiment: 2, pillName: "Test Pill", amountOfDaysToTake: 1);
 
     await tester.pumpWidget(base);

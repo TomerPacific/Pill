@@ -5,12 +5,15 @@ import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/adding_pill_form.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  DateService dateService = new DateService();
+void main() async {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  DateService dateService = DateService();
+  SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
-      new SharedPreferencesService(dateService: dateService);
-
+      await SharedPreferencesService.create(dateService);
+  SharedPreferences.setMockInitialValues({});
   Widget base = MultiBlocProvider(providers: [
     BlocProvider(create: (context) => PillBloc(sharedPreferencesService)),
   ], child: MaterialApp(home: AddingPillForm(DateTime.now())));

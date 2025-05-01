@@ -6,5 +6,5 @@ class PillState {
   final List<PillTaken>? pillsTaken;
   final PillToTake? pillToTake;
 
-  PillState({this.pillsToTake, this.pillsTaken, this.pillToTake});
+  const PillState({this.pillsToTake, this.pillsTaken, this.pillToTake});
 }

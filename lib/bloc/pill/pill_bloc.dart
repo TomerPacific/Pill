@@ -29,22 +29,22 @@ class PillsEvent {
 class PillBloc extends Bloc<PillsEvent, PillState> {
   PillBloc(SharedPreferencesService sharedPreferencesService)
       : super(PillState()) {
-    on<PillsEvent>((event, emit) async {
+    on<PillsEvent>((event, emit) {
       switch (event.eventName) {
         case PillEvent.addPill:
-          await _onAddPill(event, emit, sharedPreferencesService);
+          _onAddPill(event, emit, sharedPreferencesService);
           break;
         case PillEvent.removePill:
-          await _onRemovePill(event, emit, sharedPreferencesService);
+          _onRemovePill(event, emit, sharedPreferencesService);
           break;
         case PillEvent.updatePill:
-          await _onUpdatePill(event, emit, sharedPreferencesService);
+          _onUpdatePill(event, emit, sharedPreferencesService);
           break;
         case PillEvent.loadPills:
           List<PillTaken> pillsTaken =
-              await sharedPreferencesService.getPillsTakenForDate(event.date);
+              sharedPreferencesService.getPillsTakenForDate(event.date);
           List<PillToTake> pillsToTake =
-          await sharedPreferencesService.getPillsToTakeForDate(event.date);
+              sharedPreferencesService.getPillsToTakeForDate(event.date);
           emit(
             PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken),
           );
@@ -53,47 +53,64 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     });
   }
 
-  Future<void> _onAddPill(PillsEvent event, Emitter<PillState> emitter,
-      SharedPreferencesService sharedPreferencesService) async {
+  void _onAddPill(PillsEvent event, Emitter<PillState> emitter,
+      SharedPreferencesService sharedPreferencesService) {
+    PillToTake? pillToTake = event.pillToTake;
+
+    if (pillToTake == null) {
+      return;
+    }
+
     List<PillToTake> pillsToTake =
-        await sharedPreferencesService.getPillsToTakeForDate(event.date);
-    List<PillToTake> pills = List.from(pillsToTake)..add(event.pillToTake!);
-    sharedPreferencesService.addPillToDates(event.date, event.pillToTake!);
+        sharedPreferencesService.getPillsToTakeForDate(event.date);
+    List<PillToTake> pills = List.from(pillsToTake)..add(pillToTake);
+    sharedPreferencesService.addPillToDates(event.date, pillToTake);
     emitter(new PillState(pillsToTake: pills, pillsTaken: state.pillsTaken));
   }
 
-  Future<void> _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
-      SharedPreferencesService sharedPreferencesService) async {
-    await sharedPreferencesService.removePillFromDate(
-        event.pillToTake!, event.date);
-    List<PillToTake> updatedPills = event.pillsToTake!
-        .where((pill) => !pill.equals(event.pillToTake!))
-        .toList();
+  void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
+      SharedPreferencesService sharedPreferencesService) {
+    PillToTake? pillToTake = event.pillToTake;
+    List<PillToTake>? pillsToTake = event.pillsToTake;
+
+    if (pillToTake == null || pillsToTake == null) {
+      return;
+    }
+
+    sharedPreferencesService.removePillFromDate(pillToTake, event.date);
+    List<PillToTake> updatedPills =
+        pillsToTake.where((pill) => !pill.equals(pillToTake)).toList();
     emitter(
       PillState(pillsToTake: updatedPills, pillsTaken: event.pillsTaken),
     );
   }
 
-  Future<void> _onUpdatePill(PillsEvent event, Emitter<PillState> emitter,
-      SharedPreferencesService sharedPreferencesService) async {
+  void _onUpdatePill(PillsEvent event, Emitter<PillState> emitter,
+      SharedPreferencesService sharedPreferencesService) {
     List<PillToTake> pillsToTake =
-        await sharedPreferencesService.getPillsToTakeForDate(event.date);
+        sharedPreferencesService.getPillsToTakeForDate(event.date);
 
-    PillToTake storedPill = pillsToTake
-        .firstWhere((pill) => pill.pillName == event.pillToTake!.pillName);
+    PillToTake? pillToTake = event.pillToTake;
+
+    if (pillToTake == null) {
+      return;
+    }
+
+    PillToTake storedPill =
+        pillsToTake.firstWhere((pill) => pill.pillName == pillToTake.pillName);
     pillsToTake.remove(storedPill);
 
-    storedPill.lastTaken = event.pillToTake!.lastTaken;
-    storedPill.pillRegiment = event.pillToTake!.pillRegiment;
+    storedPill.lastTaken = pillToTake.lastTaken;
+    storedPill.pillRegiment = pillToTake.pillRegiment;
 
     if (storedPill.pillRegiment != 0) {
       pillsToTake.add(storedPill);
     }
 
-    await sharedPreferencesService.updatePillForDate(storedPill, event.date);
+    sharedPreferencesService.updatePillForDate(storedPill, event.date);
 
     List<PillTaken> pillsTaken =
-        await sharedPreferencesService.getPillsTakenForDate(event.date);
+        sharedPreferencesService.getPillsTakenForDate(event.date);
     emitter(
       PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken),
     );
