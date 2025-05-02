@@ -24,6 +24,8 @@ class PillWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime? lastTaken = pillToTake.lastTaken;
+
     return Container(
       child: Card(
         child: InkWell(
@@ -58,12 +60,10 @@ class PillWidget extends StatelessWidget {
               ),
               Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: pillToTake.lastTaken != null
+                  children: lastTaken != null
                       ? [
                           Icon(Icons.access_time),
-                          Text(
-                              dateService
-                                  .getHourFromDate(pillToTake.lastTaken!),
+                          Text(dateService.getHourFromDate(lastTaken),
                               style: TextStyle(
                                   fontSize: 20.0, fontWeight: FontWeight.bold))
                         ]
