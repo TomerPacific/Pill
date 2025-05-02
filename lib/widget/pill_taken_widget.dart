@@ -29,7 +29,7 @@ class PillTakenWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(pillToTake.pillImage,
-                      width: PILL_IMAGE_WIDTH,
+                      width: PILL_TAKEN_IMAGE_WIDTH,
                       height: PILL_IMAGE_HEIGHT,
                       color: Utils.getPillTakenImageColor(context))
                 ],
