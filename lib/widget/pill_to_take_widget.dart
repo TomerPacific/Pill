@@ -63,9 +63,13 @@ class PillWidget extends StatelessWidget {
                   children: lastTaken != null
                       ? [
                           Icon(Icons.access_time),
-                          Text(dateService.getHourFromDate(lastTaken),
+                          Padding(
+                              padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+                              child: Text(
+                              "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
                               style: TextStyle(
                                   fontSize: 20.0, fontWeight: FontWeight.bold))
+                          )
                         ]
                       : [])
             ])),
