@@ -6,7 +6,7 @@
 
 ### Key Information
 - **Type**: Flutter mobile application (Android/iOS)
-- **Source Code Size**: ~1.4MB source directory, 23 Dart files
+- **Source Code Size**: ~1.4MB source directory, 18 Dart source files + 5 test files
 - **Framework**: Flutter (stable channel)
 - **Language**: Dart SDK >=3.0.0 <4.0.0
 - **State Management**: flutter_bloc (^9.1.0)
@@ -181,13 +181,21 @@ If builds fail:
 3. Check that all tests in `/test` directory pass locally
 4. Verify `flutter analyze` shows no errors
 
-## Using These Instructions
-These instructions were generated through thorough exploration and validation of the repository's build process and CI workflows. When working on this codebase:
-- Follow the documented command sequence for reliable builds
-- The analyze and test steps are required - CI will fail without them
-- These instructions cover the standard development workflow
-- Consult the source code and CI logs for deeper understanding or when troubleshooting issues
-- The build process is well-tested and documented above
+## Working with This Repository
+
+**Standard Development Workflow:**
+1. Make code changes following the architecture patterns documented above
+2. Run the complete validation sequence before committing:
+   - `flutter pub get` (if dependencies changed)
+   - `flutter analyze` (must pass with no errors)
+   - `flutter test` (all tests must pass)
+3. Commit and push - CI will run the same validation steps
+
+**Key Points:**
+- The analyze and test steps are mandatory - CI checks will fail without them
+- Follow the BLoC pattern for state management consistency
+- Add tests for new features in the `/test` directory
+- Consult workflow logs and source code when troubleshooting
 
 ## Quick Reference
 
