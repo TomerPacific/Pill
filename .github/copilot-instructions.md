@@ -11,7 +11,7 @@
 - **Language**: Dart SDK >=3.0.0 <4.0.0
 - **State Management**: flutter_bloc (^9.1.0)
 - **Target Platforms**: 
-  - Android: compileSdk 35, targetSdk 35, minSdk determined by Flutter SDK
+  - Android: compileSdk 35, targetSdk 35, minSdk set to `flutter.minSdkVersion` (defined by Flutter SDK)
   - iOS: Standard Flutter iOS configuration
 
 ## Project Architecture
@@ -142,7 +142,7 @@ The repository uses GitHub Actions for continuous integration:
 
 ### Testing Guidelines
 - Tests are located in `/test` directory
-- Test file naming: `*_test.dart`
+- Test files: `pill_widget_test.dart`, `utils_test.dart`, `date_service_test.dart`, `shared_preferences_test.dart`, `adding_pill_form_test.dart`
 - Widget tests use `TestWidgetsFlutterBinding.ensureInitialized()`
 - SharedPreferences mocks: Use `SharedPreferences.setMockInitialValues({})`
 - Current test coverage includes widgets, services, and utilities
