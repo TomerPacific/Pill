@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
-import 'package:pill/constants.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
-import 'package:pill/utils.dart';
 
 class PillWidget extends StatelessWidget {
   const PillWidget({required this.pillToTake, required this.dateService})
@@ -41,14 +39,11 @@ class PillWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 )
               ]),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(pillToTake.pillImage,
-                      width: PILL_TO_TAKE_IMAGE_WIDTH,
-                      height: PILL_IMAGE_HEIGHT,
-                      color: Utils.getPillTakenImageColor(context))
-                ],
+              Center(child:
+                FractionallySizedBox(
+                    widthFactor: 0.6,
+                    child:
+                        Image.asset(pillToTake.pillImage, fit: BoxFit.contain)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -66,10 +61,10 @@ class PillWidget extends StatelessWidget {
                           Padding(
                               padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
                               child: Text(
-                              "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
-                              style: TextStyle(
-                                  fontSize: 20.0, fontWeight: FontWeight.bold))
-                          )
+                                  "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
+                                  style: TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold)))
                         ]
                       : [])
             ])),
