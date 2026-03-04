@@ -13,46 +13,34 @@ class PillTakenWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     DateTime? lastTaken = pillToTake.lastTaken;
 
-    return SizedBox(
-      height: 280,
-      child: Card(
-        child: InkWell(
-          splashColor: Colors.blue.withAlpha(30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              Text(
-                pillToTake.pillName,
-                style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              pillToTake.pillName,
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+            ),
+             Image.asset(
+                pillToTake.pillImage,
+                height: 250,
+                fit: BoxFit.contain,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: Image.asset(
-                    pillToTake.pillImage,
-                    fit: BoxFit.contain,
-                    width: double.infinity,
+            if (lastTaken != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.access_time),
+                  SizedBox(width: 5),
+                  Text(
+                    "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
+                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
                   ),
-                ),
+                ],
               ),
-              if (lastTaken != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.access_time, size: 20),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
-                      child: Text(
-                        "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
-                        style: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              const SizedBox(height: 4),
-            ],
-          ),
+          ],
         ),
       ),
     );
