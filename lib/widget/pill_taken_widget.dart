@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 
@@ -25,7 +26,7 @@ class PillTakenWidget extends StatelessWidget {
             ),
             Center(
                 child: FractionallySizedBox(
-                    widthFactor: 0.6,
+                    widthFactor:IMAGE_WIDTH_FACTOR,
                     child: Image.asset(
                       pillToTake.pillImage,
                       fit: BoxFit.contain,
