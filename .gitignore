@@ -1,1 +1,132 @@
-flutter_linux_*.tar.xz
+# ============================================================
+# Flutter / Dart .gitignore
+# ============================================================
+
+# ---------------------------------------------------------------
+# Dart & Flutter generated files
+# ---------------------------------------------------------------
+# Build outputs
+build/
+.dart_tool/
+
+# Flutter generated files
+*.g.dart
+*.freezed.dart
+*.gr.dart
+
+# Generated code (build_runner output)
+**.g.dart
+**.freezed.dart
+
+# ---------------------------------------------------------------
+# Packages & dependencies
+# ---------------------------------------------------------------
+# Do NOT commit pub package cache
+.pub-cache/
+.pub/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# ---------------------------------------------------------------
+# IDEs & editors
+# ---------------------------------------------------------------
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# IntelliJ / Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ---------------------------------------------------------------
+# Android
+# ---------------------------------------------------------------
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+*.jks
+
+# ---------------------------------------------------------------
+# iOS / macOS
+# ---------------------------------------------------------------
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral/
+
+# ---------------------------------------------------------------
+# Web
+# ---------------------------------------------------------------
+**/web/Flutter/
+
+# ---------------------------------------------------------------
+# Windows
+# ---------------------------------------------------------------
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/generated_plugins.cmake
+**/windows/flutter/ephemeral/
+
+# ---------------------------------------------------------------
+# Linux
+# ---------------------------------------------------------------
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugins.cmake
+**/linux/flutter/ephemeral/
+
+# ---------------------------------------------------------------
+# Misc
+# ---------------------------------------------------------------
+# Flutter tool metadata (regenerated automatically)
+.metadata
+
+# Coverage
+coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Environment / secrets
+.env
+.env.*
+*.pem
+*.key
+secrets.dart
