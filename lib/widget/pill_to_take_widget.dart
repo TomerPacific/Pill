@@ -44,7 +44,7 @@ class PillWidget extends StatelessWidget {
                 FractionallySizedBox(
                     widthFactor: IMAGE_WIDTH_FACTOR,
                     child:
-                        Image.asset(pillToTake.pillImage, fit: BoxFit.contain)),
+                        Image.asset(pillToTake.pillImage, fit: BoxFit.contain, semanticLabel: pillToTake.pillName)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

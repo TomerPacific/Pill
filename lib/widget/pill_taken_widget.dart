@@ -4,15 +4,15 @@ import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 
 class PillTakenWidget extends StatelessWidget {
-  const PillTakenWidget({required this.pillToTake, required this.dateService})
+  const PillTakenWidget({required this.pillTaken, required this.dateService})
       : super();
 
-  final PillTaken pillToTake;
+  final PillTaken pillTaken;
   final DateService dateService;
 
   @override
   Widget build(BuildContext context) {
-    DateTime? lastTaken = pillToTake.lastTaken;
+    DateTime? lastTaken = pillTaken.lastTaken;
 
     return Card(
       child: Padding(
@@ -21,15 +21,16 @@ class PillTakenWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              pillToTake.pillName,
+              pillTaken.pillName,
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             Center(
                 child: FractionallySizedBox(
                     widthFactor:IMAGE_WIDTH_FACTOR,
                     child: Image.asset(
-                      pillToTake.pillImage,
+                      pillTaken.pillImage,
                       fit: BoxFit.contain,
+                      semanticLabel: pillTaken.pillName,
                     ))),
             if (lastTaken != null)
               Row(
