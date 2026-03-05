@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 
-
 class PillTakenWidget extends StatelessWidget {
   const PillTakenWidget({required this.pillToTake, required this.dateService})
       : super();
@@ -24,16 +23,13 @@ class PillTakenWidget extends StatelessWidget {
               pillToTake.pillName,
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
-            Center(child:
-            FractionallySizedBox(
-              widthFactor: 0.6,
-             child:
-             Image.asset(
-                pillToTake.pillImage,
-                fit: BoxFit.contain,
-              )
-            )
-            ),
+            Center(
+                child: FractionallySizedBox(
+                    widthFactor: 0.6,
+                    child: Image.asset(
+                      pillToTake.pillImage,
+                      fit: BoxFit.contain,
+                    ))),
             if (lastTaken != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +38,8 @@ class PillTakenWidget extends StatelessWidget {
                   SizedBox(width: 5),
                   Text(
                     "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
-                    style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
