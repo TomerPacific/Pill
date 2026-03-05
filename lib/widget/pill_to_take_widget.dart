@@ -62,7 +62,7 @@ class PillWidget extends StatelessWidget {
                           Padding(
                               padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
                               child: Text(
-                                  "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
+                                  "Last taken today at: ${dateService.getHourFromDate(lastTaken)}",
                                   style: TextStyle(
                                       fontSize: 20.0,
                                       fontWeight: FontWeight.bold)))

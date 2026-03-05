@@ -38,7 +38,7 @@ class PillTakenWidget extends StatelessWidget {
                   Icon(Icons.access_time),
                   SizedBox(width: 5),
                   Text(
-                    "Last taken today at : ${dateService.getHourFromDate(lastTaken)}",
+                    "Last taken today at: ${dateService.getHourFromDate(lastTaken)}",
                     style:
                         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
