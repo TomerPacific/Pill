@@ -100,11 +100,14 @@ TabBarView _mainPageTabBarView(DateService dateService,
               padding: EdgeInsets.all(10.0),
               child: FloatingActionButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AddingPillForm(DateTime.now())),
-                    );
+                    showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        builder: (context) => AddingPillForm(DateTime.now()));
                   },
                   child: Icon(Icons.add)),
             ),
