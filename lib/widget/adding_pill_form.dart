@@ -25,6 +25,7 @@ class AddingPillFormState extends State<AddingPillForm> {
   late final TextEditingController _pillNameTextEditingController;
   late final TextEditingController _pillAmountOfDaysToTakeController;
   late final TextEditingController _pillRegimentController;
+  late final TextEditingController _pillDescriptionController;
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class AddingPillFormState extends State<AddingPillForm> {
         TextEditingController(text: DEFAULT_PILL_DAYS);
     _pillRegimentController =
         TextEditingController(text: DEFAULT_PILL_REGIMENT);
+    _pillDescriptionController = TextEditingController();
   }
 
   @override
@@ -41,6 +43,7 @@ class AddingPillFormState extends State<AddingPillForm> {
     _pillNameTextEditingController.dispose();
     _pillAmountOfDaysToTakeController.dispose();
     _pillRegimentController.dispose();
+    _pillDescriptionController.dispose();
     super.dispose();
   }
 
@@ -89,7 +92,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                         }
                         return null;
                       }),
-                  SizedBox(height: 25.0),
+                  SizedBox(height: 20.0),
                   TextFormField(
                       key: ObjectKey("pillRegiment"),
                       controller: _pillRegimentController,
@@ -97,23 +100,23 @@ class AddingPillFormState extends State<AddingPillForm> {
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
-                          hintText: 'How many pills to take per day?',
+                          hintText: 'How many pills per day?',
                           prefixIcon: Icon(Icons.confirmation_number,
                               color: Colors.blue)),
                       validator: (value) {
                         if (value == null ||
                             value.isEmpty ||
                             !Utils.isNumberGreaterThanZero(value)) {
-                          return 'Please enter a number representing the amount of pills to take';
+                          return 'Please enter a number';
                         }
                         return null;
                       }),
-                  SizedBox(height: 25.0),
+                  SizedBox(height: 20.0),
                   TextFormField(
                       key: ObjectKey("pillDays"),
                       controller: _pillAmountOfDaysToTakeController,
                       keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.done,
+                      textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
@@ -127,8 +130,20 @@ class AddingPillFormState extends State<AddingPillForm> {
                         if (value == null ||
                             value.isEmpty ||
                             !Utils.isNumberGreaterThanZero(value)) {
-                          return 'Please enter a number representing the number of days';
+                          return 'Please enter a number';
                         }
+                        return null;
+                      }),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                      key: ObjectKey("pillDescription"),
+                      controller: _pillDescriptionController,
+                      textInputAction: TextInputAction.done,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Instructions (optional)',
+                          prefixIcon: Icon(Icons.description, color: Colors.orange)),
+                      validator: (value) {
                         return null;
                       }),
                   SizedBox(height: 25.0),
@@ -142,7 +157,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                                   pillName: _pillNameTextEditingController.text,
                                   pillRegiment:
                                       int.parse(_pillRegimentController.text),
-                                  description: '',
+                                  description: _pillDescriptionController.text,
                                   amountOfDaysToTake: int.parse(
                                       _pillAmountOfDaysToTakeController.text));
 
