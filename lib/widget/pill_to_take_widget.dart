@@ -47,32 +47,27 @@ class PillWidget extends StatelessWidget {
               Center(
                 child: FractionallySizedBox(
                     widthFactor: PILL_IMAGE_WIDTH_FACTOR,
-                    child: Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(pillToTake.pillImage,
-                              fit: BoxFit.contain,
-                              semanticLabel: pillToTake.pillName),
-                        ),
-                        if (hasDescription)
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: GestureDetector(
-                              onTap: () {
-                                // This empty callback prevents the tap from
-                                // bubbling up to the InkWell/Card.
-                                // The Tooltip still triggers on tap.
-                              },
-                              behavior: HitTestBehavior.opaque,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 100),
+                      child: Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(pillToTake.pillImage,
+                                fit: BoxFit.contain,
+                                semanticLabel: pillToTake.pillName),
+                          ),
+                          if (hasDescription)
+                            Positioned(
+                              top: 0,
+                              right: 0,
                               child: Tooltip(
                                 message: pillToTake.description!,
                                 triggerMode: TooltipTriggerMode.tap,
                                 showDuration: const Duration(seconds: 5),
                                 child: Container(
-                                  padding: const EdgeInsets.all(12), // Larger hit area
+                                  padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.9),
                                     shape: BoxShape.circle,
@@ -92,8 +87,8 @@ class PillWidget extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     )),
               ),
               Row(
