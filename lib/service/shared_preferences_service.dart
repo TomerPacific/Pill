@@ -58,15 +58,15 @@ class SharedPreferencesService {
     return pillsTaken;
   }
 
-  void addPillToDates(String currentDate, PillToTake pill) {
-    DateTime runningDate = DateTime.now();
+  void addPillToDates(DateTime startDate, PillToTake pill) {
+    DateTime runningDate = startDate;
 
     while (pill.amountOfDaysToTake > 0) {
-      List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+      String dateStr = _dateService.getDateAsMonthAndDay(runningDate);
+      List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pill);
-      _setPillsForDate(currentDate, pills);
+      _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(Duration(days: ONE_DAY));
-      currentDate = _dateService.getDateAsMonthAndDay(runningDate);
       pill.amountOfDaysToTake--;
     }
   }
