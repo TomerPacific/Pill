@@ -11,6 +11,10 @@ const String ADD_PILL_FORM_CANCEL = "Cancel";
 const int AMOUNT_OF_TABS = 3;
 const double PILL_IMAGE_WIDTH_FACTOR = 0.6;
 
+// Default values for adding a pill
+const String DEFAULT_PILL_REGIMENT = "1";
+const String DEFAULT_PILL_DAYS = "7";
+
 //Screen headers
 const String PILLS_TO_TAKE_HEADER =
     "You do not have to take any pills today 😀";

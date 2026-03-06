@@ -30,8 +30,8 @@ class AddingPillFormState extends State<AddingPillForm> {
   void initState() {
     super.initState();
     _pillNameTextEditingController = TextEditingController();
-    _pillAmountOfDaysToTakeController = TextEditingController(text: "7");
-    _pillRegimentController = TextEditingController(text: "1");
+    _pillAmountOfDaysToTakeController = TextEditingController(text: DEFAULT_PILL_DAYS);
+    _pillRegimentController = TextEditingController(text: DEFAULT_PILL_REGIMENT);
   }
 
   @override
