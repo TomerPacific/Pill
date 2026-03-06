@@ -40,11 +40,12 @@ class PillWidget extends StatelessWidget {
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 )
               ]),
-              Center(child:
-                FractionallySizedBox(
+              Center(
+                child: FractionallySizedBox(
                     widthFactor: IMAGE_WIDTH_FACTOR,
-                    child:
-                        Image.asset(pillToTake.pillImage, fit: BoxFit.contain, semanticLabel: pillToTake.pillName)),
+                    child: Image.asset(pillToTake.pillImage,
+                        fit: BoxFit.contain,
+                        semanticLabel: pillToTake.pillName)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

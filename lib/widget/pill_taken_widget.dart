@@ -26,7 +26,7 @@ class PillTakenWidget extends StatelessWidget {
             ),
             Center(
                 child: FractionallySizedBox(
-                    widthFactor:IMAGE_WIDTH_FACTOR,
+                    widthFactor: IMAGE_WIDTH_FACTOR,
                     child: Image.asset(
                       pillTaken.pillImage,
                       fit: BoxFit.contain,
