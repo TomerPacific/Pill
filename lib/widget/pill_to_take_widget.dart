@@ -13,17 +13,21 @@ class PillWidget extends StatelessWidget {
   final DateService dateService;
 
   void _handleOnTap(BuildContext context) {
-    PillToTake updatedPillToTake = pillToTake.copyWith(
-        pillRegiment: --pillToTake.pillRegiment, lastTaken: DateTime.now());
-    context.read<PillBloc>().add(PillsEvent(
-        eventName: PillEvent.updatePill,
-        date: dateService.getCurrentDateAsMonthAndDay(),
-        pillToTake: updatedPillToTake));
+    if (pillToTake.pillRegiment > 0) {
+      PillToTake updatedPillToTake = pillToTake.copyWith(
+          pillRegiment: pillToTake.pillRegiment - 1, lastTaken: DateTime.now());
+      context.read<PillBloc>().add(PillsEvent(
+          eventName: PillEvent.updatePill,
+          date: dateService.getCurrentDateAsMonthAndDay(),
+          pillToTake: updatedPillToTake));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     DateTime? lastTaken = pillToTake.lastTaken;
+    bool hasDescription =
+        pillToTake.description != null && pillToTake.description!.isNotEmpty;
 
     return Container(
       child: Card(
@@ -43,9 +47,54 @@ class PillWidget extends StatelessWidget {
               Center(
                 child: FractionallySizedBox(
                     widthFactor: PILL_IMAGE_WIDTH_FACTOR,
-                    child: Image.asset(pillToTake.pillImage,
-                        fit: BoxFit.contain,
-                        semanticLabel: pillToTake.pillName)),
+                    child: Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(pillToTake.pillImage,
+                              fit: BoxFit.contain,
+                              semanticLabel: pillToTake.pillName),
+                        ),
+                        if (hasDescription)
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                // This empty callback prevents the tap from
+                                // bubbling up to the InkWell/Card.
+                                // The Tooltip still triggers on tap.
+                              },
+                              behavior: HitTestBehavior.opaque,
+                              child: Tooltip(
+                                message: pillToTake.description!,
+                                triggerMode: TooltipTriggerMode.tap,
+                                showDuration: const Duration(seconds: 5),
+                                child: Container(
+                                  padding: const EdgeInsets.all(12), // Larger hit area
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.9),
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                    Icons.info_outline,
+                                    color: Colors.orange,
+                                    size: 28,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    )),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
