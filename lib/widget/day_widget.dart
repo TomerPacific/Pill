@@ -63,7 +63,7 @@ class DayWidget extends StatelessWidget {
           child: ListView.builder(
             itemCount: pillsTaken.length,
             itemBuilder: (_, index) => PillTakenWidget(
-                pillToTake: pillsTaken[index], dateService: dateService),
+                pillTaken: pillsTaken[index], dateService: dateService),
           )),
     );
   }
