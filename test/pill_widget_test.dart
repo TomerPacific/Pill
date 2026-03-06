@@ -94,7 +94,7 @@ void main() async {
                                 child: ListView.builder(
                                   itemCount: state.pillsTaken!.length,
                                   itemBuilder: (_, index) => PillTakenWidget(
-                                      pillToTake: state.pillsTaken![index],
+                                      pillTaken: state.pillsTaken![index],
                                       dateService: dateService),
                                 )),
                           )
