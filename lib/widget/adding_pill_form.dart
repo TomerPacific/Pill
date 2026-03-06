@@ -22,9 +22,17 @@ class AddingPillForm extends StatefulWidget {
 
 class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
-  final _pillNameTextEditingController = TextEditingController();
-  final _pillAmountOfDaysToTakeController = TextEditingController();
-  final _pillRegimentController = TextEditingController();
+  late final TextEditingController _pillNameTextEditingController;
+  late final TextEditingController _pillAmountOfDaysToTakeController;
+  late final TextEditingController _pillRegimentController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pillNameTextEditingController = TextEditingController();
+    _pillAmountOfDaysToTakeController = TextEditingController(text: "7");
+    _pillRegimentController = TextEditingController(text: "1");
+  }
 
   @override
   void dispose() {
@@ -63,6 +71,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                     TextFormField(
                         key: ObjectKey("pillName"),
                         controller: _pillNameTextEditingController,
+                        textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
@@ -91,6 +100,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                         key: ObjectKey("pillRegiment"),
                         controller: _pillRegimentController,
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.next,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'How many pills to take per day?',
@@ -109,6 +119,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                         key: ObjectKey("pillDays"),
                         controller: _pillAmountOfDaysToTakeController,
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
                         decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
