@@ -65,7 +65,8 @@ class PillWidget extends StatelessWidget {
                               child: Tooltip(
                                 message: pillToTake.description!,
                                 triggerMode: TooltipTriggerMode.tap,
-                                showDuration: const Duration(seconds: 5),
+                                waitDuration: Duration.zero,
+                                showDuration: const Duration(seconds: 3),
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
