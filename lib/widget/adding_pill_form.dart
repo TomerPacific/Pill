@@ -31,6 +31,7 @@ class AddingPillFormState extends State<AddingPillForm> {
   final FocusNode _pillDaysFocusNode = FocusNode();
   
   PillDuration _selectedDuration = PillDuration.sevenDays;
+  int _pillsPerDay = 1;
 
   @override
   void initState() {
@@ -39,8 +40,11 @@ class AddingPillFormState extends State<AddingPillForm> {
     _pillAmountOfDaysToTakeController =
         TextEditingController(text: DEFAULT_PILL_DAYS);
     _pillRegimentController =
-        TextEditingController(text: DEFAULT_PILL_REGIMENT);
+        TextEditingController(text: "1"); // Default to 1
     _pillDescriptionController = TextEditingController();
+
+    _pillsPerDay = int.tryParse(DEFAULT_PILL_REGIMENT) ?? 1;
+    _pillRegimentController.text = _pillsPerDay.toString();
 
     if (DEFAULT_PILL_DAYS == "7") {
       _selectedDuration = PillDuration.sevenDays;
@@ -89,6 +93,22 @@ class AddingPillFormState extends State<AddingPillForm> {
     });
   }
 
+  void _incrementPills() {
+    setState(() {
+      _pillsPerDay++;
+      _pillRegimentController.text = _pillsPerDay.toString();
+    });
+  }
+
+  void _decrementPills() {
+    if (_pillsPerDay > 1) {
+      setState(() {
+        _pillsPerDay--;
+        _pillRegimentController.text = _pillsPerDay.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -131,27 +151,44 @@ class AddingPillFormState extends State<AddingPillForm> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a pill name';
                         }
+                        
+                        // Duplicate prevention check
+                        final pillBloc = context.read<PillBloc>();
+                        final existingPills = pillBloc.state.pillsToTake ?? [];
+                        if (existingPills.any((p) => p.pillName.toLowerCase() == value.trim().toLowerCase())) {
+                          return 'This pill is already in your list';
+                        }
+                        
                         return null;
                       }),
                   const SizedBox(height: 20.0),
-                  TextFormField(
-                      key: const ValueKey("pillRegiment"),
-                      controller: _pillRegimentController,
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'How many pills per day?',
-                          prefixIcon: Icon(Icons.confirmation_number,
-                              color: Colors.blue)),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            !Utils.isNumberGreaterThanZero(value)) {
-                          return 'Please enter a number';
-                        }
-                        return null;
-                      }),
+                  
+                  // Numeric Stepper for Pills per Day
+                  Row(
+                    children: [
+                      const Icon(Icons.confirmation_number, color: Colors.blue),
+                      const SizedBox(width: 12),
+                      const Text("Pills per day:", style: TextStyle(fontSize: 16)),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: _decrementPills,
+                        icon: const Icon(Icons.remove_circle_outline, color: Colors.blue),
+                      ),
+                      SizedBox(
+                        width: 40,
+                        child: Text(
+                          _pillsPerDay.toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: _incrementPills,
+                        icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                  
                   const SizedBox(height: 20.0),
                   const Align(
                     alignment: Alignment.centerLeft,
@@ -214,6 +251,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                       key: const ValueKey("pillDescription"),
                       controller: _pillDescriptionController,
                       textInputAction: TextInputAction.done,
+                      maxLines: 3,
+                      minLines: 1,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: 'Instructions (optional)',
@@ -230,9 +269,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
                               PillToTake pill = PillToTake(
-                                  pillName: _pillNameTextEditingController.text,
-                                  pillRegiment:
-                                      int.parse(_pillRegimentController.text),
+                                  pillName: _pillNameTextEditingController.text.trim(),
+                                  pillRegiment: _pillsPerDay,
                                   description: _pillDescriptionController.text,
                                   amountOfDaysToTake: int.parse(
                                       _pillAmountOfDaysToTakeController.text));
