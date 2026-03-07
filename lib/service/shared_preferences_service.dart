@@ -60,14 +60,14 @@ class SharedPreferencesService {
 
   void addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
-
-    while (pill.amountOfDaysToTake > 0) {
+    int daysToTake = pill.amountOfDaysToTake;
+    while (daysToTake > 0) {
       String dateStr = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pill);
       _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(Duration(days: ONE_DAY));
-      pill.amountOfDaysToTake--;
+      daysToTake--;
     }
   }
 
@@ -101,10 +101,10 @@ class SharedPreferencesService {
   }
 
   void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
-    DateTime date = DateTime.now();
+    DateTime now = DateTime.now();
     DateTime runningDate = dateToRemovePillsFrom;
 
-    while (runningDate.difference(date).inDays >= ONE_DAY) {
+    while (now.difference(runningDate).inDays >= ONE_DAY) {
       String converted = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pillsToTake = getPillsToTakeForDate(converted);
       List<PillTaken> pillsTaken = getPillsTakenForDate(converted);
