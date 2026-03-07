@@ -143,16 +143,16 @@ class AddingPillFormState extends State<AddingPillForm> {
                         FilteringTextInputFormatter.singleLineFormatter
                       ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
+                        if (value == null || value.trim().isEmpty) {
                           return 'Please enter a pill name';
                         }
 
                         // Duplicate prevention check
                         final pillBloc = context.read<PillBloc>();
                         final existingPills = pillBloc.state.pillsToTake ?? [];
+                        final trimmedValue = value.trim().toLowerCase();
                         if (existingPills.any((p) =>
-                            p.pillName.toLowerCase() ==
-                            value.trim().toLowerCase())) {
+                            p.pillName.toLowerCase() == trimmedValue)) {
                           return 'This pill is already in your list';
                         }
 
