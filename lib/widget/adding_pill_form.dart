@@ -24,12 +24,11 @@ class AddingPillFormState extends State<AddingPillForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _pillNameTextEditingController;
   late final TextEditingController _pillAmountOfDaysToTakeController;
-  late final TextEditingController _pillRegimentController;
   late final TextEditingController _pillDescriptionController;
-  
+
   final FocusNode _pillNameFocusNode = FocusNode();
   final FocusNode _pillDaysFocusNode = FocusNode();
-  
+
   PillDuration _selectedDuration = PillDuration.sevenDays;
   int _pillsPerDay = 1;
 
@@ -39,12 +38,9 @@ class AddingPillFormState extends State<AddingPillForm> {
     _pillNameTextEditingController = TextEditingController();
     _pillAmountOfDaysToTakeController =
         TextEditingController(text: DEFAULT_PILL_DAYS);
-    _pillRegimentController =
-        TextEditingController(text: "1"); // Default to 1
     _pillDescriptionController = TextEditingController();
 
     _pillsPerDay = int.tryParse(DEFAULT_PILL_REGIMENT) ?? 1;
-    _pillRegimentController.text = _pillsPerDay.toString();
 
     if (DEFAULT_PILL_DAYS == "7") {
       _selectedDuration = PillDuration.sevenDays;
@@ -67,7 +63,6 @@ class AddingPillFormState extends State<AddingPillForm> {
   void dispose() {
     _pillNameTextEditingController.dispose();
     _pillAmountOfDaysToTakeController.dispose();
-    _pillRegimentController.dispose();
     _pillDescriptionController.dispose();
     _pillNameFocusNode.dispose();
     _pillDaysFocusNode.dispose();
@@ -87,7 +82,7 @@ class AddingPillFormState extends State<AddingPillForm> {
       } else {
         _pillAmountOfDaysToTakeController.clear();
         Future.delayed(const Duration(milliseconds: 100), () {
-            if (mounted) _pillDaysFocusNode.requestFocus();
+          if (mounted) _pillDaysFocusNode.requestFocus();
         });
       }
     });
@@ -96,7 +91,6 @@ class AddingPillFormState extends State<AddingPillForm> {
   void _incrementPills() {
     setState(() {
       _pillsPerDay++;
-      _pillRegimentController.text = _pillsPerDay.toString();
     });
   }
 
@@ -104,7 +98,6 @@ class AddingPillFormState extends State<AddingPillForm> {
     if (_pillsPerDay > 1) {
       setState(() {
         _pillsPerDay--;
-        _pillRegimentController.text = _pillsPerDay.toString();
       });
     }
   }
@@ -112,14 +105,16 @@ class AddingPillFormState extends State<AddingPillForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(ADDING_A_PILL_TITLE,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 20.0)),
             const SizedBox(height: 25.0),
             Form(
               key: _formKey,
@@ -151,44 +146,47 @@ class AddingPillFormState extends State<AddingPillForm> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter a pill name';
                         }
-                        
+
                         // Duplicate prevention check
                         final pillBloc = context.read<PillBloc>();
                         final existingPills = pillBloc.state.pillsToTake ?? [];
-                        if (existingPills.any((p) => p.pillName.toLowerCase() == value.trim().toLowerCase())) {
+                        if (existingPills.any((p) =>
+                            p.pillName.toLowerCase() ==
+                            value.trim().toLowerCase())) {
                           return 'This pill is already in your list';
                         }
-                        
+
                         return null;
                       }),
                   const SizedBox(height: 20.0),
-                  
-                  // Numeric Stepper for Pills per Day
                   Row(
                     children: [
                       const Icon(Icons.confirmation_number, color: Colors.blue),
                       const SizedBox(width: 12),
-                      const Text("Pills per day:", style: TextStyle(fontSize: 16)),
+                      const Text("Pills per day:",
+                          style: TextStyle(fontSize: 16)),
                       const Spacer(),
                       IconButton(
                         onPressed: _decrementPills,
-                        icon: const Icon(Icons.remove_circle_outline, color: Colors.blue),
+                        icon: const Icon(Icons.remove_circle_outline,
+                            color: Colors.blue),
                       ),
                       SizedBox(
                         width: 40,
                         child: Text(
                           _pillsPerDay.toString(),
                           textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                       IconButton(
                         onPressed: _incrementPills,
-                        icon: const Icon(Icons.add_circle_outline, color: Colors.blue),
+                        icon: const Icon(Icons.add_circle_outline,
+                            color: Colors.blue),
                       ),
                     ],
                   ),
-                  
                   const SizedBox(height: 20.0),
                   const Align(
                     alignment: Alignment.centerLeft,
@@ -207,7 +205,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                         ButtonSegment(
                             value: PillDuration.sevenDays, label: Text('7d')),
                         ButtonSegment(
-                            value: PillDuration.fourteenDays, label: Text('14d')),
+                            value: PillDuration.fourteenDays,
+                            label: Text('14d')),
                         ButtonSegment(
                             value: PillDuration.oneMonth, label: Text('30d')),
                         ButtonSegment(
@@ -231,8 +230,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                           decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.green, width: 1),
+                                borderSide:
+                                    BorderSide(color: Colors.green, width: 1),
                               ),
                               hintText: 'Number of days',
                               prefixIcon: Icon(Icons.calendar_today,
@@ -269,7 +268,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
                               PillToTake pill = PillToTake(
-                                  pillName: _pillNameTextEditingController.text.trim(),
+                                  pillName: _pillNameTextEditingController.text
+                                      .trim(),
                                   pillRegiment: _pillsPerDay,
                                   description: _pillDescriptionController.text,
                                   amountOfDaysToTake: int.parse(
@@ -283,15 +283,15 @@ class AddingPillFormState extends State<AddingPillForm> {
                                   pillToTake: pill));
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Pill Added!")),
+                                const SnackBar(content: Text("Pill Added!")),
                               );
 
                               FocusScope.of(context).unfocus();
                               Navigator.pop(context);
                             }
                           },
-                          icon: const Icon(Icons.check, color: Colors.lightGreen),
+                          icon:
+                              const Icon(Icons.check, color: Colors.lightGreen),
                           label: const Text(ADD_PILL_FORM_CONFIRM)),
                       ElevatedButton.icon(
                         onPressed: () {
