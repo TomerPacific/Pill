@@ -17,13 +17,15 @@ class PillsEvent {
   final PillToTake? pillToTake;
   final List<PillToTake>? pillsToTake;
   final List<PillTaken>? pillsTaken;
+  final DateTime? startDateTime;
 
   PillsEvent(
       {required this.eventName,
       required this.date,
       this.pillToTake,
       this.pillsToTake,
-      this.pillsTaken});
+      this.pillsTaken,
+      this.startDateTime});
 }
 
 class PillBloc extends Bloc<PillsEvent, PillState> {
@@ -61,11 +63,12 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
       return;
     }
 
-    List<PillToTake> pillsToTake =
+    List<PillToTake> pillsToTakeList =
         sharedPreferencesService.getPillsToTakeForDate(event.date);
-    List<PillToTake> pills = List.from(pillsToTake)..add(pillToTake);
-    sharedPreferencesService.addPillToDates(event.date, pillToTake);
-    emitter(new PillState(pillsToTake: pills, pillsTaken: state.pillsTaken));
+    List<PillToTake> pills = List.from(pillsToTakeList)..add(pillToTake);
+    sharedPreferencesService.addPillToDates(
+        event.startDateTime ?? DateTime.now(), pillToTake);
+    emitter(PillState(pillsToTake: pills, pillsTaken: state.pillsTaken));
   }
 
   void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
