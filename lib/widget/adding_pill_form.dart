@@ -142,7 +142,8 @@ class AddingPillFormState extends State<AddingPillForm> {
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: 'Instructions (optional)',
-                          prefixIcon: Icon(Icons.description, color: Colors.orange)),
+                          prefixIcon:
+                              Icon(Icons.description, color: Colors.orange)),
                       validator: (value) {
                         return null;
                       }),
@@ -165,6 +166,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                                   eventName: PillEvent.addPill,
                                   date: DateService().getDateAsMonthAndDay(
                                       widget._currentDate),
+                                  startDateTime: widget._currentDate,
                                   pillToTake: pill));
 
                               ScaffoldMessenger.of(context).showSnackBar(
