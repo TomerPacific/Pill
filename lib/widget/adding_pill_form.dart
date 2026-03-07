@@ -64,11 +64,13 @@ class AddingPillFormState extends State<AddingPillForm> {
             SizedBox(height: 25.0),
             Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: <Widget>[
                   TextFormField(
                       key: ObjectKey("pillName"),
                       controller: _pillNameTextEditingController,
+                      autofocus: true,
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
