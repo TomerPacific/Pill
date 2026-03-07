@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/custom_icons.dart';
@@ -27,7 +26,11 @@ class AddingPillFormState extends State<AddingPillForm> {
   late final TextEditingController _pillAmountOfDaysToTakeController;
   late final TextEditingController _pillRegimentController;
   late final TextEditingController _pillDescriptionController;
-  PillDuration _selectedDurationPreset = PillDuration.sevenDays;
+  
+  final FocusNode _pillNameFocusNode = FocusNode();
+  final FocusNode _pillDaysFocusNode = FocusNode();
+  
+  PillDuration _selectedDuration = PillDuration.sevenDays;
 
   @override
   void initState() {
@@ -38,17 +41,22 @@ class AddingPillFormState extends State<AddingPillForm> {
     _pillRegimentController =
         TextEditingController(text: DEFAULT_PILL_REGIMENT);
     _pillDescriptionController = TextEditingController();
-    
-    // Set initial enum state based on default value
+
     if (DEFAULT_PILL_DAYS == "7") {
-      _selectedDurationPreset = PillDuration.sevenDays;
+      _selectedDuration = PillDuration.sevenDays;
     } else if (DEFAULT_PILL_DAYS == "14") {
-      _selectedDurationPreset = PillDuration.fourteenDays;
+      _selectedDuration = PillDuration.fourteenDays;
     } else if (DEFAULT_PILL_DAYS == "30") {
-      _selectedDurationPreset = PillDuration.oneMonth;
+      _selectedDuration = PillDuration.oneMonth;
     } else {
-      _selectedDurationPreset = PillDuration.custom;
+      _selectedDuration = PillDuration.custom;
     }
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _pillNameFocusNode.requestFocus();
+      }
+    });
   }
 
   @override
@@ -57,40 +65,51 @@ class AddingPillFormState extends State<AddingPillForm> {
     _pillAmountOfDaysToTakeController.dispose();
     _pillRegimentController.dispose();
     _pillDescriptionController.dispose();
+    _pillNameFocusNode.dispose();
+    _pillDaysFocusNode.dispose();
     super.dispose();
   }
 
-  void _updateDuration(String value, PillDuration preset) {
+  void _onDurationChanged(PillDuration selection) {
+    if (_selectedDuration == selection) return;
     setState(() {
-      _selectedDurationPreset = preset;
-      _pillAmountOfDaysToTakeController.text = value;
+      _selectedDuration = selection;
+      if (selection == PillDuration.sevenDays) {
+        _pillAmountOfDaysToTakeController.text = "7";
+      } else if (selection == PillDuration.fourteenDays) {
+        _pillAmountOfDaysToTakeController.text = "14";
+      } else if (selection == PillDuration.oneMonth) {
+        _pillAmountOfDaysToTakeController.text = "30";
+      } else {
+        _pillAmountOfDaysToTakeController.clear();
+        Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted) _pillDaysFocusNode.requestFocus();
+        });
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 20,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(ADDING_A_PILL_TITLE,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
-            SizedBox(height: 25.0),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
+            const SizedBox(height: 25.0),
             Form(
               key: _formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 children: <Widget>[
                   TextFormField(
-                      key: ObjectKey("pillName"),
+                      key: const ValueKey("pillName"),
                       controller: _pillNameTextEditingController,
-                      autofocus: true,
+                      focusNode: _pillNameFocusNode,
                       textInputAction: TextInputAction.next,
                       decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -114,9 +133,9 @@ class AddingPillFormState extends State<AddingPillForm> {
                         }
                         return null;
                       }),
-                  SizedBox(height: 20.0),
+                  const SizedBox(height: 20.0),
                   TextFormField(
-                      key: ObjectKey("pillRegiment"),
+                      key: const ValueKey("pillRegiment"),
                       controller: _pillRegimentController,
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
@@ -133,79 +152,66 @@ class AddingPillFormState extends State<AddingPillForm> {
                         }
                         return null;
                       }),
-                  SizedBox(height: 20.0),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text("Duration",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, color: Colors.grey)),
-                      ),
-                      SizedBox(height: 8.0),
-                      Wrap(
-                        spacing: 8.0,
-                        children: [
-                          ChoiceChip(
-                            label: Text("7 Days"),
-                            selected: _selectedDurationPreset == PillDuration.sevenDays,
-                            onSelected: (selected) => _updateDuration("7", PillDuration.sevenDays),
-                          ),
-                          ChoiceChip(
-                            label: Text("14 Days"),
-                            selected: _selectedDurationPreset == PillDuration.fourteenDays,
-                            onSelected: (selected) =>
-                                _updateDuration("14", PillDuration.fourteenDays),
-                          ),
-                          ChoiceChip(
-                            label: Text("1 Month"),
-                            selected: _selectedDurationPreset == PillDuration.oneMonth,
-                            onSelected: (selected) =>
-                                _updateDuration("30", PillDuration.oneMonth),
-                          ),
-                          ChoiceChip(
-                            label: Text("Custom"),
-                            selected: _selectedDurationPreset == PillDuration.custom,
-                            onSelected: (selected) {
-                              setState(() {
-                                _selectedDurationPreset = PillDuration.custom;
-                                _pillAmountOfDaysToTakeController.clear();
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      if (_selectedDurationPreset == PillDuration.custom) ...[
-                        SizedBox(height: 10.0),
-                        TextFormField(
-                            key: ObjectKey("pillDays"),
-                            controller: _pillAmountOfDaysToTakeController,
-                            keyboardType: TextInputType.number,
-                            textInputAction: TextInputAction.next,
-                            decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide:
-                                      BorderSide(color: Colors.green, width: 1),
-                                ),
-                                hintText: 'Number of days',
-                                prefixIcon: Icon(Icons.calendar_today,
-                                    color: Colors.green)),
-                            validator: (value) {
-                              if (value == null ||
-                                  value.isEmpty ||
-                                  !Utils.isNumberGreaterThanZero(value)) {
-                                return 'Please enter a number';
-                              }
-                              return null;
-                            }),
-                      ],
-                    ],
+                  const SizedBox(height: 20.0),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 8.0, left: 4.0),
+                      child: Text("Duration",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.grey)),
+                    ),
                   ),
-                  SizedBox(height: 20.0),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<PillDuration>(
+                      showSelectedIcon: false,
+                      segments: const [
+                        ButtonSegment(
+                            value: PillDuration.sevenDays, label: Text('7d')),
+                        ButtonSegment(
+                            value: PillDuration.fourteenDays, label: Text('14d')),
+                        ButtonSegment(
+                            value: PillDuration.oneMonth, label: Text('30d')),
+                        ButtonSegment(
+                            value: PillDuration.custom, label: Text('Custom')),
+                      ],
+                      selected: {_selectedDuration},
+                      onSelectionChanged: (Set<PillDuration> newSelection) {
+                        _onDurationChanged(newSelection.first);
+                      },
+                    ),
+                  ),
+                  if (_selectedDuration == PillDuration.custom)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: TextFormField(
+                          key: const ValueKey("pillDays"),
+                          controller: _pillAmountOfDaysToTakeController,
+                          focusNode: _pillDaysFocusNode,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.green, width: 1),
+                              ),
+                              hintText: 'Number of days',
+                              prefixIcon: Icon(Icons.calendar_today,
+                                  color: Colors.green)),
+                          validator: (value) {
+                            if (value == null ||
+                                value.isEmpty ||
+                                !Utils.isNumberGreaterThanZero(value)) {
+                              return 'Please enter a number';
+                            }
+                            return null;
+                          }),
+                    ),
+                  const SizedBox(height: 20.0),
                   TextFormField(
-                      key: ObjectKey("pillDescription"),
+                      key: const ValueKey("pillDescription"),
                       controller: _pillDescriptionController,
                       textInputAction: TextInputAction.done,
                       decoration: const InputDecoration(
@@ -216,7 +222,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                       validator: (value) {
                         return null;
                       }),
-                  SizedBox(height: 25.0),
+                  const SizedBox(height: 25.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -240,21 +246,21 @@ class AddingPillFormState extends State<AddingPillForm> {
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                    content: const Text("Pill Added!")),
+                                    content: Text("Pill Added!")),
                               );
 
                               FocusScope.of(context).unfocus();
                               Navigator.pop(context);
                             }
                           },
-                          icon: Icon(Icons.check, color: Colors.lightGreen),
+                          icon: const Icon(Icons.check, color: Colors.lightGreen),
                           label: const Text(ADD_PILL_FORM_CONFIRM)),
                       ElevatedButton.icon(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
                           Navigator.pop(context);
                         },
-                        icon: Icon(Icons.clear, color: Colors.red),
+                        icon: const Icon(Icons.clear, color: Colors.red),
                         label: const Text(ADD_PILL_FORM_CANCEL),
                       ),
                     ],
