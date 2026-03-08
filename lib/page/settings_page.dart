@@ -42,8 +42,8 @@ class SettingsPage extends StatelessWidget {
 
 Color _getThemeColorForDarkModeSetting(BuildContext context) {
   return context.read<ThemeBloc>().state == ThemeMode.dark
-      ? Color.fromARGB(200, 243, 231, 106)
-      : Color(0xFF642ef3);
+      ? const Color.fromARGB(200, 243, 231, 106)
+      : const Color(0xFF642ef3);
 }
 
 AlertDialog _createClearAllPillsAlertDialog(BuildContext context) {

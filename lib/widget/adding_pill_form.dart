@@ -112,8 +112,8 @@ class AddingPillFormState extends State<AddingPillForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(addingAPillTitle,
-                style: const TextStyle(
+            const Text(addingAPillTitle,
+                style: TextStyle(
                     fontWeight: FontWeight.bold, fontSize: 20.0)),
             const SizedBox(height: 25.0),
             Form(

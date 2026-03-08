@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:pill/constants.dart';
 import 'package:pill/model/pill_to_take.dart';
 
-const String DEFAULT_PILL_TAKEN_IMAGE = 'assets/images/pill_taken.png';
+const String defaultPillTakenImage = 'assets/images/pill_taken.png';
 
 class PillTaken {
   String pillName;
-  String pillImage = DEFAULT_PILL_TAKEN_IMAGE;
+  String pillImage = defaultPillTakenImage;
   String? description;
   DateTime? lastTaken;
 

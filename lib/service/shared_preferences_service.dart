@@ -66,7 +66,7 @@ class SharedPreferencesService {
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pill);
       _setPillsForDate(dateStr, pills);
-      runningDate = runningDate.add(Duration(days: ONE_DAY));
+      runningDate = runningDate.add(const Duration(days: ONE_DAY));
       daysToTake--;
     }
   }
@@ -114,7 +114,7 @@ class SharedPreferencesService {
 
       _setPillsForDate(converted, pillsToTake);
       _setPillsTakenForDate(converted, pillsTaken);
-      runningDate = runningDate.add(Duration(days: ONE_DAY));
+      runningDate = runningDate.add(const Duration(days: ONE_DAY));
     }
   }
 

@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:pill/constants.dart';
 
-const String DEFAULT_PILL_TO_TAKE_IMAGE = 'assets/images/pill_to_take.png';
+const String defaultPillToTakeImage = 'assets/images/pill_to_take.png';
 
 class PillToTake {
   String pillName;
   int pillRegiment;
-  String pillImage = DEFAULT_PILL_TO_TAKE_IMAGE;
+  String pillImage = defaultPillToTakeImage;
   String? description;
   int amountOfDaysToTake;
   DateTime? lastTaken;
@@ -58,11 +58,11 @@ class PillToTake {
           .toList();
 
   bool equals(PillToTake otherPill) {
-    return (this.pillRegiment == otherPill.pillRegiment &&
-        this.pillName == otherPill.pillName &&
-        this.description == otherPill.description &&
-        this.pillImage == otherPill.pillImage &&
-        this.amountOfDaysToTake == otherPill.amountOfDaysToTake);
+    return (pillRegiment == otherPill.pillRegiment &&
+        pillName == otherPill.pillName &&
+        description == otherPill.description &&
+        pillImage == otherPill.pillImage &&
+        amountOfDaysToTake == otherPill.amountOfDaysToTake);
   }
 
   PillToTake copyWith({
