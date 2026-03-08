@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
+import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/constants.dart';
@@ -16,18 +16,18 @@ const int PILLS_TAKEN_TAB_INDEX = 1;
 const int SETTINGS_TAB_INDEX = 2;
 
 class MainPage extends StatefulWidget {
-  MainPage(
-      {required this.title,
+  const MainPage(
+      {super.key,
+      required this.title,
       required this.sharedPreferencesService,
-      required this.dateService})
-      : super();
+      required this.dateService});
 
   final String title;
   final SharedPreferencesService sharedPreferencesService;
   final DateService dateService;
 
   @override
-  _MainPageState createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
@@ -43,7 +43,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: AMOUNT_OF_TABS,
+        length: amountOfTabs,
         child: Scaffold(
             appBar: _mainPageAppBar(context, widget.dateService),
             body: _mainPageTabBarView(
@@ -56,10 +56,10 @@ PreferredSizeWidget _mainPageAppBar(
   DateService dateService,
 ) {
   return PreferredSize(
-    preferredSize: Size.fromHeight(50),
+    preferredSize: const Size.fromHeight(50),
     child: AppBar(
       bottom: TabBar(
-        tabs: [
+        tabs: const [
           Tab(icon: Icon(CustomIcons.pill)),
           Tab(icon: Icon(Icons.watch_later_rounded)),
           Tab(icon: Icon(Icons.settings)),
@@ -75,7 +75,7 @@ PreferredSizeWidget _mainPageAppBar(
             case SETTINGS_TAB_INDEX:
               context
                   .read<ClearPillsBloc>()
-                  .add(ClearPillsEvent.UpdatePillsStatus);
+                  .add(ClearPillsEvent.updatePillsStatus);
           }
         },
       ),
@@ -92,24 +92,24 @@ TabBarView _mainPageTabBarView(DateService dateService,
         children: <Widget>[
           DayWidget(
               date: DateTime.now(),
-              header: PILLS_TO_TAKE_HEADER,
+              header: pillsToTakeHeader,
               dateService: dateService),
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               child: FloatingActionButton(
                   onPressed: () {
                     showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                           borderRadius:
                               BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         builder: (context) => AddingPillForm(DateTime.now()));
                   },
-                  child: Icon(Icons.add)),
+                  child: const Icon(Icons.add)),
             ),
           )
         ],
@@ -121,7 +121,7 @@ TabBarView _mainPageTabBarView(DateService dateService,
           children: <Widget>[
             DayWidget(
                 date: DateTime.now(),
-                header: PILLS_TAKEN_HEADER,
+                header: pillsTakenHeader,
                 dateService: dateService),
           ]);
     }),

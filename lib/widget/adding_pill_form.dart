@@ -12,7 +12,7 @@ import 'package:pill/utils.dart';
 class AddingPillForm extends StatefulWidget {
   final DateTime _currentDate;
 
-  const AddingPillForm(this._currentDate);
+  const AddingPillForm(this._currentDate, {super.key});
 
   @override
   AddingPillFormState createState() {
@@ -37,16 +37,16 @@ class AddingPillFormState extends State<AddingPillForm> {
     super.initState();
     _pillNameTextEditingController = TextEditingController();
     _pillAmountOfDaysToTakeController =
-        TextEditingController(text: DEFAULT_PILL_DAYS);
+        TextEditingController(text: defaultPillDays);
     _pillDescriptionController = TextEditingController();
 
-    _pillsPerDay = int.tryParse(DEFAULT_PILL_REGIMENT) ?? 1;
+    _pillsPerDay = int.tryParse(defaultPillRegiment) ?? 1;
 
-    if (DEFAULT_PILL_DAYS == "7") {
+    if (defaultPillDays == "7") {
       _selectedDuration = PillDuration.sevenDays;
-    } else if (DEFAULT_PILL_DAYS == "14") {
+    } else if (defaultPillDays == "14") {
       _selectedDuration = PillDuration.fourteenDays;
-    } else if (DEFAULT_PILL_DAYS == "30") {
+    } else if (defaultPillDays == "30") {
       _selectedDuration = PillDuration.oneMonth;
     } else {
       _selectedDuration = PillDuration.custom;
@@ -112,7 +112,7 @@ class AddingPillFormState extends State<AddingPillForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(ADDING_A_PILL_TITLE,
+            Text(addingAPillTitle,
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, fontSize: 20.0)),
             const SizedBox(height: 25.0),
@@ -292,14 +292,14 @@ class AddingPillFormState extends State<AddingPillForm> {
                           },
                           icon:
                               const Icon(Icons.check, color: Colors.lightGreen),
-                          label: const Text(ADD_PILL_FORM_CONFIRM)),
+                          label: const Text(addPillFormConfirm)),
                       ElevatedButton.icon(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
                           Navigator.pop(context);
                         },
                         icon: const Icon(Icons.clear, color: Colors.red),
-                        label: const Text(ADD_PILL_FORM_CANCEL),
+                        label: const Text(addPillFormCancel),
                       ),
                     ],
                   )

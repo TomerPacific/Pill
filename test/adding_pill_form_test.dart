@@ -23,7 +23,7 @@ void main() async {
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "Test Pill");
+    await tester.enterText(find.byKey(const ObjectKey("pillName")), "Test Pill");
     // Regiment and Days already have defaults (1 and 7)
 
     await tester.tap(find.byIcon(Icons.check));
@@ -41,7 +41,7 @@ void main() async {
     await tester.ensureVisible(find.byType(AddingPillForm));
     
     // Clear the name field (it's empty by default anyway)
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "");
+    await tester.enterText(find.byKey(const ObjectKey("pillName")), "");
 
     await tester.tap(find.byIcon(Icons.check));
 
@@ -55,8 +55,8 @@ void main() async {
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "Test Pill");
-    await tester.enterText(find.byKey(ObjectKey("pillDescription")), "Take after eating");
+    await tester.enterText(find.byKey(const ObjectKey("pillName")), "Test Pill");
+    await tester.enterText(find.byKey(const ObjectKey("pillDescription")), "Take after eating");
 
     await tester.tap(find.byIcon(Icons.check));
 
@@ -72,7 +72,7 @@ void main() async {
     await tester.ensureVisible(find.byType(AddingPillForm));
 
     // Input formatter should block numbers
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "1234");
+    await tester.enterText(find.byKey(const ObjectKey("pillName")), "1234");
 
     await tester.tap(find.byIcon(Icons.check));
 
@@ -81,7 +81,7 @@ void main() async {
     expect(find.text("Please enter a pill name"), findsOneWidget);
 
     TextFormField pillName =
-        tester.widget<TextFormField>(find.byKey(ObjectKey("pillName")));
+        tester.widget<TextFormField>(find.byKey(const ObjectKey("pillName")));
 
     expect(pillName.controller?.text.length, 0);
   });

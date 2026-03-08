@@ -12,7 +12,7 @@ class SharedPreferencesService {
   late SharedPreferences _sharedPreferences;
 
   SharedPreferencesService._create(DateService dateService) {
-    this._dateService = dateService;
+    _dateService = dateService;
   }
 
   static Future<SharedPreferencesService> create(
@@ -35,7 +35,7 @@ class SharedPreferencesService {
     List<PillTaken> pillsTaken,
   ) {
     _sharedPreferences.setString(
-        PILLS_TAKEN_KEY + date, PillTaken.encode(pillsTaken));
+        pillsTakenKey + date, PillTaken.encode(pillsTaken));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
@@ -49,7 +49,7 @@ class SharedPreferencesService {
   }
 
   List<PillTaken> getPillsTakenForDate(String date) {
-    String? encodedPills = _sharedPreferences.getString(PILLS_TAKEN_KEY + date);
+    String? encodedPills = _sharedPreferences.getString(pillsTakenKey + date);
     List<PillTaken> pillsTaken = [];
     if (encodedPills != null) {
       pillsTaken = PillTaken.decode(encodedPills);
@@ -120,12 +120,12 @@ class SharedPreferencesService {
 
   void setTimeWhenApplicationWasOpened() {
     DateTime now = DateTime.now();
-    _sharedPreferences.setString(TIME_APP_OPENED_KEY, now.toIso8601String());
+    _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
     String? timeApplicationWasOpened =
-        _sharedPreferences.getString(TIME_APP_OPENED_KEY);
+        _sharedPreferences.getString(timeAppOpenedKey);
     return timeApplicationWasOpened != null
         ? DateTime.parse(timeApplicationWasOpened)
         : null;
@@ -134,7 +134,7 @@ class SharedPreferencesService {
   void clearAllPills() {
     Set<String> keys = _sharedPreferences.getKeys();
     for (String key in keys) {
-      if (key.contains(TIME_APP_OPENED_KEY)) {
+      if (key.contains(timeAppOpenedKey)) {
         continue;
       }
       _sharedPreferences.remove(key);
@@ -158,7 +158,7 @@ class SharedPreferencesService {
     Set<String> keys = _sharedPreferences.getKeys();
     if (keys.isEmpty) return false;
     for (String key in keys) {
-      if (key.contains(RegExp('[0-9]')) && !key.contains(PILLS_TAKEN_KEY)) {
+      if (key.contains(RegExp('[0-9]')) && !key.contains(pillsTakenKey)) {
         List<PillToTake> pills = getPillsToTakeForDate(key);
         if (pills.isNotEmpty) return true;
       }
@@ -168,11 +168,11 @@ class SharedPreferencesService {
   }
 
   void saveThemeStatus(bool isDarkModeEnabled) {
-    _sharedPreferences.setBool(DARK_MODE_KEY, isDarkModeEnabled);
+    _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
   }
 
   bool getThemeStatus() {
-    bool? darkMode = _sharedPreferences.getBool(DARK_MODE_KEY);
+    bool? darkMode = _sharedPreferences.getBool(darkModeKey);
     return darkMode != null ? darkMode : false;
   }
 }

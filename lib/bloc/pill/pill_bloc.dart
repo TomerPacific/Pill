@@ -30,7 +30,7 @@ class PillsEvent {
 
 class PillBloc extends Bloc<PillsEvent, PillState> {
   PillBloc(SharedPreferencesService sharedPreferencesService)
-      : super(PillState()) {
+      : super(const PillState()) {
     on<PillsEvent>((event, emit) {
       switch (event.eventName) {
         case PillEvent.addPill:

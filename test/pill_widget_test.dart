@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
+import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
@@ -49,7 +49,7 @@ void main() async {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 40.0),
                     child: Text(currentDate,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 25.0, fontWeight: FontWeight.bold)),
                   ),
                 ),
@@ -57,7 +57,7 @@ void main() async {
                     ? Padding(
                         padding: const EdgeInsets.only(top: 20),
                         child: Text(title,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)))
                     : Expanded(
                         child: SizedBox(

@@ -17,7 +17,7 @@ class PillTaken {
       required this.lastTaken});
 
   factory PillTaken.fromJson(Map<String, dynamic> jsonData) {
-    String? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
+    String? lastTaken = jsonData[pillLastTakenKey];
     DateTime? lastTakenDate;
     try {
       if (lastTaken != null) {
@@ -28,8 +28,8 @@ class PillTaken {
     }
 
     return PillTaken(
-        pillName: jsonData[PILL_NAME_KEY],
-        description: jsonData[PILL_DESCRIPTION_KEY],
+        pillName: jsonData[pillNameKey],
+        description: jsonData[pillDescriptionKey],
         lastTaken: lastTakenDate);
   }
 
@@ -39,11 +39,10 @@ class PillTaken {
   }
 
   static Map<String, dynamic> toMap(PillTaken pill) => {
-        PILL_NAME_KEY: pill.pillName,
-    
-        PILL_DESCRIPTION_KEY: pill.description,
-        PILL_LAST_TAKEN_KEY: pill.lastTaken?.toIso8601String()
-  };
+        pillNameKey: pill.pillName,
+        pillDescriptionKey: pill.description,
+        pillLastTakenKey: pill.lastTaken?.toIso8601String()
+      };
 
   static String encode(List<PillTaken> pills) => json.encode(
         pills

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
+import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 
 class SettingsPage extends StatelessWidget {
-  SettingsPage({required this.sharedPreferencesService});
+  const SettingsPage({required this.sharedPreferencesService});
 
   final SharedPreferencesService sharedPreferencesService;
 
@@ -14,7 +14,7 @@ class SettingsPage extends StatelessWidget {
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       SwitchListTile(
           title: const Text("Dark Mode"),
-          secondary: new Icon(Icons.dark_mode,
+          secondary: Icon(Icons.dark_mode,
               color: _getThemeColorForDarkModeSetting(context)),
           value:
               context.read<ThemeBloc>().state == ThemeMode.dark ? true : false,
@@ -55,7 +55,7 @@ AlertDialog _createClearAllPillsAlertDialog(BuildContext context) {
       TextButton(
           onPressed: () {
             BlocProvider.of<ClearPillsBloc>(context)
-                .add(ClearPillsEvent.ClearAllPills);
+                .add(ClearPillsEvent.clearAllPills);
             Navigator.pop(context);
           },
           child: const Text("Yes")),

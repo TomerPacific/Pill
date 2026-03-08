@@ -3,7 +3,6 @@ import 'package:pill/constants.dart';
 
 const String DEFAULT_PILL_TO_TAKE_IMAGE = 'assets/images/pill_to_take.png';
 
-
 class PillToTake {
   String pillName;
   int pillRegiment;
@@ -20,8 +19,7 @@ class PillToTake {
       this.lastTaken});
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
-
-    String? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
+    String? lastTaken = jsonData[pillLastTakenKey];
     DateTime? lastTakenDate;
 
     try {
@@ -33,19 +31,19 @@ class PillToTake {
     }
 
     return PillToTake(
-        pillName: jsonData[PILL_NAME_KEY],
-        pillRegiment: jsonData[PILL_REGIMENT_KEY],
-        description: jsonData[PILL_DESCRIPTION_KEY],
-        amountOfDaysToTake: jsonData[PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY],
+        pillName: jsonData[pillNameKey],
+        pillRegiment: jsonData[pillRegimentKey],
+        description: jsonData[pillDescriptionKey],
+        amountOfDaysToTake: jsonData[pillAmountOfDaysToTakeKey],
         lastTaken: lastTakenDate);
   }
 
   static Map<String, dynamic> toMap(PillToTake pill) => {
-        PILL_NAME_KEY: pill.pillName,
-        PILL_REGIMENT_KEY: pill.pillRegiment,
-        PILL_DESCRIPTION_KEY: pill.description,
-        PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY: pill.amountOfDaysToTake,
-        PILL_LAST_TAKEN_KEY: pill.lastTaken?.toIso8601String()
+        pillNameKey: pill.pillName,
+        pillRegimentKey: pill.pillRegiment,
+        pillDescriptionKey: pill.description,
+        pillAmountOfDaysToTakeKey: pill.amountOfDaysToTake,
+        pillLastTakenKey: pill.lastTaken?.toIso8601String()
       };
 
   static String encode(List<PillToTake> pills) => json.encode(

@@ -12,8 +12,8 @@ import 'package:pill/widget/pill_to_take_widget.dart';
 const double LIST_ITEM_HEIGHT = 200.0;
 
 class DayWidget extends StatelessWidget {
-  DayWidget(
-      {required this.date, required this.header, required this.dateService});
+  const DayWidget(
+      {super.key, required this.date, required this.header, required this.dateService});
 
   final DateTime date;
   final String header;
@@ -25,7 +25,7 @@ class DayWidget extends StatelessWidget {
         ? Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Text(header,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
         : Expanded(
             child: SizedBox(
             height: LIST_ITEM_HEIGHT,
@@ -54,7 +54,7 @@ class DayWidget extends StatelessWidget {
       return Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Text(header,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));
     }
 
     return Expanded(
@@ -83,10 +83,10 @@ class DayWidget extends StatelessWidget {
               padding: const EdgeInsets.only(top: 40.0),
               child: Text(dateService.getDateAsMonthAndDay(date),
                   style:
-                      TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)),
+                      const TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          (this.header == PILLS_TO_TAKE_HEADER)
+          (header == pillsToTakeHeader)
               ? _pillsToTakeList(context, context.read<PillBloc>().state)
               : _pillsTakenList(context, context.read<PillBloc>().state)
         ],
