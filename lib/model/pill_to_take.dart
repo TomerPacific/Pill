@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:pill/constants.dart';
 
 const String defaultPillToTakeImage = 'assets/images/pill_to_take.png';
@@ -27,7 +28,7 @@ class PillToTake {
         lastTakenDate = DateTime.parse(lastTaken);
       }
     } catch (e) {
-      print("Error parsing PillToTake lastTaken value: $e");
+      log("Error parsing PillToTake lastTaken value: $e", level: 1000);
     }
 
     return PillToTake(

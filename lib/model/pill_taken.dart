@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:pill/constants.dart';
 import 'package:pill/model/pill_to_take.dart';
@@ -24,7 +25,7 @@ class PillTaken {
         lastTakenDate = DateTime.parse(lastTaken);
       }
     } catch (e) {
-      print("Error parsing PillTaken lastTaken value: $e");
+      log("Error parsing PillTaken lastTaken value: $e", level: 1000);
     }
 
     return PillTaken(
