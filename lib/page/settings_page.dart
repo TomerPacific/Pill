@@ -5,7 +5,7 @@ import 'package:pill/bloc/theme/theme_block.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({required this.sharedPreferencesService});
+  const SettingsPage({super.key, required this.sharedPreferencesService});
 
   final SharedPreferencesService sharedPreferencesService;
 

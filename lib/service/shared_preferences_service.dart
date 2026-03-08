@@ -5,7 +5,7 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const int ONE_DAY = 1;
+const int oneDay = 1;
 
 class SharedPreferencesService {
   late DateService _dateService;
@@ -66,7 +66,7 @@ class SharedPreferencesService {
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pill);
       _setPillsForDate(dateStr, pills);
-      runningDate = runningDate.add(const Duration(days: ONE_DAY));
+      runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
     }
   }
@@ -104,7 +104,7 @@ class SharedPreferencesService {
     DateTime now = DateTime.now();
     DateTime runningDate = dateToRemovePillsFrom;
 
-    while (now.difference(runningDate).inDays >= ONE_DAY) {
+    while (now.difference(runningDate).inDays >= oneDay) {
       String converted = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pillsToTake = getPillsToTakeForDate(converted);
       List<PillTaken> pillsTaken = getPillsTakenForDate(converted);
@@ -114,7 +114,7 @@ class SharedPreferencesService {
 
       _setPillsForDate(converted, pillsToTake);
       _setPillsTakenForDate(converted, pillsTaken);
-      runningDate = runningDate.add(const Duration(days: ONE_DAY));
+      runningDate = runningDate.add(const Duration(days: oneDay));
     }
   }
 
@@ -147,7 +147,7 @@ class SharedPreferencesService {
       setTimeWhenApplicationWasOpened();
     } else {
       DateTime now = DateTime.now();
-      if (now.difference(timeWhenApplicationWasOpened).inDays >= ONE_DAY) {
+      if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
         clearAllPillsFromDate(timeWhenApplicationWasOpened);
         setTimeWhenApplicationWasOpened();
       }
@@ -172,7 +172,6 @@ class SharedPreferencesService {
   }
 
   bool getThemeStatus() {
-    bool? darkMode = _sharedPreferences.getBool(darkModeKey);
-    return darkMode != null ? darkMode : false;
+    return _sharedPreferences.getBool(darkModeKey) ?? false;
   }
 }
