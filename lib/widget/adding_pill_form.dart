@@ -267,11 +267,16 @@ class AddingPillFormState extends State<AddingPillForm> {
                       ElevatedButton.icon(
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
+                              final trimmedDescription =
+                                  _pillDescriptionController.text.trim();
+
                               PillToTake pill = PillToTake(
                                   pillName: _pillNameTextEditingController.text
                                       .trim(),
                                   pillRegiment: _pillsPerDay,
-                                  description: _pillDescriptionController.text,
+                                  description: trimmedDescription.isEmpty
+                                      ? ''
+                                      : trimmedDescription,
                                   amountOfDaysToTake: int.parse(
                                       _pillAmountOfDaysToTakeController.text));
 
