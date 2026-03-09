@@ -4,8 +4,8 @@ import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 
 class PillTakenWidget extends StatelessWidget {
-  const PillTakenWidget({required this.pillTaken, required this.dateService})
-      : super();
+  const PillTakenWidget(
+      {super.key, required this.pillTaken, required this.dateService});
 
   final PillTaken pillTaken;
   final DateService dateService;
@@ -22,11 +22,12 @@ class PillTakenWidget extends StatelessWidget {
           children: [
             Text(
               pillTaken.pillName,
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             Center(
                 child: FractionallySizedBox(
-                    widthFactor: PILL_IMAGE_WIDTH_FACTOR,
+                    widthFactor: pillImageWidthFactor,
                     child: Image.asset(
                       pillTaken.pillImage,
                       fit: BoxFit.contain,
@@ -36,12 +37,12 @@ class PillTakenWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.access_time),
-                  SizedBox(width: 5),
+                  const Icon(Icons.access_time),
+                  const SizedBox(width: 5),
                   Text(
                     "Last taken today at: ${dateService.getHourFromDate(lastTaken)}",
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20.0, fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

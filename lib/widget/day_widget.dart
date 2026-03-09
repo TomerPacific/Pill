@@ -9,11 +9,14 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
 
-const double LIST_ITEM_HEIGHT = 200.0;
+const double listItemHeight = 200.0;
 
 class DayWidget extends StatelessWidget {
-  DayWidget(
-      {required this.date, required this.header, required this.dateService});
+  const DayWidget(
+      {super.key,
+      required this.date,
+      required this.header,
+      required this.dateService});
 
   final DateTime date;
   final String header;
@@ -25,10 +28,11 @@ class DayWidget extends StatelessWidget {
         ? Padding(
             padding: const EdgeInsets.only(top: 20),
             child: Text(header,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
         : Expanded(
             child: SizedBox(
-            height: LIST_ITEM_HEIGHT,
+            height: listItemHeight,
             child: ListView.builder(
                 itemCount: pillsToTake.length,
                 itemBuilder: (_, index) => Dismissible(
@@ -54,12 +58,13 @@ class DayWidget extends StatelessWidget {
       return Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Text(header,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));
     }
 
     return Expanded(
       child: SizedBox(
-          height: LIST_ITEM_HEIGHT,
+          height: listItemHeight,
           child: ListView.builder(
             itemCount: pillsTaken.length,
             itemBuilder: (_, index) => PillTakenWidget(
@@ -82,11 +87,11 @@ class DayWidget extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 40.0),
               child: Text(dateService.getDateAsMonthAndDay(date),
-                  style:
-                      TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold)),
+                  style: const TextStyle(
+                      fontSize: 25.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          (this.header == PILLS_TO_TAKE_HEADER)
+          (header == pillsToTakeHeader)
               ? _pillsToTakeList(context, context.read<PillBloc>().state)
               : _pillsTakenList(context, context.read<PillBloc>().state)
         ],

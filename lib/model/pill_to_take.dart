@@ -1,13 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:pill/constants.dart';
 
-const String DEFAULT_PILL_TO_TAKE_IMAGE = 'assets/images/pill_to_take.png';
-
+const String defaultPillToTakeImage = 'assets/images/pill_to_take.png';
 
 class PillToTake {
   String pillName;
   int pillRegiment;
-  String pillImage = DEFAULT_PILL_TO_TAKE_IMAGE;
+  String pillImage = defaultPillToTakeImage;
   String? description;
   int amountOfDaysToTake;
   DateTime? lastTaken;
@@ -20,8 +20,7 @@ class PillToTake {
       this.lastTaken});
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
-
-    String? lastTaken = jsonData[PILL_LAST_TAKEN_KEY];
+    String? lastTaken = jsonData[pillLastTakenKey];
     DateTime? lastTakenDate;
 
     try {
@@ -29,23 +28,23 @@ class PillToTake {
         lastTakenDate = DateTime.parse(lastTaken);
       }
     } catch (e) {
-      print("Error parsing PillToTake lastTaken value: $e");
+      log("Error parsing PillToTake lastTaken value: $e", level: 1000);
     }
 
     return PillToTake(
-        pillName: jsonData[PILL_NAME_KEY],
-        pillRegiment: jsonData[PILL_REGIMENT_KEY],
-        description: jsonData[PILL_DESCRIPTION_KEY],
-        amountOfDaysToTake: jsonData[PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY],
+        pillName: jsonData[pillNameKey],
+        pillRegiment: jsonData[pillRegimentKey],
+        description: jsonData[pillDescriptionKey],
+        amountOfDaysToTake: jsonData[pillAmountOfDaysToTakeKey],
         lastTaken: lastTakenDate);
   }
 
   static Map<String, dynamic> toMap(PillToTake pill) => {
-        PILL_NAME_KEY: pill.pillName,
-        PILL_REGIMENT_KEY: pill.pillRegiment,
-        PILL_DESCRIPTION_KEY: pill.description,
-        PILL_AMOUNT_OF_DAYS_TO_TAKE_KEY: pill.amountOfDaysToTake,
-        PILL_LAST_TAKEN_KEY: pill.lastTaken?.toIso8601String()
+        pillNameKey: pill.pillName,
+        pillRegimentKey: pill.pillRegiment,
+        pillDescriptionKey: pill.description,
+        pillAmountOfDaysToTakeKey: pill.amountOfDaysToTake,
+        pillLastTakenKey: pill.lastTaken?.toIso8601String()
       };
 
   static String encode(List<PillToTake> pills) => json.encode(
@@ -60,11 +59,11 @@ class PillToTake {
           .toList();
 
   bool equals(PillToTake otherPill) {
-    return (this.pillRegiment == otherPill.pillRegiment &&
-        this.pillName == otherPill.pillName &&
-        this.description == otherPill.description &&
-        this.pillImage == otherPill.pillImage &&
-        this.amountOfDaysToTake == otherPill.amountOfDaysToTake);
+    return (pillRegiment == otherPill.pillRegiment &&
+        pillName == otherPill.pillName &&
+        description == otherPill.description &&
+        pillImage == otherPill.pillImage &&
+        amountOfDaysToTake == otherPill.amountOfDaysToTake);
   }
 
   PillToTake copyWith({

@@ -5,14 +5,14 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const int ONE_DAY = 1;
+const int oneDay = 1;
 
 class SharedPreferencesService {
   late DateService _dateService;
   late SharedPreferences _sharedPreferences;
 
   SharedPreferencesService._create(DateService dateService) {
-    this._dateService = dateService;
+    _dateService = dateService;
   }
 
   static Future<SharedPreferencesService> create(
@@ -35,7 +35,7 @@ class SharedPreferencesService {
     List<PillTaken> pillsTaken,
   ) {
     _sharedPreferences.setString(
-        PILLS_TAKEN_KEY + date, PillTaken.encode(pillsTaken));
+        pillsTakenKey + date, PillTaken.encode(pillsTaken));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
@@ -49,7 +49,7 @@ class SharedPreferencesService {
   }
 
   List<PillTaken> getPillsTakenForDate(String date) {
-    String? encodedPills = _sharedPreferences.getString(PILLS_TAKEN_KEY + date);
+    String? encodedPills = _sharedPreferences.getString(pillsTakenKey + date);
     List<PillTaken> pillsTaken = [];
     if (encodedPills != null) {
       pillsTaken = PillTaken.decode(encodedPills);
@@ -58,16 +58,16 @@ class SharedPreferencesService {
     return pillsTaken;
   }
 
-  void addPillToDates(String currentDate, PillToTake pill) {
-    DateTime runningDate = DateTime.now();
-
-    while (pill.amountOfDaysToTake > 0) {
-      List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+  void addPillToDates(DateTime startDate, PillToTake pill) {
+    DateTime runningDate = startDate;
+    int daysToTake = pill.amountOfDaysToTake;
+    while (daysToTake > 0) {
+      String dateStr = _dateService.getDateAsMonthAndDay(runningDate);
+      List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pill);
-      _setPillsForDate(currentDate, pills);
-      runningDate = runningDate.add(Duration(days: ONE_DAY));
-      currentDate = _dateService.getDateAsMonthAndDay(runningDate);
-      pill.amountOfDaysToTake--;
+      _setPillsForDate(dateStr, pills);
+      runningDate = runningDate.add(const Duration(days: oneDay));
+      daysToTake--;
     }
   }
 
@@ -101,10 +101,10 @@ class SharedPreferencesService {
   }
 
   void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
-    DateTime date = DateTime.now();
+    DateTime now = DateTime.now();
     DateTime runningDate = dateToRemovePillsFrom;
 
-    while (runningDate.difference(date).inDays >= ONE_DAY) {
+    while (now.difference(runningDate).inDays >= oneDay) {
       String converted = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pillsToTake = getPillsToTakeForDate(converted);
       List<PillTaken> pillsTaken = getPillsTakenForDate(converted);
@@ -114,18 +114,18 @@ class SharedPreferencesService {
 
       _setPillsForDate(converted, pillsToTake);
       _setPillsTakenForDate(converted, pillsTaken);
-      runningDate = runningDate.add(Duration(days: ONE_DAY));
+      runningDate = runningDate.add(const Duration(days: oneDay));
     }
   }
 
   void setTimeWhenApplicationWasOpened() {
     DateTime now = DateTime.now();
-    _sharedPreferences.setString(TIME_APP_OPENED_KEY, now.toIso8601String());
+    _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
     String? timeApplicationWasOpened =
-        _sharedPreferences.getString(TIME_APP_OPENED_KEY);
+        _sharedPreferences.getString(timeAppOpenedKey);
     return timeApplicationWasOpened != null
         ? DateTime.parse(timeApplicationWasOpened)
         : null;
@@ -134,7 +134,7 @@ class SharedPreferencesService {
   void clearAllPills() {
     Set<String> keys = _sharedPreferences.getKeys();
     for (String key in keys) {
-      if (key.contains(TIME_APP_OPENED_KEY)) {
+      if (key.contains(timeAppOpenedKey)) {
         continue;
       }
       _sharedPreferences.remove(key);
@@ -147,7 +147,7 @@ class SharedPreferencesService {
       setTimeWhenApplicationWasOpened();
     } else {
       DateTime now = DateTime.now();
-      if (now.difference(timeWhenApplicationWasOpened).inDays >= ONE_DAY) {
+      if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
         clearAllPillsFromDate(timeWhenApplicationWasOpened);
         setTimeWhenApplicationWasOpened();
       }
@@ -158,7 +158,7 @@ class SharedPreferencesService {
     Set<String> keys = _sharedPreferences.getKeys();
     if (keys.isEmpty) return false;
     for (String key in keys) {
-      if (key.contains(RegExp('[0-9]')) && !key.contains(PILLS_TAKEN_KEY)) {
+      if (key.contains(RegExp('[0-9]')) && !key.contains(pillsTakenKey)) {
         List<PillToTake> pills = getPillsToTakeForDate(key);
         if (pills.isNotEmpty) return true;
       }
@@ -168,11 +168,10 @@ class SharedPreferencesService {
   }
 
   void saveThemeStatus(bool isDarkModeEnabled) {
-    _sharedPreferences.setBool(DARK_MODE_KEY, isDarkModeEnabled);
+    _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
   }
 
   bool getThemeStatus() {
-    bool? darkMode = _sharedPreferences.getBool(DARK_MODE_KEY);
-    return darkMode != null ? darkMode : false;
+    return _sharedPreferences.getBool(darkModeKey) ?? false;
   }
 }

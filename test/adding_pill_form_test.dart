@@ -13,19 +13,50 @@ void main() async {
   SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
-  SharedPreferences.setMockInitialValues({});
+  
   Widget base = MultiBlocProvider(providers: [
     BlocProvider(create: (context) => PillBloc(sharedPreferencesService)),
-  ], child: MaterialApp(home: AddingPillForm(DateTime.now())));
+  ], child: MaterialApp(home: Scaffold(body: AddingPillForm(DateTime.now()))));
 
-  testWidgets("Adding Pill Form - Add A Pill", (WidgetTester tester) async {
+  testWidgets("Adding Pill Form - Add A Pill with Defaults", (WidgetTester tester) async {
     await tester.pumpWidget(base);
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "Test Pill");
-    await tester.enterText(find.byKey(ObjectKey("pillRegiment")), "2");
-    await tester.enterText(find.byKey(ObjectKey("pillDays")), "1");
+    await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
+    // Regiment and Days already have defaults (1 and 7)
+
+    await tester.tap(find.byIcon(Icons.check));
+
+    await tester.pumpAndSettle();
+
+    // The form should be popped after success
+    expect(find.byType(AddingPillForm), findsNothing);
+  });
+
+  testWidgets("Adding Pill Form - Trying to add a pill with an empty name",
+      (WidgetTester tester) async {
+    await tester.pumpWidget(base);
+
+    await tester.ensureVisible(find.byType(AddingPillForm));
+    
+    // Clear the name field (it's empty by default anyway)
+    await tester.enterText(find.byKey(const ValueKey("pillName")), "");
+
+    await tester.tap(find.byIcon(Icons.check));
+
+    await tester.pumpAndSettle();
+
+    expect(find.text("Please enter a pill name"), findsOneWidget);
+  });
+
+  testWidgets("Adding Pill Form - Add Pill with Instructions", (WidgetTester tester) async {
+    await tester.pumpWidget(base);
+
+    await tester.ensureVisible(find.byType(AddingPillForm));
+
+    await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
+    await tester.enterText(find.byKey(const ValueKey("pillDescription")), "Take after eating");
 
     await tester.tap(find.byIcon(Icons.check));
 
@@ -34,80 +65,23 @@ void main() async {
     expect(find.byType(AddingPillForm), findsNothing);
   });
 
-  testWidgets("Adding Pill Form - Trying to add a pill with an empty form",
-      (WidgetTester tester) async {
-    await tester.pumpWidget(base);
-
-    await tester.ensureVisible(find.byType(AddingPillForm));
-
-    await tester.tap(find.byIcon(Icons.check));
-
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
-
-    expect(find.text("Please enter a pill name"), findsOneWidget);
-  });
-
-  testWidgets("Adding Pill Form - Trying to add a pill with only a pill name",
-      (WidgetTester tester) async {
-    await tester.pumpWidget(base);
-
-    await tester.ensureVisible(find.byType(AddingPillForm));
-
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "Test Pill");
-
-    await tester.tap(find.byIcon(Icons.check));
-
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
-
-    expect(find.text("Please enter a pill name"), findsNothing);
-
-    expect(
-        find.text(
-            "Please enter a number representing the amount of pills to take"),
-        findsOneWidget);
-  });
-
-  testWidgets("Adding Pill Form - Trying to add a pill without amount of days",
-      (WidgetTester tester) async {
-    await tester.pumpWidget(base);
-
-    await tester.ensureVisible(find.byType(AddingPillForm));
-
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "Test Pill");
-
-    await tester.enterText(find.byKey(ObjectKey("pillRegiment")), "2");
-
-    await tester.tap(find.byIcon(Icons.check));
-
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
-
-    expect(find.text("Please enter a pill name"), findsNothing);
-
-    expect(
-        find.text(
-            "Please enter a number representing the amount of pills to take"),
-        findsNothing);
-
-    expect(find.text("Please enter a number representing the number of days"),
-        findsOneWidget);
-  });
-
   testWidgets("Adding Pill Form - Try to add pill with numbers as pill name",
       (WidgetTester tester) async {
     await tester.pumpWidget(base);
 
     await tester.ensureVisible(find.byType(AddingPillForm));
 
-    await tester.enterText(find.byKey(ObjectKey("pillName")), "1234");
+    // Input formatter should block numbers
+    await tester.enterText(find.byKey(const ValueKey("pillName")), "1234");
 
     await tester.tap(find.byIcon(Icons.check));
 
-    await tester.pumpAndSettle(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(find.text("Please enter a pill name"), findsOneWidget);
 
     TextFormField pillName =
-        tester.widget<TextFormField>(find.byKey(ObjectKey("pillName")));
+        tester.widget<TextFormField>(find.byKey(const ValueKey("pillName")));
 
     expect(pillName.controller?.text.length, 0);
   });

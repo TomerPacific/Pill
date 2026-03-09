@@ -10,7 +10,8 @@ void main() async {
   SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
-  final String date = DateService().getCurrentDateAsMonthAndDay();
+  final DateTime now = DateTime.now();
+  final String date = DateService().getDateAsMonthAndDay(now);
 
   setUp(() {
     sharedPreferencesService.clearAllPills();
@@ -26,7 +27,7 @@ void main() async {
   test("SharedPreferences Service add pill to date", () {
     PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(date, pill);
+    sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(date);
 
@@ -41,7 +42,7 @@ void main() async {
   test("SharedPreferences Service remove pill from date", () {
     PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(date, pill);
+    sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(date);
 
@@ -57,7 +58,7 @@ void main() async {
   test("SharedPreferences Service update pill from date", () {
     PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(date, pill);
+    sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(date);
 
@@ -77,7 +78,7 @@ void main() async {
   test("SharedPreferences Service Clearing All Pills", () {
     PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(date, pill);
+    sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(date);
 

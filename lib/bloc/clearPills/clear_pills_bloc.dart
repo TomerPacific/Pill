@@ -1,19 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 
-enum ClearPillsEvent { UpdatePillsStatus, ClearAllPills }
+enum ClearPillsEvent { updatePillsStatus, clearAllPills }
 
 class ClearPillsBloc extends Bloc<ClearPillsEvent, bool> {
   ClearPillsBloc(SharedPreferencesService sharedPreferencesService)
       : super(false) {
     on<ClearPillsEvent>((event, emit) {
       switch (event) {
-        case ClearPillsEvent.UpdatePillsStatus:
+        case ClearPillsEvent.updatePillsStatus:
           bool anyPillsLeftToTake =
           sharedPreferencesService.areThereAnyPillsToTake();
           emit(anyPillsLeftToTake);
           break;
-        case ClearPillsEvent.ClearAllPills:
+        case ClearPillsEvent.clearAllPills:
           sharedPreferencesService.clearAllPills();
           emit(false);
           break;

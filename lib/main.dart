@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pill/bloc/clearPills/ClearPillsBloc.dart';
+import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
 import 'package:pill/bloc/theme/theme_block.dart';
 import 'package:pill/service/date_service.dart';
 import 'bloc/pill/pill_bloc.dart';
@@ -13,7 +13,7 @@ Future<void> main() async {
   DateService dateService = DateService();
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
-  bool isDarkMode = await sharedPreferencesService.getThemeStatus();
+  bool isDarkMode = sharedPreferencesService.getThemeStatus();
   runApp(MyApp(
       sharedPreferencesService: sharedPreferencesService,
       dateService: dateService,
@@ -21,8 +21,9 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp(
-      {required this.sharedPreferencesService,
+  const MyApp(
+      {super.key,
+      required this.sharedPreferencesService,
       required this.dateService,
       required this.isDarkMode});
 
@@ -45,12 +46,12 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeBloc, ThemeMode>(builder: (context, state) {
         return MaterialApp(
-          title: APP_TITLE,
+          title: appTitle,
           theme: ThemeData(primarySwatch: Colors.blue),
           darkTheme: ThemeData.dark(),
           themeMode: state,
           home: MainPage(
-              title: APP_TITLE,
+              title: appTitle,
               sharedPreferencesService: sharedPreferencesService,
               dateService: dateService),
         );

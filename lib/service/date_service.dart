@@ -1,20 +1,20 @@
-const int TEN = 10;
+const int ten = 10;
 
 class DateService {
   String getDateAsMonthAndDay(DateTime date) {
-    return date.month.toString() + "/" + date.day.toString();
+    return "${date.month}/${date.day}";
   }
 
   String getHourFromDate(DateTime dateTime) {
     String hour =
-        dateTime.hour < TEN ? "0${dateTime.hour}" : "${dateTime.hour}";
+        dateTime.hour < ten ? "0${dateTime.hour}" : "${dateTime.hour}";
     String minutes = _convertDigitToStringWithPadding(dateTime.minute);
     String seconds = _convertDigitToStringWithPadding(dateTime.second);
     return "$hour:$minutes:$seconds";
   }
 
   String _convertDigitToStringWithPadding(int digit) {
-    return digit < TEN ? "0$digit" : "$digit";
+    return digit < ten ? "0$digit" : "$digit";
   }
 
   String getCurrentDateAsMonthAndDay() {
