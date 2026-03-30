@@ -60,14 +60,6 @@ class PillToTake extends Equatable {
           .map<PillToTake>((pill) => PillToTake.fromJson(pill))
           .toList();
 
-  bool equals(PillToTake otherPill) {
-    return (pillRegiment == otherPill.pillRegiment &&
-        pillName == otherPill.pillName &&
-        description == otherPill.description &&
-        pillImage == otherPill.pillImage &&
-        amountOfDaysToTake == otherPill.amountOfDaysToTake);
-  }
-
   PillToTake copyWith({
     String? pillName,
     int? pillRegiment,
