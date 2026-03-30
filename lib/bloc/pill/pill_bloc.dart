@@ -30,7 +30,7 @@ class PillsEvent {
 
 class PillBloc extends Bloc<PillsEvent, PillState> {
   PillBloc(SharedPreferencesService sharedPreferencesService)
-      : super(const PillState()) {
+      : super(PillState()) {
     on<PillsEvent>((event, emit) {
       switch (event.eventName) {
         case PillEvent.addPill:
@@ -73,8 +73,8 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
 
   void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) {
-    final PillToTake? pillToTake = event.pillToTake;
-    final List<PillToTake>? pillsToTakeList = event.pillsToTake;
+    PillToTake? pillToTake = event.pillToTake;
+    List<PillToTake>? pillsToTakeList = event.pillsToTake;
 
     if (pillToTake == null || pillsToTakeList == null) {
       return;
@@ -90,34 +90,22 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
 
   void _onUpdatePill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) {
-    List<PillToTake> pillsToTake =
-        sharedPreferencesService.getPillsToTakeForDate(event.date);
-
     PillToTake? pillToTake = event.pillToTake;
 
     if (pillToTake == null) {
       return;
     }
 
-    PillToTake storedPill =
-        pillsToTake.firstWhere((pill) => pill.pillName == pillToTake.pillName);
-    pillsToTake.remove(storedPill);
+    // Always update the service first to handle persistence
+    // Service handles in-place replacement and potentially removing if regiment is 0
+    sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
-    PillToTake updatedPill = storedPill.copyWith(
-      lastTaken: pillToTake.lastTaken,
-      pillRegiment: pillToTake.pillRegiment,
-    );
+    // Reload from service to ensure consistent ordering and state with persistence
+    List<PillToTake> pillsToTakeList = sharedPreferencesService.getPillsToTakeForDate(event.date);
+    List<PillTaken> pillsTakenList = sharedPreferencesService.getPillsTakenForDate(event.date);
 
-    if (updatedPill.pillRegiment != 0) {
-      pillsToTake.add(updatedPill);
-    }
-
-    sharedPreferencesService.updatePillForDate(updatedPill, event.date);
-
-    List<PillTaken> pillsTaken =
-        sharedPreferencesService.getPillsTakenForDate(event.date);
     emitter(
-      PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken),
+      PillState(pillsToTake: pillsToTakeList, pillsTaken: pillsTakenList),
     );
   }
 }
