@@ -64,19 +64,21 @@ class PillToTake extends Equatable {
     String? pillName,
     int? pillRegiment,
     String? pillImage,
-    String? description,
+    Object? description = _sentinel,
     int? amountOfDaysToTake,
-    DateTime? lastTaken,
+    Object? lastTaken = _sentinel,
   }) {
     return PillToTake(
       pillName: pillName ?? this.pillName,
       pillRegiment: pillRegiment ?? this.pillRegiment,
       pillImage: pillImage ?? this.pillImage,
-      description: description ?? this.description,
+      description: description == _sentinel ? this.description : description as String?,
       amountOfDaysToTake: amountOfDaysToTake ?? this.amountOfDaysToTake,
-      lastTaken: lastTaken ?? this.lastTaken,
+      lastTaken: lastTaken == _sentinel ? this.lastTaken : lastTaken as DateTime?,
     );
   }
+
+  static const _sentinel = Object();
 
   @override
   List<Object?> get props => [
