@@ -25,7 +25,7 @@ void main() async {
   });
 
   test("SharedPreferences Service add pill to date", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
@@ -40,7 +40,7 @@ void main() async {
   });
 
   test("SharedPreferences Service remove pill from date", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
@@ -56,7 +56,7 @@ void main() async {
   });
 
   test("SharedPreferences Service update pill from date", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
@@ -64,9 +64,9 @@ void main() async {
 
     expect(pills.length, 1);
 
-    pill.pillRegiment = 10;
+    PillToTake updatedPillInstance = pill.copyWith(pillRegiment: 10);
 
-    sharedPreferencesService.updatePillForDate(pill, date);
+    sharedPreferencesService.updatePillForDate(updatedPillInstance, date);
 
     pills = sharedPreferencesService.getPillsToTakeForDate(date);
 
@@ -76,7 +76,7 @@ void main() async {
   });
 
   test("SharedPreferences Service Clearing All Pills", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
