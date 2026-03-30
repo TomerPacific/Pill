@@ -1,20 +1,22 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:equatable/equatable.dart';
 import 'package:pill/constants.dart';
 
 const String defaultPillToTakeImage = 'assets/images/pill_to_take.png';
 
-class PillToTake {
-  String pillName;
-  int pillRegiment;
-  String pillImage = defaultPillToTakeImage;
-  String? description;
-  int amountOfDaysToTake;
-  DateTime? lastTaken;
+class PillToTake extends Equatable {
+  final String pillName;
+  final int pillRegiment;
+  final String pillImage;
+  final String? description;
+  final int amountOfDaysToTake;
+  final DateTime? lastTaken;
 
-  PillToTake(
+  const PillToTake(
       {required this.pillName,
       required this.pillRegiment,
+      this.pillImage = defaultPillToTakeImage,
       this.description,
       required this.amountOfDaysToTake,
       this.lastTaken});
@@ -69,6 +71,7 @@ class PillToTake {
   PillToTake copyWith({
     String? pillName,
     int? pillRegiment,
+    String? pillImage,
     String? description,
     int? amountOfDaysToTake,
     DateTime? lastTaken,
@@ -76,9 +79,20 @@ class PillToTake {
     return PillToTake(
       pillName: pillName ?? this.pillName,
       pillRegiment: pillRegiment ?? this.pillRegiment,
+      pillImage: pillImage ?? this.pillImage,
       description: description ?? this.description,
       amountOfDaysToTake: amountOfDaysToTake ?? this.amountOfDaysToTake,
       lastTaken: lastTaken ?? this.lastTaken,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        pillName,
+        pillRegiment,
+        pillImage,
+        description,
+        amountOfDaysToTake,
+        lastTaken
+      ];
 }
