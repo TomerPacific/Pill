@@ -73,8 +73,8 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
 
   void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) {
-    PillToTake? pillToTake = event.pillToTake;
-    List<PillToTake>? pillsToTakeList = event.pillsToTake;
+    final PillToTake? pillToTake = event.pillToTake;
+    final List<PillToTake>? pillsToTakeList = event.pillsToTake;
 
     if (pillToTake == null || pillsToTakeList == null) {
       return;
