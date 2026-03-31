@@ -40,7 +40,9 @@ class PillTaken extends Equatable {
   static PillTaken extractFromPillToTake(PillToTake pillToTake) {
     return PillTaken(
         pillName: pillToTake.pillName,
-        pillImage: pillToTake.pillImage,
+        pillImage: pillToTake.pillImage == defaultPillToTakeImage
+            ? defaultPillTakenImage
+            : pillToTake.pillImage,
         description: pillToTake.description,
         lastTaken: pillToTake.lastTaken);
   }
