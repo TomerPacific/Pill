@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/model/pill_to_take.dart';
+import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,6 +74,39 @@ void main() async {
     PillToTake updatedPill = pills[0];
 
     expect(updatedPill.pillRegiment, 10);
+  });
+
+  test("SharedPreferences Service update pill from date - pill not found guard", () {
+    const PillToTake pill = PillToTake(
+        pillName: "Non Existent Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+    
+    // This should not throw RangeError
+    sharedPreferencesService.updatePillForDate(pill, date);
+    
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills.length, 0);
+    
+    List<PillTaken> pillsTaken = sharedPreferencesService.getPillsTakenForDate(date);
+    expect(pillsTaken.length, 1);
+    expect(pillsTaken[0].pillName, "Non Existent Pill");
+  });
+
+  test("SharedPreferences Service pillImage persistence", () {
+    const String customImage = "assets/images/custom_pill.png";
+    const PillToTake pill = PillToTake(
+        pillName: "Custom Image Pill", 
+        pillRegiment: 2, 
+        amountOfDaysToTake: 1,
+        pillImage: customImage);
+    
+    sharedPreferencesService.addPillToDates(now, pill);
+    
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills[0].pillImage, customImage);
+    
+    sharedPreferencesService.updatePillForDate(pill, date);
+    List<PillTaken> pillsTaken = sharedPreferencesService.getPillsTakenForDate(date);
+    expect(pillsTaken[0].pillImage, customImage);
   });
 
   test("SharedPreferences Service Clearing All Pills", () {
