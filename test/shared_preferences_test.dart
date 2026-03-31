@@ -65,7 +65,7 @@ void main() async {
 
     expect(pills.length, 1);
 
-    PillToTake updatedPillInstance = pill.copyWith(pillRegiment: 10);
+    final PillToTake updatedPillInstance = pill.copyWith(pillRegiment: 10);
 
     sharedPreferencesService.updatePillForDate(updatedPillInstance, date);
 
