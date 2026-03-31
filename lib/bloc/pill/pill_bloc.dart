@@ -63,12 +63,13 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
       return;
     }
 
-    List<PillToTake> pillsToTakeList =
-        sharedPreferencesService.getPillsToTakeForDate(event.date);
-    List<PillToTake> pills = List.from(pillsToTakeList)..add(pillToTake);
     sharedPreferencesService.addPillToDates(
         event.startDateTime ?? DateTime.now(), pillToTake);
-    emitter(PillState(pillsToTake: pills, pillsTaken: state.pillsTaken));
+        
+    // Reload from service to ensure consistent ordering and state with persistence
+    List<PillToTake> pillsToTakeList = sharedPreferencesService.getPillsToTakeForDate(event.date);
+
+    emitter(PillState(pillsToTake: pillsToTakeList, pillsTaken: state.pillsTaken));
   }
 
   void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,

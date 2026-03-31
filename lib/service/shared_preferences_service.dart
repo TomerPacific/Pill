@@ -61,10 +61,11 @@ class SharedPreferencesService {
   void addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
+    final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
     while (daysToTake > 0) {
       String dateStr = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
-      pills.add(pill);
+      pills.add(pillWithTrimmedName);
       _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
@@ -89,12 +90,17 @@ class SharedPreferencesService {
       return;
     }
 
-    addTakenPill(pillToTake, currentDate);
+    // Preserve the existing stored pill's name to avoid overwriting with
+    // different casing or whitespace from the caller.
+    final existingPill = pills[pillIndex];
+    final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
-    if (pillToTake.pillRegiment == 0) {
-      removePillFromDate(pillToTake, currentDate);
+    addTakenPill(pillToSave, currentDate);
+
+    if (pillToSave.pillRegiment == 0) {
+      removePillFromDate(pillToSave, currentDate);
     } else {
-      pills.replaceRange(pillIndex, pillIndex + 1, [pillToTake]);
+      pills[pillIndex] = pillToSave;
       _setPillsForDate(currentDate, pills);
     }
   }
