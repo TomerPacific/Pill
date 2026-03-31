@@ -80,14 +80,20 @@ class SharedPreferencesService {
 
   void updatePillForDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+    
+    int pillIndex = pills
+        .indexWhere((element) => element.pillName == pillToTake.pillName);
+    
+    if (pillIndex == -1) {
+      return;
+    }
+
     addTakenPill(pillToTake, currentDate);
 
     if (pillToTake.pillRegiment == 0) {
       removePillFromDate(pillToTake, currentDate);
     } else {
-      int index = pills
-          .indexWhere((element) => element.pillName == pillToTake.pillName);
-      pills.replaceRange(index, index + 1, [pillToTake]);
+      pills.replaceRange(pillIndex, pillIndex + 1, [pillToTake]);
       _setPillsForDate(currentDate, pills);
     }
   }
