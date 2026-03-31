@@ -61,10 +61,11 @@ class SharedPreferencesService {
   void addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
+    final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
     while (daysToTake > 0) {
       String dateStr = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
-      pills.add(pill);
+      pills.add(pillWithTrimmedName);
       _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
@@ -80,22 +81,36 @@ class SharedPreferencesService {
 
   void updatePillForDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
-    addTakenPill(pillToTake, currentDate);
 
-    if (pillToTake.pillRegiment == 0) {
-      removePillFromDate(pillToTake, currentDate);
+    final normalizedName = pillToTake.pillName.trim().toLowerCase();
+    int pillIndex = pills.indexWhere((element) =>
+        element.pillName.trim().toLowerCase() == normalizedName);
+
+    if (pillIndex == -1) {
+      return;
+    }
+
+    // Preserve the existing stored pill's name to avoid overwriting with
+    // different casing or whitespace from the caller.
+    final existingPill = pills[pillIndex];
+    final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
+
+    addTakenPill(pillToSave, currentDate);
+
+    if (pillToSave.pillRegiment == 0) {
+      removePillFromDate(pillToSave, currentDate);
     } else {
-      int index = pills
-          .indexWhere((element) => element.pillName == pillToTake.pillName);
-      pills.replaceRange(index, index + 1, [pillToTake]);
+      pills[pillIndex] = pillToSave;
       _setPillsForDate(currentDate, pills);
     }
   }
 
   void removePillFromDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+    final normalizedName = pillToTake.pillName.trim().toLowerCase();
     List<PillToTake> updatedPills = pills
-        .where((element) => element.pillName != pillToTake.pillName)
+        .where((element) =>
+            element.pillName.trim().toLowerCase() != normalizedName)
         .toList();
     _setPillsForDate(currentDate, updatedPills);
   }

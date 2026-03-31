@@ -1,20 +1,22 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:equatable/equatable.dart';
 import 'package:pill/constants.dart';
 
 const String defaultPillToTakeImage = 'assets/images/pill_to_take.png';
 
-class PillToTake {
-  String pillName;
-  int pillRegiment;
-  String pillImage = defaultPillToTakeImage;
-  String? description;
-  int amountOfDaysToTake;
-  DateTime? lastTaken;
+class PillToTake extends Equatable {
+  final String pillName;
+  final int pillRegiment;
+  final String pillImage;
+  final String? description;
+  final int amountOfDaysToTake;
+  final DateTime? lastTaken;
 
-  PillToTake(
+  const PillToTake(
       {required this.pillName,
       required this.pillRegiment,
+      this.pillImage = defaultPillToTakeImage,
       this.description,
       required this.amountOfDaysToTake,
       this.lastTaken});
@@ -34,6 +36,7 @@ class PillToTake {
     return PillToTake(
         pillName: jsonData[pillNameKey],
         pillRegiment: jsonData[pillRegimentKey],
+        pillImage: jsonData[pillImageKey] ?? defaultPillToTakeImage,
         description: jsonData[pillDescriptionKey],
         amountOfDaysToTake: jsonData[pillAmountOfDaysToTakeKey],
         lastTaken: lastTakenDate);
@@ -42,6 +45,7 @@ class PillToTake {
   static Map<String, dynamic> toMap(PillToTake pill) => {
         pillNameKey: pill.pillName,
         pillRegimentKey: pill.pillRegiment,
+        pillImageKey: pill.pillImage,
         pillDescriptionKey: pill.description,
         pillAmountOfDaysToTakeKey: pill.amountOfDaysToTake,
         pillLastTakenKey: pill.lastTaken?.toIso8601String()
@@ -58,27 +62,33 @@ class PillToTake {
           .map<PillToTake>((pill) => PillToTake.fromJson(pill))
           .toList();
 
-  bool equals(PillToTake otherPill) {
-    return (pillRegiment == otherPill.pillRegiment &&
-        pillName == otherPill.pillName &&
-        description == otherPill.description &&
-        pillImage == otherPill.pillImage &&
-        amountOfDaysToTake == otherPill.amountOfDaysToTake);
-  }
-
   PillToTake copyWith({
     String? pillName,
     int? pillRegiment,
+    String? pillImage,
     String? description,
+    bool clearDescription = false,
     int? amountOfDaysToTake,
     DateTime? lastTaken,
+    bool clearLastTaken = false,
   }) {
     return PillToTake(
       pillName: pillName ?? this.pillName,
       pillRegiment: pillRegiment ?? this.pillRegiment,
-      description: description ?? this.description,
+      pillImage: pillImage ?? this.pillImage,
+      description: clearDescription ? null : (description ?? this.description),
       amountOfDaysToTake: amountOfDaysToTake ?? this.amountOfDaysToTake,
-      lastTaken: lastTaken ?? this.lastTaken,
+      lastTaken: clearLastTaken ? null : (lastTaken ?? this.lastTaken),
     );
   }
+
+  @override
+  List<Object?> get props => [
+        pillName,
+        pillRegiment,
+        pillImage,
+        description,
+        amountOfDaysToTake,
+        lastTaken
+      ];
 }

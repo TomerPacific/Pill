@@ -150,9 +150,9 @@ class AddingPillFormState extends State<AddingPillForm> {
                         // Duplicate prevention check
                         final pillBloc = context.read<PillBloc>();
                         final existingPills = pillBloc.state.pillsToTake ?? [];
-                        final trimmedValue = value.trim().toLowerCase();
+                        final normalizedValue = value.trim().toLowerCase();
                         if (existingPills.any((p) =>
-                            p.pillName.toLowerCase() == trimmedValue)) {
+                            p.pillName.trim().toLowerCase() == normalizedValue)) {
                           return 'This pill is already in your list';
                         }
 

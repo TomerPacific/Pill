@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:equatable/equatable.dart';
 
 import 'package:pill/constants.dart';
 import 'package:pill/model/pill_to_take.dart';
 
 const String defaultPillTakenImage = 'assets/images/pill_taken.png';
 
-class PillTaken {
-  String pillName;
-  String pillImage = defaultPillTakenImage;
-  String? description;
-  DateTime? lastTaken;
+class PillTaken extends Equatable {
+  final String pillName;
+  final String pillImage;
+  final String? description;
+  final DateTime? lastTaken;
 
-  PillTaken(
+  const PillTaken(
       {required this.pillName,
+      this.pillImage = defaultPillTakenImage,
       this.description,
       required this.lastTaken});
 
@@ -30,17 +32,24 @@ class PillTaken {
 
     return PillTaken(
         pillName: jsonData[pillNameKey],
+        pillImage: jsonData[pillImageKey] ?? defaultPillTakenImage,
         description: jsonData[pillDescriptionKey],
         lastTaken: lastTakenDate);
   }
 
   static PillTaken extractFromPillToTake(PillToTake pillToTake) {
     return PillTaken(
-        pillName: pillToTake.pillName, lastTaken: pillToTake.lastTaken);
+        pillName: pillToTake.pillName,
+        pillImage: pillToTake.pillImage == defaultPillToTakeImage
+            ? defaultPillTakenImage
+            : pillToTake.pillImage,
+        description: pillToTake.description,
+        lastTaken: pillToTake.lastTaken);
   }
 
   static Map<String, dynamic> toMap(PillTaken pill) => {
         pillNameKey: pill.pillName,
+        pillImageKey: pill.pillImage,
         pillDescriptionKey: pill.description,
         pillLastTakenKey: pill.lastTaken?.toIso8601String()
       };
@@ -55,4 +64,7 @@ class PillTaken {
       (json.decode(pills) as List<dynamic>)
           .map<PillTaken>((pill) => PillTaken.fromJson(pill))
           .toList();
+
+  @override
+  List<Object?> get props => [pillName, pillImage, description, lastTaken];
 }

@@ -30,7 +30,7 @@ class PillsEvent {
 
 class PillBloc extends Bloc<PillsEvent, PillState> {
   PillBloc(SharedPreferencesService sharedPreferencesService)
-      : super(const PillState()) {
+      : super(PillState()) {
     on<PillsEvent>((event, emit) {
       switch (event.eventName) {
         case PillEvent.addPill:
@@ -63,26 +63,31 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
       return;
     }
 
-    List<PillToTake> pillsToTakeList =
-        sharedPreferencesService.getPillsToTakeForDate(event.date);
-    List<PillToTake> pills = List.from(pillsToTakeList)..add(pillToTake);
     sharedPreferencesService.addPillToDates(
         event.startDateTime ?? DateTime.now(), pillToTake);
-    emitter(PillState(pillsToTake: pills, pillsTaken: state.pillsTaken));
+        
+    // Reload from service to ensure consistent ordering and state with persistence
+    List<PillToTake> pillsToTakeList = sharedPreferencesService.getPillsToTakeForDate(event.date);
+
+    emitter(PillState(pillsToTake: pillsToTakeList, pillsTaken: state.pillsTaken));
   }
 
   void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) {
     PillToTake? pillToTake = event.pillToTake;
-    List<PillToTake>? pillsToTake = event.pillsToTake;
+    List<PillToTake>? pillsToTakeList = event.pillsToTake;
 
-    if (pillToTake == null || pillsToTake == null) {
+    if (pillToTake == null || pillsToTakeList == null) {
       return;
     }
 
     sharedPreferencesService.removePillFromDate(pillToTake, event.date);
-    List<PillToTake> updatedPills =
-        pillsToTake.where((pill) => !pill.equals(pillToTake)).toList();
+    
+    final normalizedName = pillToTake.pillName.trim().toLowerCase();
+    List<PillToTake> updatedPills = pillsToTakeList
+        .where((pill) => pill.pillName.trim().toLowerCase() != normalizedName)
+        .toList();
+        
     emitter(
       PillState(pillsToTake: updatedPills, pillsTaken: event.pillsTaken),
     );
@@ -90,32 +95,22 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
 
   void _onUpdatePill(PillsEvent event, Emitter<PillState> emitter,
       SharedPreferencesService sharedPreferencesService) {
-    List<PillToTake> pillsToTake =
-        sharedPreferencesService.getPillsToTakeForDate(event.date);
-
     PillToTake? pillToTake = event.pillToTake;
 
     if (pillToTake == null) {
       return;
     }
 
-    PillToTake storedPill =
-        pillsToTake.firstWhere((pill) => pill.pillName == pillToTake.pillName);
-    pillsToTake.remove(storedPill);
+    // Always update the service first to handle persistence
+    // Service handles in-place replacement and potentially removing if regiment is 0
+    sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
-    storedPill.lastTaken = pillToTake.lastTaken;
-    storedPill.pillRegiment = pillToTake.pillRegiment;
+    // Reload from service to ensure consistent ordering and state with persistence
+    List<PillToTake> pillsToTakeList = sharedPreferencesService.getPillsToTakeForDate(event.date);
+    List<PillTaken> pillsTakenList = sharedPreferencesService.getPillsTakenForDate(event.date);
 
-    if (storedPill.pillRegiment != 0) {
-      pillsToTake.add(storedPill);
-    }
-
-    sharedPreferencesService.updatePillForDate(storedPill, event.date);
-
-    List<PillTaken> pillsTaken =
-        sharedPreferencesService.getPillsTakenForDate(event.date);
     emitter(
-      PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken),
+      PillState(pillsToTake: pillsToTakeList, pillsTaken: pillsTakenList),
     );
   }
 }

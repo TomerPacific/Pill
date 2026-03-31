@@ -1,6 +1,7 @@
 const String pillNameKey = "pillName";
 const String pillWeightKey = "pillWeight";
 const String pillRegimentKey = "pillRegiment";
+const String pillImageKey = "pillImage";
 const String pillDescriptionKey = "description";
 const String pillAmountOfDaysToTakeKey = "amountOfDaysToTake";
 const String pillLastTakenKey = "lastTaken";

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/model/pill_to_take.dart';
+import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +26,7 @@ void main() async {
   });
 
   test("SharedPreferences Service add pill to date", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
@@ -40,7 +41,7 @@ void main() async {
   });
 
   test("SharedPreferences Service remove pill from date", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
@@ -55,8 +56,23 @@ void main() async {
     expect(pills.length, 0);
   });
 
+  test("SharedPreferences Service remove pill from date (case-insensitive and trimmed)", () {
+    const PillToTake pill = PillToTake(
+        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+    sharedPreferencesService.addPillToDates(now, pill);
+    
+    // Attempt removal with different casing and whitespace
+    const PillToTake pillToRemove = PillToTake(
+        pillName: "  test pill  ", pillRegiment: 2, amountOfDaysToTake: 1);
+    
+    sharedPreferencesService.removePillFromDate(pillToRemove, date);
+
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills.length, 0);
+  });
+
   test("SharedPreferences Service update pill from date", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
@@ -64,9 +80,9 @@ void main() async {
 
     expect(pills.length, 1);
 
-    pill.pillRegiment = 10;
+    final PillToTake updatedPillInstance = pill.copyWith(pillRegiment: 10);
 
-    sharedPreferencesService.updatePillForDate(pill, date);
+    sharedPreferencesService.updatePillForDate(updatedPillInstance, date);
 
     pills = sharedPreferencesService.getPillsToTakeForDate(date);
 
@@ -75,8 +91,57 @@ void main() async {
     expect(updatedPill.pillRegiment, 10);
   });
 
+  test("SharedPreferences Service update pill from date (case-insensitive and trimmed)", () {
+    const PillToTake pill = PillToTake(
+        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+    sharedPreferencesService.addPillToDates(now, pill);
+    
+    // Update with different casing and whitespace
+    const PillToTake updatedPillInstance = PillToTake(
+        pillName: "  test pill  ", pillRegiment: 10, amountOfDaysToTake: 1);
+
+    sharedPreferencesService.updatePillForDate(updatedPillInstance, date);
+
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills.length, 1);
+    expect(pills[0].pillRegiment, 10);
+  });
+
+  test("SharedPreferences Service update pill from date - pill not found guard", () {
+    const PillToTake pill = PillToTake(
+        pillName: "Non Existent Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+    
+    // This should not throw RangeError
+    sharedPreferencesService.updatePillForDate(pill, date);
+    
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills.length, 0);
+    
+    List<PillTaken> pillsTaken = sharedPreferencesService.getPillsTakenForDate(date);
+    // Verification: No entry should be added for a pill not in the schedule
+    expect(pillsTaken.length, 0);
+  });
+
+  test("SharedPreferences Service pillImage persistence", () {
+    const String customImage = "assets/images/custom_pill.png";
+    const PillToTake pill = PillToTake(
+        pillName: "Custom Image Pill", 
+        pillRegiment: 2, 
+        amountOfDaysToTake: 1,
+        pillImage: customImage);
+    
+    sharedPreferencesService.addPillToDates(now, pill);
+    
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills[0].pillImage, customImage);
+    
+    sharedPreferencesService.updatePillForDate(pill, date);
+    List<PillTaken> pillsTaken = sharedPreferencesService.getPillsTakenForDate(date);
+    expect(pillsTaken[0].pillImage, customImage);
+  });
+
   test("SharedPreferences Service Clearing All Pills", () {
-    PillToTake pill = PillToTake(
+    const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     sharedPreferencesService.addPillToDates(now, pill);
     List<PillToTake> pills =
