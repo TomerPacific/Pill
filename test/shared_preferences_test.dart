@@ -56,6 +56,21 @@ void main() async {
     expect(pills.length, 0);
   });
 
+  test("SharedPreferences Service remove pill from date (case-insensitive and trimmed)", () {
+    const PillToTake pill = PillToTake(
+        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+    sharedPreferencesService.addPillToDates(now, pill);
+    
+    // Attempt removal with different casing and whitespace
+    const PillToTake pillToRemove = PillToTake(
+        pillName: "  test pill  ", pillRegiment: 2, amountOfDaysToTake: 1);
+    
+    sharedPreferencesService.removePillFromDate(pillToRemove, date);
+
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills.length, 0);
+  });
+
   test("SharedPreferences Service update pill from date", () {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
@@ -74,6 +89,22 @@ void main() async {
     PillToTake updatedPill = pills[0];
 
     expect(updatedPill.pillRegiment, 10);
+  });
+
+  test("SharedPreferences Service update pill from date (case-insensitive and trimmed)", () {
+    const PillToTake pill = PillToTake(
+        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+    sharedPreferencesService.addPillToDates(now, pill);
+    
+    // Update with different casing and whitespace
+    const PillToTake updatedPillInstance = PillToTake(
+        pillName: "  test pill  ", pillRegiment: 10, amountOfDaysToTake: 1);
+
+    sharedPreferencesService.updatePillForDate(updatedPillInstance, date);
+
+    List<PillToTake> pills = sharedPreferencesService.getPillsToTakeForDate(date);
+    expect(pills.length, 1);
+    expect(pills[0].pillRegiment, 10);
   });
 
   test("SharedPreferences Service update pill from date - pill not found guard", () {

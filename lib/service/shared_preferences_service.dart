@@ -80,10 +80,11 @@ class SharedPreferencesService {
 
   void updatePillForDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
-    
-    int pillIndex = pills
-        .indexWhere((element) => element.pillName == pillToTake.pillName);
-    
+
+    final normalizedName = pillToTake.pillName.trim().toLowerCase();
+    int pillIndex = pills.indexWhere((element) =>
+        element.pillName.trim().toLowerCase() == normalizedName);
+
     if (pillIndex == -1) {
       return;
     }
@@ -100,8 +101,10 @@ class SharedPreferencesService {
 
   void removePillFromDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+    final normalizedName = pillToTake.pillName.trim().toLowerCase();
     List<PillToTake> updatedPills = pills
-        .where((element) => element.pillName != pillToTake.pillName)
+        .where((element) =>
+            element.pillName.trim().toLowerCase() != normalizedName)
         .toList();
     _setPillsForDate(currentDate, updatedPills);
   }
