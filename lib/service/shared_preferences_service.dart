@@ -79,6 +79,9 @@ class SharedPreferencesService {
   }
 
   void updatePillForDate(PillToTake pillToTake, String currentDate) {
+    // Add to taken list even if not found in 'to take' list to support all update attempts
+    addTakenPill(pillToTake, currentDate);
+
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     
     int pillIndex = pills
@@ -87,8 +90,6 @@ class SharedPreferencesService {
     if (pillIndex == -1) {
       return;
     }
-
-    addTakenPill(pillToTake, currentDate);
 
     if (pillToTake.pillRegiment == 0) {
       removePillFromDate(pillToTake, currentDate);
