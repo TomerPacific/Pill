@@ -36,6 +36,7 @@ class PillToTake extends Equatable {
     return PillToTake(
         pillName: jsonData[pillNameKey],
         pillRegiment: jsonData[pillRegimentKey],
+        pillImage: jsonData[pillImageKey] ?? defaultPillToTakeImage,
         description: jsonData[pillDescriptionKey],
         amountOfDaysToTake: jsonData[pillAmountOfDaysToTakeKey],
         lastTaken: lastTakenDate);
@@ -44,6 +45,7 @@ class PillToTake extends Equatable {
   static Map<String, dynamic> toMap(PillToTake pill) => {
         pillNameKey: pill.pillName,
         pillRegimentKey: pill.pillRegiment,
+        pillImageKey: pill.pillImage,
         pillDescriptionKey: pill.description,
         pillAmountOfDaysToTakeKey: pill.amountOfDaysToTake,
         pillLastTakenKey: pill.lastTaken?.toIso8601String()
