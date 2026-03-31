@@ -87,8 +87,8 @@ void main() async {
     expect(pills.length, 0);
     
     List<PillTaken> pillsTaken = sharedPreferencesService.getPillsTakenForDate(date);
-    expect(pillsTaken.length, 1);
-    expect(pillsTaken[0].pillName, "Non Existent Pill");
+    // Verification: No entry should be added for a pill not in the schedule
+    expect(pillsTaken.length, 0);
   });
 
   test("SharedPreferences Service pillImage persistence", () {
