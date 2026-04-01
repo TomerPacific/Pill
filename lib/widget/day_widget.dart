@@ -30,8 +30,7 @@ class DayWidget extends StatelessWidget {
             child: Text(header,
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
-        : Expanded(
-            child: SizedBox(
+        : SizedBox(
             height: listItemHeight,
             child: ListView.builder(
                 itemCount: pillsToTake.length,
@@ -49,7 +48,7 @@ class DayWidget extends StatelessWidget {
                           pillsToTake: pillsToTake,
                           pillsTaken: state.pillsTaken));
                     })),
-          ));
+          );
   }
 
   Widget _pillsTakenList(BuildContext context, PillState state) {
@@ -62,15 +61,13 @@ class DayWidget extends StatelessWidget {
                   const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));
     }
 
-    return Expanded(
-      child: SizedBox(
+    return SizedBox(
           height: listItemHeight,
           child: ListView.builder(
             itemCount: pillsTaken.length,
             itemBuilder: (_, index) => PillTakenWidget(
                 pillTaken: pillsTaken[index], dateService: dateService),
-          )),
-    );
+          ));
   }
 
   @override
@@ -91,12 +88,14 @@ class DayWidget extends StatelessWidget {
                       fontSize: 25.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          BlocBuilder<PillBloc, PillState>(
-            builder: (context, state) {
-              return (header == pillsToTakeHeader)
-                  ? _pillsToTakeList(context, state)
-                  : _pillsTakenList(context, state);
-            },
+          Expanded(
+            child: BlocBuilder<PillBloc, PillState>(
+              builder: (context, state) {
+                return (header == pillsToTakeHeader)
+                    ? _pillsToTakeList(context, state)
+                    : _pillsTakenList(context, state);
+              },
+            ),
           ),
         ],
       ),
