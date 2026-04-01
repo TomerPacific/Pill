@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
-import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/constants.dart';
 import 'package:pill/custom_icons.dart';
 import 'package:pill/page/settings_page.dart';
@@ -86,19 +85,19 @@ PreferredSizeWidget _mainPageAppBar(
 TabBarView _mainPageTabBarView(DateService dateService,
     SharedPreferencesService sharedPreferencesService) {
   return TabBarView(children: [
-    BlocBuilder<PillBloc, PillState>(builder: (context, state) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          DayWidget(
-              date: DateTime.now(),
-              header: pillsToTakeHeader,
-              dateService: dateService),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: FloatingActionButton(
+    Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        DayWidget(
+            date: DateTime.now(),
+            header: pillsToTakeHeader,
+            dateService: dateService),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Builder(builder: (context) {
+              return FloatingActionButton(
                   onPressed: () {
                     showModalBottomSheet(
                         context: context,
@@ -109,22 +108,18 @@ TabBarView _mainPageTabBarView(DateService dateService,
                         ),
                         builder: (context) => AddingPillForm(DateTime.now()));
                   },
-                  child: const Icon(Icons.add)),
-            ),
-          )
-        ],
-      );
-    }),
-    BlocBuilder<PillBloc, PillState>(builder: (context, state) {
-      return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            DayWidget(
-                date: DateTime.now(),
-                header: pillsTakenHeader,
-                dateService: dateService),
-          ]);
-    }),
+                  child: const Icon(Icons.add));
+            }),
+          ),
+        )
+      ],
+    ),
+    Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+      DayWidget(
+          date: DateTime.now(),
+          header: pillsTakenHeader,
+          dateService: dateService),
+    ]),
     BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
       return SettingsPage(sharedPreferencesService: sharedPreferencesService);
     })
