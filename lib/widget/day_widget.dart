@@ -91,9 +91,13 @@ class DayWidget extends StatelessWidget {
                       fontSize: 25.0, fontWeight: FontWeight.bold)),
             ),
           ),
-          (header == pillsToTakeHeader)
-              ? _pillsToTakeList(context, context.read<PillBloc>().state)
-              : _pillsTakenList(context, context.read<PillBloc>().state)
+          BlocBuilder<PillBloc, PillState>(
+            builder: (context, state) {
+              return (header == pillsToTakeHeader)
+                  ? _pillsToTakeList(context, state)
+                  : _pillsTakenList(context, state);
+            },
+          ),
         ],
       ),
     ));
