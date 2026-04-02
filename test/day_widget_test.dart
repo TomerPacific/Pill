@@ -48,7 +48,7 @@ void main() {
     });
   }
 
-  Widget createWidgetUnderTest({required String header}) {
+  Widget createWidgetUnderTest({required DayWidgetMode mode}) {
     return MaterialApp(
       home: Scaffold(
         body: Column(
@@ -57,7 +57,7 @@ void main() {
               value: pillBloc,
               child: DayWidget(
                 date: testDate,
-                header: header,
+                mode: mode,
                 dateService: dateService,
               ),
             ),
@@ -70,7 +70,7 @@ void main() {
   testWidgets('DayWidget renders empty state and updates when a pill is added',
       (WidgetTester tester) async {
     // 1. Render the widget in its initial empty state
-    await tester.pumpWidget(createWidgetUnderTest(header: pillsToTakeHeader));
+    await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
     await tester.pumpAndSettle();
 
     expect(find.text(pillsToTakeHeader), findsOneWidget);
@@ -97,7 +97,7 @@ void main() {
   testWidgets('DayWidget rebuilds correctly for pills taken list',
       (WidgetTester tester) async {
     // 1. Render the widget with the "Taken" header in empty state
-    await tester.pumpWidget(createWidgetUnderTest(header: pillsTakenHeader));
+    await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.taken));
     await tester.pumpAndSettle();
 
     expect(find.text(pillsTakenHeader), findsOneWidget);
@@ -123,7 +123,7 @@ void main() {
   testWidgets(
       'DayWidget does not throw ParentData exception when correctly placed in Column',
       (WidgetTester tester) async {
-    await tester.pumpWidget(createWidgetUnderTest(header: pillsToTakeHeader));
+    await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);

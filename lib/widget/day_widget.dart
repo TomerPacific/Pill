@@ -11,23 +11,28 @@ import 'package:pill/widget/pill_to_take_widget.dart';
 
 const double listItemHeight = 200.0;
 
+enum DayWidgetMode { toTake, taken }
+
 class DayWidget extends StatelessWidget {
   const DayWidget(
       {super.key,
       required this.date,
-      required this.header,
+      required this.mode,
       required this.dateService});
 
   final DateTime date;
-  final String header;
+  final DayWidgetMode mode;
   final DateService dateService;
+
+  String get _header =>
+      mode == DayWidgetMode.toTake ? pillsToTakeHeader : pillsTakenHeader;
 
   Widget _pillsToTakeList(BuildContext context, PillState state) {
     List<PillToTake>? pillsToTake = state.pillsToTake;
     return (pillsToTake == null || pillsToTake.isEmpty)
         ? Padding(
             padding: const EdgeInsets.only(top: 20),
-            child: Text(header,
+            child: Text(_header,
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)))
         : SizedBox(
@@ -54,18 +59,18 @@ class DayWidget extends StatelessWidget {
     if (pillsTaken == null || pillsTaken.isEmpty) {
       return Padding(
           padding: const EdgeInsets.only(top: 20),
-          child: Text(header,
+          child: Text(_header,
               style:
                   const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)));
     }
 
     return SizedBox(
-          height: listItemHeight,
-          child: ListView.builder(
-            itemCount: pillsTaken.length,
-            itemBuilder: (_, index) => PillTakenWidget(
-                pillTaken: pillsTaken[index], dateService: dateService),
-          ));
+        height: listItemHeight,
+        child: ListView.builder(
+          itemCount: pillsTaken.length,
+          itemBuilder: (_, index) => PillTakenWidget(
+              pillTaken: pillsTaken[index], dateService: dateService),
+        ));
   }
 
   @override
@@ -89,7 +94,7 @@ class DayWidget extends StatelessWidget {
           Expanded(
             child: BlocBuilder<PillBloc, PillState>(
               builder: (context, state) {
-                return (header == pillsToTakeHeader)
+                return (mode == DayWidgetMode.toTake)
                     ? _pillsToTakeList(context, state)
                     : _pillsTakenList(context, state);
               },

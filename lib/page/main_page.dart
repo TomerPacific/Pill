@@ -90,7 +90,7 @@ TabBarView _mainPageTabBarView(DateService dateService,
       children: <Widget>[
         DayWidget(
             date: DateTime.now(),
-            header: pillsToTakeHeader,
+            mode: DayWidgetMode.toTake,
             dateService: dateService),
         Align(
           alignment: Alignment.bottomRight,
@@ -117,7 +117,7 @@ TabBarView _mainPageTabBarView(DateService dateService,
     Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
       DayWidget(
           date: DateTime.now(),
-          header: pillsTakenHeader,
+          mode: DayWidgetMode.taken,
           dateService: dateService),
     ]),
     BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {

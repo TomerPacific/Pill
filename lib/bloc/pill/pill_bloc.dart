@@ -95,6 +95,8 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     final result =
         sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
+    if (result == null) return;
+
     emitter(PillState(
       pillsToTake: result.pillsToTake,
       pillsTaken: result.pillsTaken,

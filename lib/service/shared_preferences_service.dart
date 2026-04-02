@@ -73,8 +73,8 @@ class SharedPreferencesService {
     }
   }
 
-  List<PillTaken> addTakenPill(PillToTake pillTaken, String date) {
-    PillTaken pill = PillTaken.extractFromPillToTake(pillTaken);
+  List<PillTaken> addTakenPill(PillToTake pillToTake, String date) {
+    PillTaken pill = PillTaken.extractFromPillToTake(pillToTake);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
     pillsTaken.add(pill);
     _setPillsTakenForDate(date, pillsTaken);
@@ -82,33 +82,28 @@ class SharedPreferencesService {
   }
 
   // Returns updated lists for currentDate so the BLoC can emit state without
-  // a second read.
-  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken}) updatePillForDate(
+  // a second read. Returns null if the pill to update was not found.
+  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})? updatePillForDate(
       PillToTake pillToTake, String currentDate) {
     List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
-    List<PillTaken> pillsTakenList = getPillsTakenForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     int pillIndex = pillsToTakeList.indexWhere(
             (element) => element.pillName.trim().toLowerCase() == normalizedName);
 
     if (pillIndex == -1) {
-      return (
-      pillsToTake: pillsToTakeList,
-      pillsTaken: pillsTakenList
-      );
+      return null;
     }
 
     final existingPill = pillsToTakeList[pillIndex];
     final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
     // Update taken list
-    pillsTakenList.add(PillTaken.extractFromPillToTake(pillToSave));
-    _setPillsTakenForDate(currentDate, pillsTakenList);
+    final updatedPillsTaken = addTakenPill(pillToSave, currentDate);
 
     if (pillToSave.pillRegiment == 0) {
       pillsToTakeList.removeWhere((element) =>
-          element.pillName.trim().toLowerCase() == normalizedName);
+      element.pillName.trim().toLowerCase() == normalizedName);
       _setPillsForDate(currentDate, pillsToTakeList);
     } else {
       pillsToTakeList[pillIndex] = pillToSave;
@@ -117,7 +112,7 @@ class SharedPreferencesService {
 
     return (
     pillsToTake: pillsToTakeList,
-    pillsTaken: pillsTakenList
+    pillsTaken: updatedPillsTaken
     );
   }
 
