@@ -73,62 +73,62 @@ class SharedPreferencesService {
     }
   }
 
-  void addTakenPill(PillToTake pillTaken, String date) {
+  List<PillTaken> addTakenPill(PillToTake pillTaken, String date) {
     PillTaken pill = PillTaken.extractFromPillToTake(pillTaken);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
     pillsTaken.add(pill);
     _setPillsTakenForDate(date, pillsTaken);
+    return pillsTaken;
   }
 
   // Returns updated lists for currentDate so the BLoC can emit state without
-  // a second read. updatePillForDate only ever modifies a single date, so
-  // returning the result here is unambiguous.
+  // a second read.
   ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken}) updatePillForDate(
       PillToTake pillToTake, String currentDate) {
-    List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+    List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
+    List<PillTaken> pillsTakenList = getPillsTakenForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
-    int pillIndex = pills.indexWhere(
+    int pillIndex = pillsToTakeList.indexWhere(
             (element) => element.pillName.trim().toLowerCase() == normalizedName);
 
     if (pillIndex == -1) {
       return (
-      pillsToTake: pills,
-      pillsTaken: getPillsTakenForDate(currentDate)
+      pillsToTake: pillsToTakeList,
+      pillsTaken: pillsTakenList
       );
     }
 
-    final existingPill = pills[pillIndex];
+    final existingPill = pillsToTakeList[pillIndex];
     final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
-    addTakenPill(pillToSave, currentDate);
+    // Update taken list
+    pillsTakenList.add(PillTaken.extractFromPillToTake(pillToSave));
+    _setPillsTakenForDate(currentDate, pillsTakenList);
 
     if (pillToSave.pillRegiment == 0) {
-      removePillFromDate(pillToSave, currentDate);
-      pills = getPillsToTakeForDate(currentDate);
+      pillsToTakeList.removeAt(pillIndex);
+      _setPillsForDate(currentDate, pillsToTakeList);
     } else {
-      pills[pillIndex] = pillToSave;
-      _setPillsForDate(currentDate, pills);
+      pillsToTakeList[pillIndex] = pillToSave;
+      _setPillsForDate(currentDate, pillsToTakeList);
     }
 
     return (
-    pillsToTake: pills,
-    pillsTaken: getPillsTakenForDate(currentDate)
+    pillsToTake: pillsToTakeList,
+    pillsTaken: pillsTakenList
     );
   }
 
-  // Returns the updated list for currentDate. removePillFromDate only ever
-  // modifies a single date, so the return value is unambiguous.
+  // Returns the updated list for currentDate.
   List<PillToTake> removePillFromDate(
       PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
-    List<PillToTake> updatedPills = pills
-        .where((element) =>
-    element.pillName.trim().toLowerCase() != normalizedName)
-        .toList();
-    _setPillsForDate(currentDate, updatedPills);
-    return updatedPills;
+    pills.removeWhere((element) =>
+    element.pillName.trim().toLowerCase() == normalizedName);
+    _setPillsForDate(currentDate, pills);
+    return pills;
   }
 
   void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
