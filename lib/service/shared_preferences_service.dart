@@ -18,10 +18,10 @@ class SharedPreferencesService {
   static Future<SharedPreferencesService> create(
       DateService dateService) async {
     SharedPreferencesService sharedPreferencesService =
-    SharedPreferencesService._create(dateService);
+        SharedPreferencesService._create(dateService);
 
     sharedPreferencesService._sharedPreferences =
-    await SharedPreferences.getInstance();
+        await SharedPreferences.getInstance();
 
     return sharedPreferencesService;
   }
@@ -83,13 +83,13 @@ class SharedPreferencesService {
 
   // Returns updated lists for currentDate so the BLoC can emit state without
   // a second read. Returns null if the pill to update was not found.
-  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})? updatePillForDate(
-      PillToTake pillToTake, String currentDate) {
+  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?
+      updatePillForDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     int pillIndex = pillsToTakeList.indexWhere(
-            (element) => element.pillName.trim().toLowerCase() == normalizedName);
+        (element) => element.pillName.trim().toLowerCase() == normalizedName);
 
     if (pillIndex == -1) {
       return null;
@@ -102,18 +102,15 @@ class SharedPreferencesService {
     final updatedPillsTaken = addTakenPill(pillToSave, currentDate);
 
     if (pillToSave.pillRegiment == 0) {
-      pillsToTakeList.removeWhere((element) =>
-      element.pillName.trim().toLowerCase() == normalizedName);
+      pillsToTakeList.removeWhere(
+          (element) => element.pillName.trim().toLowerCase() == normalizedName);
       _setPillsForDate(currentDate, pillsToTakeList);
     } else {
       pillsToTakeList[pillIndex] = pillToSave;
       _setPillsForDate(currentDate, pillsToTakeList);
     }
 
-    return (
-    pillsToTake: pillsToTakeList,
-    pillsTaken: updatedPillsTaken
-    );
+    return (pillsToTake: pillsToTakeList, pillsTaken: updatedPillsTaken);
   }
 
   // Returns the updated list for currentDate.
@@ -121,8 +118,8 @@ class SharedPreferencesService {
       PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
-    pills.removeWhere((element) =>
-    element.pillName.trim().toLowerCase() == normalizedName);
+    pills.removeWhere(
+        (element) => element.pillName.trim().toLowerCase() == normalizedName);
     _setPillsForDate(currentDate, pills);
     return pills;
   }
@@ -141,12 +138,13 @@ class SharedPreferencesService {
 
   void setTimeWhenApplicationWasOpened() {
     DateTime now = DateTime.now();
-    unawaited(_sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String()));
+    unawaited(
+        _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String()));
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
     String? timeApplicationWasOpened =
-    _sharedPreferences.getString(timeAppOpenedKey);
+        _sharedPreferences.getString(timeAppOpenedKey);
     return timeApplicationWasOpened != null
         ? DateTime.parse(timeApplicationWasOpened)
         : null;
