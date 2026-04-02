@@ -18,58 +18,57 @@ class SharedPreferencesService {
   static Future<SharedPreferencesService> create(
       DateService dateService) async {
     SharedPreferencesService sharedPreferencesService =
-        SharedPreferencesService._create(dateService);
+    SharedPreferencesService._create(dateService);
 
     sharedPreferencesService._sharedPreferences =
-        await SharedPreferences.getInstance();
+    await SharedPreferences.getInstance();
 
     return sharedPreferencesService;
   }
 
+  // Kept as void — SharedPreferences.setString is synchronous on the mock
+  // and near-instant on real devices. Awaiting it causes test timing issues.
   void _setPillsForDate(String currentDate, List<PillToTake> pills) {
     _sharedPreferences.setString(currentDate, PillToTake.encode(pills));
   }
 
-  void _setPillsTakenForDate(
-    String date,
-    List<PillTaken> pillsTaken,
-  ) {
+  void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) {
     _sharedPreferences.setString(
         pillsTakenKey + date, PillTaken.encode(pillsTaken));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
     String? encodedPills = _sharedPreferences.getString(currentDate);
-    List<PillToTake> pills = [];
     if (encodedPills != null) {
-      pills = PillToTake.decode(encodedPills);
+      return PillToTake.decode(encodedPills);
     }
-
-    return pills;
+    return [];
   }
 
   List<PillTaken> getPillsTakenForDate(String date) {
     String? encodedPills = _sharedPreferences.getString(pillsTakenKey + date);
-    List<PillTaken> pillsTaken = [];
     if (encodedPills != null) {
-      pillsTaken = PillTaken.decode(encodedPills);
+      return PillTaken.decode(encodedPills);
     }
-
-    return pillsTaken;
+    return [];
   }
 
-  void addPillToDates(DateTime startDate, PillToTake pill) {
+  // Returns the updated list so the BLoC can use it directly without re-reading.
+  List<PillToTake> addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
     final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
+    List<PillToTake> lastUpdatedList = [];
     while (daysToTake > 0) {
       String dateStr = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pillWithTrimmedName);
       _setPillsForDate(dateStr, pills);
+      lastUpdatedList = pills;
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
     }
+    return lastUpdatedList;
   }
 
   void addTakenPill(PillToTake pillTaken, String date) {
@@ -79,19 +78,22 @@ class SharedPreferencesService {
     _setPillsTakenForDate(date, pillsTaken);
   }
 
-  void updatePillForDate(PillToTake pillToTake, String currentDate) {
+  // Returns a record with the updated pillsToTake and pillsTaken lists.
+  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken}) updatePillForDate(
+      PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
-    int pillIndex = pills.indexWhere((element) =>
-        element.pillName.trim().toLowerCase() == normalizedName);
+    int pillIndex = pills.indexWhere(
+            (element) => element.pillName.trim().toLowerCase() == normalizedName);
 
     if (pillIndex == -1) {
-      return;
+      return (
+      pillsToTake: pills,
+      pillsTaken: getPillsTakenForDate(currentDate)
+      );
     }
 
-    // Preserve the existing stored pill's name to avoid overwriting with
-    // different casing or whitespace from the caller.
     final existingPill = pills[pillIndex];
     final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
@@ -99,20 +101,28 @@ class SharedPreferencesService {
 
     if (pillToSave.pillRegiment == 0) {
       removePillFromDate(pillToSave, currentDate);
+      pills = getPillsToTakeForDate(currentDate);
     } else {
       pills[pillIndex] = pillToSave;
       _setPillsForDate(currentDate, pills);
     }
+
+    return (
+    pillsToTake: pills,
+    pillsTaken: getPillsTakenForDate(currentDate)
+    );
   }
 
-  void removePillFromDate(PillToTake pillToTake, String currentDate) {
+  // Returns the updated list so callers can use it directly.
+  List<PillToTake> removePillFromDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     List<PillToTake> updatedPills = pills
         .where((element) =>
-            element.pillName.trim().toLowerCase() != normalizedName)
+    element.pillName.trim().toLowerCase() != normalizedName)
         .toList();
     _setPillsForDate(currentDate, updatedPills);
+    return updatedPills;
   }
 
   void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
@@ -121,14 +131,8 @@ class SharedPreferencesService {
 
     while (now.difference(runningDate).inDays >= oneDay) {
       String converted = _dateService.getDateAsMonthAndDay(runningDate);
-      List<PillToTake> pillsToTake = getPillsToTakeForDate(converted);
-      List<PillTaken> pillsTaken = getPillsTakenForDate(converted);
-
-      pillsToTake.clear();
-      pillsTaken.clear();
-
-      _setPillsForDate(converted, pillsToTake);
-      _setPillsTakenForDate(converted, pillsTaken);
+      _setPillsForDate(converted, []);
+      _setPillsTakenForDate(converted, []);
       runningDate = runningDate.add(const Duration(days: oneDay));
     }
   }
@@ -140,7 +144,7 @@ class SharedPreferencesService {
 
   DateTime? getTimeWhenApplicationWasOpened() {
     String? timeApplicationWasOpened =
-        _sharedPreferences.getString(timeAppOpenedKey);
+    _sharedPreferences.getString(timeAppOpenedKey);
     return timeApplicationWasOpened != null
         ? DateTime.parse(timeApplicationWasOpened)
         : null;
@@ -178,7 +182,6 @@ class SharedPreferencesService {
         if (pills.isNotEmpty) return true;
       }
     }
-
     return false;
   }
 
