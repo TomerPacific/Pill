@@ -107,7 +107,8 @@ class SharedPreferencesService {
     _setPillsTakenForDate(currentDate, pillsTakenList);
 
     if (pillToSave.pillRegiment == 0) {
-      pillsToTakeList.removeAt(pillIndex);
+      pillsToTakeList.removeWhere((element) =>
+          element.pillName.trim().toLowerCase() == normalizedName);
       _setPillsForDate(currentDate, pillsToTakeList);
     } else {
       pillsToTakeList[pillIndex] = pillToSave;
