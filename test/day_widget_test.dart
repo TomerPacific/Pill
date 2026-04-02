@@ -24,7 +24,7 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     sharedPreferencesService =
-    await SharedPreferencesService.create(dateService);
+        await SharedPreferencesService.create(dateService);
     pillBloc = PillBloc(sharedPreferencesService);
   });
 
@@ -35,7 +35,8 @@ void main() {
   /// Writes data to the service and waits for the bloc to process a loadPills
   /// event in a real async zone (tester.runAsync), so the bloc's state is
   /// fully updated BEFORE pumpWidget renders the widget tree.
-  Future<void> seedBlocState(WidgetTester tester, void Function() serviceSetup) async {
+  Future<void> seedBlocState(
+      WidgetTester tester, void Function() serviceSetup) async {
     serviceSetup();
     await tester.runAsync(() async {
       pillBloc.add(PillsEvent(
@@ -66,77 +67,77 @@ void main() {
     );
   }
 
-  testWidgets(
-      'DayWidget renders empty state and updates when a pill is added',
-          (WidgetTester tester) async {
-        // 1. Render the widget in its initial empty state
-        await tester.pumpWidget(createWidgetUnderTest(header: pillsToTakeHeader));
-        await tester.pumpAndSettle();
+  testWidgets('DayWidget renders empty state and updates when a pill is added',
+      (WidgetTester tester) async {
+    // 1. Render the widget in its initial empty state
+    await tester.pumpWidget(createWidgetUnderTest(header: pillsToTakeHeader));
+    await tester.pumpAndSettle();
 
-        expect(find.text(pillsToTakeHeader), findsOneWidget);
-        expect(find.text(testDateStr), findsOneWidget);
+    expect(find.text(pillsToTakeHeader), findsOneWidget);
+    expect(find.text(testDateStr), findsOneWidget);
 
-        // 2. Write to service synchronously, then drive bloc state update via
-        //    tester.runAsync so the stream emission fully completes
-        const pill = PillToTake(
-            pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+    // 2. Write to service synchronously, then drive bloc state update via
+    //    tester.runAsync so the stream emission fully completes
+    const pill = PillToTake(
+        pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
-        await seedBlocState(tester, () {
-          sharedPreferencesService.addPillToDates(testDate, pill);
-        });
+    await seedBlocState(tester, () {
+      sharedPreferencesService.addPillToDates(testDate, pill);
+    });
 
-        // 3. Pump the widget tree so BlocBuilder reacts to the already-emitted state
-        await tester.pump();
-        await tester.pumpAndSettle();
+    // 3. Pump the widget tree so BlocBuilder reacts to the already-emitted state
+    await tester.pump();
+    await tester.pumpAndSettle();
 
-        expect(find.byType(PillWidget), findsOneWidget);
-        expect(find.text("Test Pill"), findsOneWidget);
-        expect(find.text(pillsToTakeHeader), findsNothing);
-      });
+    expect(find.byType(PillWidget), findsOneWidget);
+    expect(find.text("Test Pill"), findsOneWidget);
+    expect(find.text(pillsToTakeHeader), findsNothing);
+  });
 
   testWidgets('DayWidget rebuilds correctly for pills taken list',
-          (WidgetTester tester) async {
-        // 1. Render the widget with the "Taken" header in empty state
-        await tester.pumpWidget(createWidgetUnderTest(header: pillsTakenHeader));
-        await tester.pumpAndSettle();
+      (WidgetTester tester) async {
+    // 1. Render the widget with the "Taken" header in empty state
+    await tester.pumpWidget(createWidgetUnderTest(header: pillsTakenHeader));
+    await tester.pumpAndSettle();
 
-        expect(find.text(pillsTakenHeader), findsOneWidget);
+    expect(find.text(pillsTakenHeader), findsOneWidget);
 
-        const pill = PillToTake(
-            pillName: "Taken Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+    const pill = PillToTake(
+        pillName: "Taken Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
-        // 2. Add AND mark taken synchronously in the service, then drive bloc state
-        await seedBlocState(tester, () {
-          sharedPreferencesService.addPillToDates(testDate, pill);
-          sharedPreferencesService.updatePillForDate(
-              pill.copyWith(pillRegiment: 0, lastTaken: testDate), testDateStr);
-        });
+    // 2. Add AND mark taken synchronously in the service, then drive bloc state
+    await seedBlocState(tester, () {
+      sharedPreferencesService.addPillToDates(testDate, pill);
+      sharedPreferencesService.updatePillForDate(
+          pill.copyWith(pillRegiment: 0, lastTaken: testDate), testDateStr);
+    });
 
-        await tester.pump();
-        await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pumpAndSettle();
 
-        expect(find.byType(PillTakenWidget), findsOneWidget);
-        expect(find.text("Taken Pill"), findsOneWidget);
-        expect(find.text(pillsTakenHeader), findsNothing);
-      });
+    expect(find.byType(PillTakenWidget), findsOneWidget);
+    expect(find.text("Taken Pill"), findsOneWidget);
+    expect(find.text(pillsTakenHeader), findsNothing);
+  });
 
   testWidgets(
       'DayWidget does not throw ParentData exception when correctly placed in Column',
-          (WidgetTester tester) async {
-        await tester.pumpWidget(createWidgetUnderTest(header: pillsToTakeHeader));
-        await tester.pumpAndSettle();
+      (WidgetTester tester) async {
+    await tester.pumpWidget(createWidgetUnderTest(header: pillsToTakeHeader));
+    await tester.pumpAndSettle();
 
-        expect(tester.takeException(), isNull);
+    expect(tester.takeException(), isNull);
 
-        await seedBlocState(tester, () {
-          sharedPreferencesService.addPillToDates(testDate,
-              const PillToTake(
-                  pillName: "Layout Pill", pillRegiment: 1, amountOfDaysToTake: 1));
-        });
+    await seedBlocState(tester, () {
+      sharedPreferencesService.addPillToDates(
+          testDate,
+          const PillToTake(
+              pillName: "Layout Pill", pillRegiment: 1, amountOfDaysToTake: 1));
+    });
 
-        await tester.pump();
-        await tester.pumpAndSettle();
+    await tester.pump();
+    await tester.pumpAndSettle();
 
-        expect(tester.takeException(), isNull);
-      });
+    expect(tester.takeException(), isNull);
+  });
 }

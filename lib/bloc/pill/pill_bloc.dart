@@ -21,11 +21,11 @@ class PillsEvent {
 
   PillsEvent(
       {required this.eventName,
-        required this.date,
-        this.pillToTake,
-        this.pillsToTake,
-        this.pillsTaken,
-        this.startDateTime});
+      required this.date,
+      this.pillToTake,
+      this.pillsToTake,
+      this.pillsTaken,
+      this.startDateTime});
 }
 
 class PillBloc extends Bloc<PillsEvent, PillState> {
@@ -44,9 +44,9 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           break;
         case PillEvent.loadPills:
           final pillsTaken =
-          sharedPreferencesService.getPillsTakenForDate(event.date);
+              sharedPreferencesService.getPillsTakenForDate(event.date);
           final pillsToTake =
-          sharedPreferencesService.getPillsToTakeForDate(event.date);
+              sharedPreferencesService.getPillsToTakeForDate(event.date);
           emit(PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken));
           break;
       }
@@ -65,7 +65,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
         event.startDateTime ?? DateTime.now(), pillToTake);
 
     final pillsToTake =
-    sharedPreferencesService.getPillsToTakeForDate(event.date);
+        sharedPreferencesService.getPillsToTakeForDate(event.date);
 
     emitter(PillState(
       pillsToTake: pillsToTake,
@@ -80,7 +80,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     if (pillToTake == null || pillsToTakeList == null) return;
 
     final updatedPills =
-    sharedPreferencesService.removePillFromDate(pillToTake, event.date);
+        sharedPreferencesService.removePillFromDate(pillToTake, event.date);
 
     emitter(PillState(
       pillsToTake: updatedPills,
@@ -94,7 +94,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     if (pillToTake == null) return;
 
     final result =
-    sharedPreferencesService.updatePillForDate(pillToTake, event.date);
+        sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
     emitter(PillState(
       pillsToTake: result.pillsToTake,
