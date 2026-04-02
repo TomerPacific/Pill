@@ -26,9 +26,10 @@ class SharedPreferencesService {
     return sharedPreferencesService;
   }
 
-  // The Future returned by setString is intentionally unawaited: SharedPreferences
-  // commits writes to its in-memory cache synchronously before the Future resolves,
-  // so subsequent getString calls on the same instance always see the updated value.
+  // The Future returned by SharedPreferences write methods is intentionally
+  // unawaited: SharedPreferences commits writes to its in-memory cache
+  // synchronously before the Future resolves, so subsequent reads on the same
+  // instance always see the updated value immediately.
   void _setPillsForDate(String currentDate, List<PillToTake> pills) {
     unawaited(
         _sharedPreferences.setString(currentDate, PillToTake.encode(pills)));
@@ -144,7 +145,7 @@ class SharedPreferencesService {
 
   void setTimeWhenApplicationWasOpened() {
     DateTime now = DateTime.now();
-    _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
+    unawaited(_sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String()));
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
@@ -161,7 +162,7 @@ class SharedPreferencesService {
       if (key.contains(timeAppOpenedKey)) {
         continue;
       }
-      _sharedPreferences.remove(key);
+      unawaited(_sharedPreferences.remove(key));
     }
   }
 
@@ -191,7 +192,7 @@ class SharedPreferencesService {
   }
 
   void saveThemeStatus(bool isDarkModeEnabled) {
-    _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
+    unawaited(_sharedPreferences.setBool(darkModeKey, isDarkModeEnabled));
   }
 
   bool getThemeStatus() {
