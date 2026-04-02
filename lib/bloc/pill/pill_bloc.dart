@@ -58,12 +58,17 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
-    // addPillToDates now returns the updated list — no need to re-read.
-    final updatedPillsToTake = sharedPreferencesService.addPillToDates(
+    // addPillToDates writes to all scheduled dates. We then read back
+    // event.date specifically so the emitted state always reflects the
+    // correct day's list, regardless of how many days the pill spans.
+    sharedPreferencesService.addPillToDates(
         event.startDateTime ?? DateTime.now(), pillToTake);
 
+    final pillsToTake =
+    sharedPreferencesService.getPillsToTakeForDate(event.date);
+
     emitter(PillState(
-      pillsToTake: updatedPillsToTake,
+      pillsToTake: pillsToTake,
       pillsTaken: state.pillsTaken,
     ));
   }
@@ -74,9 +79,8 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     final pillsToTakeList = event.pillsToTake;
     if (pillToTake == null || pillsToTakeList == null) return;
 
-    // removePillFromDate now returns the updated list — no need to re-read.
-    final updatedPills = sharedPreferencesService
-        .removePillFromDate(pillToTake, event.date);
+    final updatedPills =
+    sharedPreferencesService.removePillFromDate(pillToTake, event.date);
 
     emitter(PillState(
       pillsToTake: updatedPills,
@@ -89,9 +93,8 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
-    // updatePillForDate now returns both updated lists — no need to re-read.
-    final result = sharedPreferencesService
-        .updatePillForDate(pillToTake, event.date);
+    final result =
+    sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
     emitter(PillState(
       pillsToTake: result.pillsToTake,
