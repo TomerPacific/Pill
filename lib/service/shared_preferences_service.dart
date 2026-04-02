@@ -26,15 +26,17 @@ class SharedPreferencesService {
     return sharedPreferencesService;
   }
 
-  // Kept as void — SharedPreferences.setString is synchronous on the mock
-  // and near-instant on real devices. Awaiting it causes test timing issues.
+  // The Future returned by setString is intentionally unawaited: SharedPreferences
+  // commits writes to its in-memory cache synchronously before the Future resolves,
+  // so subsequent getString calls on the same instance always see the updated value.
   void _setPillsForDate(String currentDate, List<PillToTake> pills) {
-    _sharedPreferences.setString(currentDate, PillToTake.encode(pills));
+    unawaited(
+        _sharedPreferences.setString(currentDate, PillToTake.encode(pills)));
   }
 
   void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) {
-    _sharedPreferences.setString(
-        pillsTakenKey + date, PillTaken.encode(pillsTaken));
+    unawaited(_sharedPreferences.setString(
+        pillsTakenKey + date, PillTaken.encode(pillsTaken)));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
@@ -53,22 +55,21 @@ class SharedPreferencesService {
     return [];
   }
 
-  // Returns the updated list so the BLoC can use it directly without re-reading.
-  List<PillToTake> addPillToDates(DateTime startDate, PillToTake pill) {
+  // void return: callers should read the specific date they need via
+  // getPillsToTakeForDate(date) after this call, since a pill scheduled
+  // across multiple days updates each date independently.
+  void addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
     final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
-    List<PillToTake> lastUpdatedList = [];
     while (daysToTake > 0) {
       String dateStr = _dateService.getDateAsMonthAndDay(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pillWithTrimmedName);
       _setPillsForDate(dateStr, pills);
-      lastUpdatedList = pills;
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
     }
-    return lastUpdatedList;
   }
 
   void addTakenPill(PillToTake pillTaken, String date) {
@@ -78,7 +79,9 @@ class SharedPreferencesService {
     _setPillsTakenForDate(date, pillsTaken);
   }
 
-  // Returns a record with the updated pillsToTake and pillsTaken lists.
+  // Returns updated lists for currentDate so the BLoC can emit state without
+  // a second read. updatePillForDate only ever modifies a single date, so
+  // returning the result here is unambiguous.
   ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken}) updatePillForDate(
       PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
@@ -113,8 +116,10 @@ class SharedPreferencesService {
     );
   }
 
-  // Returns the updated list so callers can use it directly.
-  List<PillToTake> removePillFromDate(PillToTake pillToTake, String currentDate) {
+  // Returns the updated list for currentDate. removePillFromDate only ever
+  // modifies a single date, so the return value is unambiguous.
+  List<PillToTake> removePillFromDate(
+      PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     List<PillToTake> updatedPills = pills
