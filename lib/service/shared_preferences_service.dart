@@ -26,38 +26,39 @@ class SharedPreferencesService {
     return sharedPreferencesService;
   }
 
+  // The Future returned by SharedPreferences write methods is intentionally
+  // unawaited: SharedPreferences commits writes to its in-memory cache
+  // synchronously before the Future resolves, so subsequent reads on the same
+  // instance always see the updated value immediately.
   void _setPillsForDate(String currentDate, List<PillToTake> pills) {
-    _sharedPreferences.setString(currentDate, PillToTake.encode(pills));
+    unawaited(
+        _sharedPreferences.setString(currentDate, PillToTake.encode(pills)));
   }
 
-  void _setPillsTakenForDate(
-    String date,
-    List<PillTaken> pillsTaken,
-  ) {
-    _sharedPreferences.setString(
-        pillsTakenKey + date, PillTaken.encode(pillsTaken));
+  void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) {
+    unawaited(_sharedPreferences.setString(
+        pillsTakenKey + date, PillTaken.encode(pillsTaken)));
   }
 
   List<PillToTake> getPillsToTakeForDate(String currentDate) {
     String? encodedPills = _sharedPreferences.getString(currentDate);
-    List<PillToTake> pills = [];
     if (encodedPills != null) {
-      pills = PillToTake.decode(encodedPills);
+      return PillToTake.decode(encodedPills);
     }
-
-    return pills;
+    return [];
   }
 
   List<PillTaken> getPillsTakenForDate(String date) {
     String? encodedPills = _sharedPreferences.getString(pillsTakenKey + date);
-    List<PillTaken> pillsTaken = [];
     if (encodedPills != null) {
-      pillsTaken = PillTaken.decode(encodedPills);
+      return PillTaken.decode(encodedPills);
     }
-
-    return pillsTaken;
+    return [];
   }
 
+  // void return: callers should read the specific date they need via
+  // getPillsToTakeForDate(date) after this call, since a pill scheduled
+  // across multiple days updates each date independently.
   void addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
@@ -72,47 +73,55 @@ class SharedPreferencesService {
     }
   }
 
-  void addTakenPill(PillToTake pillTaken, String date) {
-    PillTaken pill = PillTaken.extractFromPillToTake(pillTaken);
+  List<PillTaken> addTakenPill(PillToTake pillToTake, String date) {
+    PillTaken pill = PillTaken.extractFromPillToTake(pillToTake);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
     pillsTaken.add(pill);
     _setPillsTakenForDate(date, pillsTaken);
+    return pillsTaken;
   }
 
-  void updatePillForDate(PillToTake pillToTake, String currentDate) {
-    List<PillToTake> pills = getPillsToTakeForDate(currentDate);
+  // Returns updated lists for currentDate so the BLoC can emit state without
+  // a second read. Returns null if the pill to update was not found.
+  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?
+      updatePillForDate(PillToTake pillToTake, String currentDate) {
+    List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
-    int pillIndex = pills.indexWhere((element) =>
-        element.pillName.trim().toLowerCase() == normalizedName);
+    int pillIndex = pillsToTakeList.indexWhere(
+        (element) => element.pillName.trim().toLowerCase() == normalizedName);
 
     if (pillIndex == -1) {
-      return;
+      return null;
     }
 
-    // Preserve the existing stored pill's name to avoid overwriting with
-    // different casing or whitespace from the caller.
-    final existingPill = pills[pillIndex];
+    final existingPill = pillsToTakeList[pillIndex];
     final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
-    addTakenPill(pillToSave, currentDate);
+    // Update taken list
+    final updatedPillsTaken = addTakenPill(pillToSave, currentDate);
 
     if (pillToSave.pillRegiment == 0) {
-      removePillFromDate(pillToSave, currentDate);
+      pillsToTakeList.removeWhere(
+          (element) => element.pillName.trim().toLowerCase() == normalizedName);
+      _setPillsForDate(currentDate, pillsToTakeList);
     } else {
-      pills[pillIndex] = pillToSave;
-      _setPillsForDate(currentDate, pills);
+      pillsToTakeList[pillIndex] = pillToSave;
+      _setPillsForDate(currentDate, pillsToTakeList);
     }
+
+    return (pillsToTake: pillsToTakeList, pillsTaken: updatedPillsTaken);
   }
 
-  void removePillFromDate(PillToTake pillToTake, String currentDate) {
+  // Returns the updated list for currentDate.
+  List<PillToTake> removePillFromDate(
+      PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
-    List<PillToTake> updatedPills = pills
-        .where((element) =>
-            element.pillName.trim().toLowerCase() != normalizedName)
-        .toList();
-    _setPillsForDate(currentDate, updatedPills);
+    pills.removeWhere(
+        (element) => element.pillName.trim().toLowerCase() == normalizedName);
+    _setPillsForDate(currentDate, pills);
+    return pills;
   }
 
   void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
@@ -121,21 +130,16 @@ class SharedPreferencesService {
 
     while (now.difference(runningDate).inDays >= oneDay) {
       String converted = _dateService.getDateAsMonthAndDay(runningDate);
-      List<PillToTake> pillsToTake = getPillsToTakeForDate(converted);
-      List<PillTaken> pillsTaken = getPillsTakenForDate(converted);
-
-      pillsToTake.clear();
-      pillsTaken.clear();
-
-      _setPillsForDate(converted, pillsToTake);
-      _setPillsTakenForDate(converted, pillsTaken);
+      _setPillsForDate(converted, []);
+      _setPillsTakenForDate(converted, []);
       runningDate = runningDate.add(const Duration(days: oneDay));
     }
   }
 
   void setTimeWhenApplicationWasOpened() {
     DateTime now = DateTime.now();
-    _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
+    unawaited(
+        _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String()));
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
@@ -152,7 +156,7 @@ class SharedPreferencesService {
       if (key.contains(timeAppOpenedKey)) {
         continue;
       }
-      _sharedPreferences.remove(key);
+      unawaited(_sharedPreferences.remove(key));
     }
   }
 
@@ -178,12 +182,11 @@ class SharedPreferencesService {
         if (pills.isNotEmpty) return true;
       }
     }
-
     return false;
   }
 
   void saveThemeStatus(bool isDarkModeEnabled) {
-    _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
+    unawaited(_sharedPreferences.setBool(darkModeKey, isDarkModeEnabled));
   }
 
   bool getThemeStatus() {

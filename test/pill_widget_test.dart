@@ -75,9 +75,7 @@ void main() async {
                                   context.read<PillBloc>().add(PillsEvent(
                                       eventName: PillEvent.removePill,
                                       date: currentDate,
-                                      pillToTake: state.pillsToTake![index],
-                                      pillsToTake: state.pillsToTake,
-                                      pillsTaken: state.pillsTaken));
+                                      pillToTake: state.pillsToTake![index]));
                                 })),
                       ))
               ],
