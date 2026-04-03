@@ -23,18 +23,19 @@ class SharedPreferencesService {
     sharedPreferencesService._sharedPreferences =
         await SharedPreferences.getInstance();
 
-    sharedPreferencesService._migrateKeys();
+    await sharedPreferencesService._migrateKeys();
 
     return sharedPreferencesService;
   }
 
-  void _migrateKeys() {
+  Future<void> _migrateKeys() async {
     if (_sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false) {
       return;
     }
 
     final keys = _sharedPreferences.getKeys();
     final currentYear = DateTime.now().year;
+    bool allSucceeded = true;
 
     for (String key in keys) {
       if (key == timeAppOpenedKey ||
@@ -43,29 +44,37 @@ class SharedPreferencesService {
         continue;
       }
 
+      String? migratedKey;
       // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
       // Old keys are "month/day", new keys are "year/month/day"
       if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
-        final value = _sharedPreferences.getString(key);
-        if (value != null) {
-          final newKey = "$currentYear/$key";
-          unawaited(_sharedPreferences.setString(newKey, value));
-          unawaited(_sharedPreferences.remove(key));
-        }
+        migratedKey = "$currentYear/$key";
       } else if (key.startsWith(pillsTakenKey)) {
         final datePart = key.substring(pillsTakenKey.length);
         if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
-          final value = _sharedPreferences.getString(key);
-          if (value != null) {
-            final newKey = "$pillsTakenKey$currentYear/$datePart";
-            unawaited(_sharedPreferences.setString(newKey, value));
-            unawaited(_sharedPreferences.remove(key));
+          migratedKey = "$pillsTakenKey$currentYear/$datePart";
+        }
+      }
+
+      if (migratedKey != null) {
+        final value = _sharedPreferences.getString(key);
+        if (value != null) {
+          final setSuccess = await _sharedPreferences.setString(migratedKey, value);
+          if (setSuccess) {
+            final removeSuccess = await _sharedPreferences.remove(key);
+            if (!removeSuccess) {
+              allSucceeded = false;
+            }
+          } else {
+            allSucceeded = false;
           }
         }
       }
     }
 
-    unawaited(_sharedPreferences.setBool(migratedToYearlyKeysKey, true));
+    if (allSucceeded) {
+      await _sharedPreferences.setBool(migratedToYearlyKeysKey, true);
+    }
   }
 
   // The Future returned by SharedPreferences write methods is intentionally
