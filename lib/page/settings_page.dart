@@ -12,38 +12,41 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-      SwitchListTile(
-          title: const Text("Dark Mode"),
-          secondary: Icon(Icons.dark_mode,
-              color: _getThemeColorForDarkModeSetting(context)),
-          value:
-              context.read<ThemeBloc>().state == ThemeMode.dark ? true : false,
-          onChanged: (bool isDarkModeEnabled) {
-            ThemeEvent event = context.read<ThemeBloc>().state == ThemeMode.dark
-                ? ThemeEvent.enableLightMode
-                : ThemeEvent.enableDarkMode;
-            BlocProvider.of<ThemeBloc>(context).add(event);
-          }),
-      ListTile(
-          title: const Text("Clear All Pills"),
-          leading: const Icon(Icons.clear, color: Colors.redAccent),
-          enabled: context.read<ClearPillsBloc>().state,
-          onTap: () {
-            AlertDialog alertDialog = _createClearAllPillsAlertDialog(context);
-            showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return alertDialog;
-                });
-          }),
+      BlocBuilder<ThemeBloc, ThemeMode>(
+        builder: (context, themeMode) {
+          return SwitchListTile(
+              title: const Text("Dark Mode"),
+              secondary: Icon(Icons.dark_mode,
+                  color: themeMode == ThemeMode.dark
+                      ? const Color.fromARGB(200, 243, 231, 106)
+                      : const Color(0xFF642ef3)),
+              value: themeMode == ThemeMode.dark,
+              onChanged: (bool isDarkModeEnabled) {
+                ThemeEvent event = isDarkModeEnabled
+                    ? ThemeEvent.enableDarkMode
+                    : ThemeEvent.enableLightMode;
+                context.read<ThemeBloc>().add(event);
+              });
+        },
+      ),
+      BlocBuilder<ClearPillsBloc, bool>(
+        builder: (context, clearPillsEnabled) {
+          return ListTile(
+              title: const Text("Clear All Pills"),
+              leading: const Icon(Icons.clear, color: Colors.redAccent),
+              enabled: clearPillsEnabled,
+              onTap: () {
+                AlertDialog alertDialog = _createClearAllPillsAlertDialog(context);
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return alertDialog;
+                    });
+              });
+        },
+      ),
     ]);
   }
-}
-
-Color _getThemeColorForDarkModeSetting(BuildContext context) {
-  return context.read<ThemeBloc>().state == ThemeMode.dark
-      ? const Color.fromARGB(200, 243, 231, 106)
-      : const Color(0xFF642ef3);
 }
 
 AlertDialog _createClearAllPillsAlertDialog(BuildContext context) {
