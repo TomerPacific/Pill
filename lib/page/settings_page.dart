@@ -22,9 +22,9 @@ class SettingsPage extends StatelessWidget {
                       : const Color(0xFF642ef3)),
               value: themeMode == ThemeMode.dark,
               onChanged: (bool isDarkModeEnabled) {
-                ThemeEvent event = themeMode == ThemeMode.dark
-                    ? ThemeEvent.enableLightMode
-                    : ThemeEvent.enableDarkMode;
+                ThemeEvent event = isDarkModeEnabled
+                    ? ThemeEvent.enableDarkMode
+                    : ThemeEvent.enableLightMode;
                 context.read<ThemeBloc>().add(event);
               });
         },
