@@ -166,6 +166,7 @@ void main() async {
     const String pillsToTakeValue = "pillsToTakeData";
     const String pillsTakenValue = "pillsTakenData";
     const String otherValue = "some_value";
+    const int migrationYear = 2023;
 
     SharedPreferences.setMockInitialValues({
       "3/29": pillsToTakeValue,
@@ -173,15 +174,14 @@ void main() async {
       "some_other_key": otherValue
     });
     
-    // Create a new service instance to trigger migration
-    await SharedPreferencesService.create(dateService);
+    // Create a new service instance to trigger migration with a fixed year
+    await SharedPreferencesService.create(dateService, migrationYear: migrationYear);
     
-    final currentYear = DateTime.now().year;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
     // Verify values were migrated correctly
-    expect(prefs.getString("$currentYear/3/29"), pillsToTakeValue);
-    expect(prefs.getString("$pillsTakenKey$currentYear/3/29"), pillsTakenValue);
+    expect(prefs.getString("$migrationYear/3/29"), pillsToTakeValue);
+    expect(prefs.getString("$pillsTakenKey$migrationYear/3/29"), pillsTakenValue);
     
     // Verify old keys were removed
     expect(prefs.containsKey("3/29"), false);

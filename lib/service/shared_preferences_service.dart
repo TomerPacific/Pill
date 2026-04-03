@@ -16,25 +16,25 @@ class SharedPreferencesService {
   }
 
   static Future<SharedPreferencesService> create(
-      DateService dateService) async {
+      DateService dateService, {int? migrationYear}) async {
     SharedPreferencesService sharedPreferencesService =
         SharedPreferencesService._create(dateService);
 
     sharedPreferencesService._sharedPreferences =
         await SharedPreferences.getInstance();
 
-    await sharedPreferencesService._migrateKeys();
+    await sharedPreferencesService._migrateKeys(migrationYear: migrationYear);
 
     return sharedPreferencesService;
   }
 
-  Future<void> _migrateKeys() async {
+  Future<void> _migrateKeys({int? migrationYear}) async {
     if (_sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false) {
       return;
     }
 
     final keys = _sharedPreferences.getKeys();
-    final currentYear = DateTime.now().year;
+    final currentYear = migrationYear ?? DateTime.now().year;
     bool allSucceeded = true;
 
     for (String key in keys) {
