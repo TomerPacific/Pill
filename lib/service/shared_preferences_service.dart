@@ -23,7 +23,49 @@ class SharedPreferencesService {
     sharedPreferencesService._sharedPreferences =
         await SharedPreferences.getInstance();
 
+    sharedPreferencesService._migrateKeys();
+
     return sharedPreferencesService;
+  }
+
+  void _migrateKeys() {
+    if (_sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false) {
+      return;
+    }
+
+    final keys = _sharedPreferences.getKeys();
+    final currentYear = DateTime.now().year;
+
+    for (String key in keys) {
+      if (key == timeAppOpenedKey ||
+          key == darkModeKey ||
+          key == migratedToYearlyKeysKey) {
+        continue;
+      }
+
+      // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
+      // Old keys are "month/day", new keys are "year/month/day"
+      if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
+        final value = _sharedPreferences.getString(key);
+        if (value != null) {
+          final newKey = "$currentYear/$key";
+          unawaited(_sharedPreferences.setString(newKey, value));
+          unawaited(_sharedPreferences.remove(key));
+        }
+      } else if (key.startsWith(pillsTakenKey)) {
+        final datePart = key.substring(pillsTakenKey.length);
+        if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
+          final value = _sharedPreferences.getString(key);
+          if (value != null) {
+            final newKey = "$pillsTakenKey$currentYear/$datePart";
+            unawaited(_sharedPreferences.setString(newKey, value));
+            unawaited(_sharedPreferences.remove(key));
+          }
+        }
+      }
+    }
+
+    unawaited(_sharedPreferences.setBool(migratedToYearlyKeysKey, true));
   }
 
   // The Future returned by SharedPreferences write methods is intentionally
@@ -153,7 +195,9 @@ class SharedPreferencesService {
   void clearAllPills() {
     Set<String> keys = _sharedPreferences.getKeys();
     for (String key in keys) {
-      if (key.contains(timeAppOpenedKey)) {
+      if (key == timeAppOpenedKey ||
+          key == darkModeKey ||
+          key == migratedToYearlyKeysKey) {
         continue;
       }
       unawaited(_sharedPreferences.remove(key));
