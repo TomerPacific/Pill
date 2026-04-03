@@ -181,7 +181,7 @@ void main() async {
     
     // Verify values were migrated correctly
     expect(prefs.getString("$currentYear/3/29"), pillsToTakeValue);
-    expect(prefs.getString("${pillsTakenKey}$currentYear/3/29"), pillsTakenValue);
+    expect(prefs.getString("$pillsTakenKey$currentYear/3/29"), pillsTakenValue);
     
     // Verify old keys were removed
     expect(prefs.containsKey("3/29"), false);
