@@ -57,9 +57,42 @@ class SharedPreferencesService {
       }
 
       if (migratedKey != null) {
-        final value = _sharedPreferences.getString(key);
-        if (value != null) {
-          final setSuccess = await _sharedPreferences.setString(migratedKey, value);
+        final legacyValue = _sharedPreferences.getString(key);
+        final existingYearlyValue = _sharedPreferences.getString(migratedKey);
+
+        if (legacyValue != null) {
+          String migratedValue = legacyValue;
+
+          if (existingYearlyValue != null) {
+            try {
+              if (key.startsWith(pillsTakenKey)) {
+                final legacyMonthlyPills = PillTaken.decode(legacyValue);
+                final existingYearlyPills = PillTaken.decode(existingYearlyValue);
+                // For taken pills, combine and deduplicate exact matches
+                final merged =
+                    {...legacyMonthlyPills, ...existingYearlyPills}.toList();
+                migratedValue = PillTaken.encode(merged);
+              } else {
+                final legacyMonthlyPills = PillToTake.decode(legacyValue);
+                final existingYearlyPills = PillToTake.decode(existingYearlyValue);
+                // For pills to take, prefer the newer ones if names match
+                final Map<String, PillToTake> mergedMap = {};
+                for (final pill in legacyMonthlyPills) {
+                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                }
+                for (final pill in existingYearlyPills) {
+                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                }
+                migratedValue = PillToTake.encode(mergedMap.values.toList());
+              }
+            } catch (_) {
+              // On error, prefer existing (newer) value to prevent data corruption
+              migratedValue = existingYearlyValue;
+            }
+          }
+
+          final setSuccess =
+              await _sharedPreferences.setString(migratedKey, migratedValue);
           if (setSuccess) {
             final removeSuccess = await _sharedPreferences.remove(key);
             if (!removeSuccess) {
