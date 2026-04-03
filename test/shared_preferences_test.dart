@@ -3,6 +3,7 @@ import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
+import 'package:pill/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -159,5 +160,25 @@ void main() async {
     areTherePillsToTake = sharedPreferencesService.areThereAnyPillsToTake();
 
     expect(areTherePillsToTake, false);
+  });
+
+  test("SharedPreferences Service migration", () async {
+    SharedPreferences.setMockInitialValues({
+      "3/29": "[]",
+      "pillsTaken3/29": "[]",
+      "some_other_key": "some_value"
+    });
+    
+    SharedPreferencesService migratedService = await SharedPreferencesService.create(dateService);
+    final currentYear = DateTime.now().year;
+    
+    expect(migratedService.getPillsToTakeForDate("$currentYear/3/29"), isA<List<PillToTake>>());
+    expect(migratedService.getPillsTakenForDate("$currentYear/3/29"), isA<List<PillTaken>>());
+    
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    expect(prefs.containsKey("3/29"), false);
+    expect(prefs.containsKey("pillsTaken3/29"), false);
+    expect(prefs.getString("some_other_key"), "some_value");
+    expect(prefs.getBool(migratedToYearlyKeysKey), true);
   });
 }
