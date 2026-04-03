@@ -48,7 +48,7 @@ class DayWidget extends StatelessWidget {
                     onDismissed: (direction) {
                       context.read<PillBloc>().add(PillsEvent(
                           eventName: PillEvent.removePill,
-                          date: dateService.getDateAsMonthAndDay(date),
+                          date: dateService.getDateAsYearMonthDay(date),
                           pillToTake: pillsToTake[index]));
                     })),
           );
@@ -86,7 +86,7 @@ class DayWidget extends StatelessWidget {
             alignment: Alignment.topCenter,
             child: Padding(
               padding: const EdgeInsets.only(top: 40.0),
-              child: Text(dateService.getDateAsMonthAndDay(date),
+              child: Text(dateService.getDateAsYearMonthDay(date),
                   style: const TextStyle(
                       fontSize: 25.0, fontWeight: FontWeight.bold)),
             ),

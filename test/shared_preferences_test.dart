@@ -13,7 +13,7 @@ void main() async {
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
   final DateTime now = DateTime.now();
-  final String date = DateService().getDateAsMonthAndDay(now);
+  final String date = DateService().getDateAsYearMonthDay(now);
 
   setUp(() {
     sharedPreferencesService.clearAllPills();

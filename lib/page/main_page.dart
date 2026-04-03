@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     BlocProvider.of<PillBloc>(context).add(PillsEvent(
         eventName: PillEvent.loadPills,
-        date: widget.dateService.getCurrentDateAsMonthAndDay()));
+        date: widget.dateService.getCurrentDateAsYearMonthDay()));
     widget.sharedPreferencesService.clearPillsOfPastDays();
   }
 
@@ -69,7 +69,7 @@ PreferredSizeWidget _mainPageAppBar(
             case pillsTakenTabIndex:
               context.read<PillBloc>().add(PillsEvent(
                   eventName: PillEvent.loadPills,
-                  date: dateService.getCurrentDateAsMonthAndDay()));
+                  date: dateService.getCurrentDateAsYearMonthDay()));
               break;
             case settingsTabIndex:
               context

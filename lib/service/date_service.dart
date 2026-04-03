@@ -1,7 +1,7 @@
 const int ten = 10;
 
 class DateService {
-  String getDateAsMonthAndDay(DateTime date) {
+  String getDateAsYearMonthDay(DateTime date) {
     return "${date.year}/${date.month}/${date.day}";
   }
 
@@ -17,7 +17,7 @@ class DateService {
     return digit < ten ? "0$digit" : "$digit";
   }
 
-  String getCurrentDateAsMonthAndDay() {
-    return getDateAsMonthAndDay(DateTime.now());
+  String getCurrentDateAsYearMonthDay() {
+    return getDateAsYearMonthDay(DateTime.now());
   }
 }

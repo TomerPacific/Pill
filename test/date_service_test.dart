@@ -6,7 +6,7 @@ void main() {
 
   test("DateService convert date to year, month and day", () {
     final DateTime date = DateTime.parse("2022-05-06");
-    final String str = dateService.getDateAsMonthAndDay(date);
+    final String str = dateService.getDateAsYearMonthDay(date);
     expect(str, equals("2022/5/6"));
   });
 

@@ -17,7 +17,7 @@ void main() async {
   SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
-  String currentDate = dateService.getDateAsMonthAndDay(DateTime.now());
+  String currentDate = dateService.getDateAsYearMonthDay(DateTime.now());
   String title = "You do not have to take any pills today 😀";
 
   setUp(() async {

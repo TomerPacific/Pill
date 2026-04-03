@@ -19,7 +19,7 @@ void main() {
   final dateService = DateService();
 
   final testDate = DateTime(2023, 10, 10);
-  final testDateStr = dateService.getDateAsMonthAndDay(testDate);
+  final testDateStr = dateService.getDateAsYearMonthDay(testDate);
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
