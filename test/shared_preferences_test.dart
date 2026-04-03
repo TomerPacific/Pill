@@ -11,7 +11,7 @@ void main() async {
   final DateService dateService = DateService();
   late SharedPreferencesService sharedPreferencesService;
   final DateTime now = DateTime.now();
-  final String date = dateService.getDateAsYearMonthDay(now);
+  final String date = dateService.formatDateForStorage(now);
 
   setUp(() async {
     // Reset SharedPreferences before each test

@@ -17,7 +17,8 @@ void main() async {
   SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
-  String currentDate = dateService.getDateAsYearMonthDay(DateTime.now());
+  String currentDateStorage = dateService.formatDateForStorage(DateTime.now());
+  String currentDateDisplay = dateService.formatDateForDisplay(DateTime.now());
   String title = "You do not have to take any pills today 😀";
 
   setUp(() async {
@@ -29,7 +30,7 @@ void main() async {
         BlocProvider(
             create: (context) => PillBloc(sharedPreferencesService)
               ..add(PillsEvent(
-                  eventName: PillEvent.loadPills, date: currentDate))),
+                  eventName: PillEvent.loadPills, date: currentDateStorage))),
         BlocProvider(
             create: (context) => ThemeBloc(sharedPreferencesService, false)),
         BlocProvider(
@@ -48,7 +49,7 @@ void main() async {
                   alignment: Alignment.topCenter,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 40.0),
-                    child: Text(currentDate,
+                    child: Text(currentDateDisplay,
                         style: const TextStyle(
                             fontSize: 25.0, fontWeight: FontWeight.bold)),
                   ),
@@ -74,7 +75,7 @@ void main() async {
                                 onDismissed: (direction) {
                                   context.read<PillBloc>().add(PillsEvent(
                                       eventName: PillEvent.removePill,
-                                      date: currentDate,
+                                      date: currentDateStorage,
                                       pillToTake: state.pillsToTake![index]));
                                 })),
                       ))
@@ -97,7 +98,7 @@ void main() async {
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
-        date: currentDate,
+        date: currentDateStorage,
         pillToTake: pillWithInfo));
 
     await tester.pumpAndSettle();
@@ -133,7 +134,7 @@ void main() async {
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
-        date: currentDate,
+        date: currentDateStorage,
         pillToTake: pillWithInfo));
 
     await tester.pumpAndSettle();
@@ -156,7 +157,7 @@ void main() async {
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
-        date: currentDate,
+        date: currentDateStorage,
         pillToTake: pillToTake));
 
     await tester.pumpAndSettle();

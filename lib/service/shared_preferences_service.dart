@@ -171,7 +171,7 @@ class SharedPreferencesService {
     int daysToTake = pill.amountOfDaysToTake;
     final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
     while (daysToTake > 0) {
-      String dateStr = _dateService.getDateAsYearMonthDay(runningDate);
+      String dateStr = _dateService.formatDateForStorage(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pillWithTrimmedName);
       _setPillsForDate(dateStr, pills);
@@ -236,7 +236,7 @@ class SharedPreferencesService {
     DateTime runningDate = dateToRemovePillsFrom;
 
     while (now.difference(runningDate).inDays >= oneDay) {
-      String converted = _dateService.getDateAsYearMonthDay(runningDate);
+      String converted = _dateService.formatDateForStorage(runningDate);
       _setPillsForDate(converted, []);
       _setPillsTakenForDate(converted, []);
       runningDate = runningDate.add(const Duration(days: oneDay));

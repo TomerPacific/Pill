@@ -282,7 +282,7 @@ class AddingPillFormState extends State<AddingPillForm> {
 
                               context.read<PillBloc>().add(PillsEvent(
                                   eventName: PillEvent.addPill,
-                                  date: DateService().getDateAsYearMonthDay(
+                                  date: DateService().formatDateForStorage(
                                       widget._currentDate),
                                   startDateTime: widget._currentDate,
                                   pillToTake: pill));
