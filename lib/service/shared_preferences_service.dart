@@ -16,7 +16,12 @@ class SharedPreferencesService {
     _dateService = dateService;
   }
 
-  static Future<SharedPreferencesService> create(DateService dateService,
+  static Future<SharedPreferencesService> create(DateService dateService) async {
+    return _createInternal(dateService);
+  }
+
+  static Future<SharedPreferencesService> createForTesting(
+      DateService dateService,
       {int? migrationYear}) async {
     return _createInternal(dateService, migrationYear: migrationYear);
   }

@@ -195,7 +195,7 @@ void main() async {
       });
 
       // Create a new service instance to trigger migration with a fixed year
-      await SharedPreferencesService.create(dateService,
+      await SharedPreferencesService.createForTesting(dateService,
           migrationYear: migrationYear);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -240,7 +240,7 @@ void main() async {
         migratedToYearlyKeysKey: false,
       });
 
-      await SharedPreferencesService.create(dateService,
+      await SharedPreferencesService.createForTesting(dateService,
           migrationYear: migrationYear);
 
       final prefs = await SharedPreferences.getInstance();
