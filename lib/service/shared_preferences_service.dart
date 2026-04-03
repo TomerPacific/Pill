@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'package:meta/meta.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
@@ -17,19 +16,14 @@ class SharedPreferencesService {
     _dateService = dateService;
   }
 
-  static Future<SharedPreferencesService> create(
-      DateService dateService) async {
-    return _createInternal(dateService);
-  }
-
-  @visibleForTesting
-  static Future<SharedPreferencesService> createForTesting(
-      DateService dateService, {int? migrationYear}) async {
+  static Future<SharedPreferencesService> create(DateService dateService,
+      {int? migrationYear}) async {
     return _createInternal(dateService, migrationYear: migrationYear);
   }
 
   static Future<SharedPreferencesService> _createInternal(
-      DateService dateService, {int? migrationYear}) async {
+      DateService dateService,
+      {int? migrationYear}) async {
     SharedPreferencesService sharedPreferencesService =
         SharedPreferencesService._create(dateService);
 
