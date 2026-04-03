@@ -61,44 +61,50 @@ class SharedPreferencesService {
         final existingYearlyValue = _sharedPreferences.getString(migratedKey);
 
         if (legacyValue != null) {
-          String migratedValue = legacyValue;
-
-          if (existingYearlyValue != null) {
-            try {
-              if (key.startsWith(pillsTakenKey)) {
-                final legacyMonthlyPills = PillTaken.decode(legacyValue);
-                final existingYearlyPills = PillTaken.decode(existingYearlyValue);
+          try {
+            String migratedValue;
+            if (key.startsWith(pillsTakenKey)) {
+              final legacyPills = PillTaken.decode(legacyValue);
+              if (existingYearlyValue != null) {
+                final existingPills = PillTaken.decode(existingYearlyValue);
                 // For taken pills, combine and deduplicate exact matches
-                final merged =
-                    {...legacyMonthlyPills, ...existingYearlyPills}.toList();
+                final merged = {...legacyPills, ...existingPills}.toList();
                 migratedValue = PillTaken.encode(merged);
               } else {
-                final legacyMonthlyPills = PillToTake.decode(legacyValue);
-                final existingYearlyPills = PillToTake.decode(existingYearlyValue);
+                migratedValue = PillTaken.encode(legacyPills);
+              }
+            } else {
+              final legacyPills = PillToTake.decode(legacyValue);
+              if (existingYearlyValue != null) {
+                final existingPills = PillToTake.decode(existingYearlyValue);
                 // For pills to take, prefer the newer ones if names match
                 final Map<String, PillToTake> mergedMap = {};
-                for (final pill in legacyMonthlyPills) {
-                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                for (final pill in legacyPills) {
+                  mergedMap[pill.pillName.trim().toLowerCase()] = pill;
                 }
-                for (final pill in existingYearlyPills) {
-                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                for (final pill in existingPills) {
+                  mergedMap[pill.pillName.trim().toLowerCase()] = pill;
                 }
                 migratedValue = PillToTake.encode(mergedMap.values.toList());
+              } else {
+                migratedValue = PillToTake.encode(legacyPills);
               }
-            } catch (_) {
-              // On error, prefer existing (newer) value to prevent data corruption
-              migratedValue = existingYearlyValue;
             }
-          }
 
-          final setSuccess =
-              await _sharedPreferences.setString(migratedKey, migratedValue);
-          if (setSuccess) {
-            final removeSuccess = await _sharedPreferences.remove(key);
-            if (!removeSuccess) {
+            final setSuccess =
+                await _sharedPreferences.setString(migratedKey, migratedValue);
+            if (setSuccess) {
+              final removeSuccess = await _sharedPreferences.remove(key);
+              if (!removeSuccess) {
+                allSucceeded = false;
+              }
+            } else {
               allSucceeded = false;
             }
-          } else {
+          } catch (_) {
+            // If decoding or merging fails, we don't remove the legacy key
+            // and don't overwrite the existing yearly value with potentially
+            // corrupted data.
             allSucceeded = false;
           }
         }
