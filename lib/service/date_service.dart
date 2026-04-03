@@ -2,7 +2,7 @@ const int ten = 10;
 
 class DateService {
   String getDateAsMonthAndDay(DateTime date) {
-    return "${date.month}/${date.day}";
+    return "${date.year}/${date.month}/${date.day}";
   }
 
   String getHourFromDate(DateTime dateTime) {
