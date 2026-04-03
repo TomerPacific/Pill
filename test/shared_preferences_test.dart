@@ -163,22 +163,34 @@ void main() async {
   });
 
   test("SharedPreferences Service migration", () async {
+    const String pillsToTakeValue = "pillsToTakeData";
+    const String pillsTakenValue = "pillsTakenData";
+    const String otherValue = "some_value";
+
     SharedPreferences.setMockInitialValues({
-      "3/29": "[]",
-      "pillsTaken3/29": "[]",
-      "some_other_key": "some_value"
+      "3/29": pillsToTakeValue,
+      "pillsTaken3/29": pillsTakenValue,
+      "some_other_key": otherValue
     });
     
-    SharedPreferencesService migratedService = await SharedPreferencesService.create(dateService);
+    // Create a new service instance to trigger migration
+    await SharedPreferencesService.create(dateService);
+    
     final currentYear = DateTime.now().year;
-    
-    expect(migratedService.getPillsToTakeForDate("$currentYear/3/29"), isA<List<PillToTake>>());
-    expect(migratedService.getPillsTakenForDate("$currentYear/3/29"), isA<List<PillTaken>>());
-    
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    // Verify values were migrated correctly
+    expect(prefs.getString("$currentYear/3/29"), pillsToTakeValue);
+    expect(prefs.getString("${pillsTakenKey}$currentYear/3/29"), pillsTakenValue);
+    
+    // Verify old keys were removed
     expect(prefs.containsKey("3/29"), false);
     expect(prefs.containsKey("pillsTaken3/29"), false);
-    expect(prefs.getString("some_other_key"), "some_value");
+    
+    // Verify unrelated keys were preserved
+    expect(prefs.getString("some_other_key"), otherValue);
+    
+    // Verify migration flag was set
     expect(prefs.getBool(migratedToYearlyKeysKey), true);
   });
 }
