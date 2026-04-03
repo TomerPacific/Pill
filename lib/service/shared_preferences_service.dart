@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'package:meta/meta.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
@@ -16,6 +18,17 @@ class SharedPreferencesService {
   }
 
   static Future<SharedPreferencesService> create(
+      DateService dateService) async {
+    return _createInternal(dateService);
+  }
+
+  @visibleForTesting
+  static Future<SharedPreferencesService> createForTesting(
+      DateService dateService, {int? migrationYear}) async {
+    return _createInternal(dateService, migrationYear: migrationYear);
+  }
+
+  static Future<SharedPreferencesService> _createInternal(
       DateService dateService, {int? migrationYear}) async {
     SharedPreferencesService sharedPreferencesService =
         SharedPreferencesService._create(dateService);
@@ -96,12 +109,17 @@ class SharedPreferencesService {
             if (setSuccess) {
               final removeSuccess = await _sharedPreferences.remove(key);
               if (!removeSuccess) {
+                log("Failed to remove legacy key '$key' after successful migration to '$migratedKey'",
+                    level: 1000);
                 allSucceeded = false;
               }
             } else {
+              log("Failed to write migrated value for key '$migratedKey'",
+                  level: 1000);
               allSucceeded = false;
             }
-          } catch (_) {
+          } catch (e) {
+            log("Error migrating key '$key' to '$migratedKey': $e", level: 1000);
             // If decoding or merging fails, we don't remove the legacy key
             // and don't overwrite the existing yearly value with potentially
             // corrupted data.
