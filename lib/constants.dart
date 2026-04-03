@@ -25,3 +25,4 @@ const String pillsTakenHeader = "You have not taken any pills today";
 const String pillsTakenKey = "pillsTaken";
 const String timeAppOpenedKey = "timeAppOpened";
 const String darkModeKey = "darkMode";
+const String migratedToYearlyKeysKey = "migratedToYearlyKeys";
