@@ -17,7 +17,7 @@ class PillWidget extends StatelessWidget {
   final DateTime date;
 
   void _handleOnTap(BuildContext context) {
-    final now = DateTime.now();
+    final now = dateService.now();
     final todayStr = dateService.formatDateForStorage(now);
     final widgetDateStr = dateService.formatDateForStorage(date);
 

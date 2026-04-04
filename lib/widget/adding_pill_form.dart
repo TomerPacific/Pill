@@ -11,8 +11,9 @@ import 'package:pill/utils.dart';
 
 class AddingPillForm extends StatefulWidget {
   final DateTime pillDate;
+  final DateService? dateService;
 
-  const AddingPillForm({super.key, required this.pillDate});
+  const AddingPillForm({super.key, required this.pillDate, this.dateService});
 
   @override
   AddingPillFormState createState() {
@@ -104,6 +105,8 @@ class AddingPillFormState extends State<AddingPillForm> {
 
   @override
   Widget build(BuildContext context) {
+    final dateService = widget.dateService ?? DateService();
+
     return Container(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -282,7 +285,7 @@ class AddingPillFormState extends State<AddingPillForm> {
 
                               context.read<PillBloc>().add(PillsEvent(
                                   eventName: PillEvent.addPill,
-                                  date: DateService().formatDateForStorage(widget.pillDate),
+                                  date: dateService.formatDateForStorage(widget.pillDate),
                                   startDateTime: widget.pillDate,
                                   pillToTake: pill));
 

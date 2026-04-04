@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => PillBloc(sharedPreferencesService),
+          create: (context) => PillBloc(sharedPreferencesService, dateService),
         ),
         BlocProvider(
             create: (context) =>

@@ -26,7 +26,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     sharedPreferencesService =
         await SharedPreferencesService.create(dateService);
-    pillBloc = PillBloc(sharedPreferencesService);
+    pillBloc = PillBloc(sharedPreferencesService, dateService);
   });
 
   tearDown(() async {

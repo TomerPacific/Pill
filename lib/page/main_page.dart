@@ -38,7 +38,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _now = DateTime.now();
+    _now = widget.dateService.now();
     _loadPillsForToday();
     widget.sharedPreferencesService.clearPillsOfPastDays();
     _scheduleMidnightRefresh();
@@ -60,7 +60,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
   void _scheduleMidnightRefresh() {
     _midnightTimer?.cancel();
-    final now = DateTime.now();
+    final now = widget.dateService.now();
     final nextMidnight = DateTime(now.year, now.month, now.day + 1);
     final duration = nextMidnight.difference(now);
 
@@ -74,7 +74,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   }
 
   void _loadPillsForToday() {
-    final now = DateTime.now();
+    final now = widget.dateService.now();
     final todayStr = widget.dateService.formatDateForStorage(now);
     final displayedStr = widget.dateService.formatDateForStorage(_now);
 
@@ -91,7 +91,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 
   void _updateNow() {
     setState(() {
-      _now = DateTime.now();
+      _now = widget.dateService.now();
     });
   }
 
@@ -156,7 +156,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             borderRadius:
                                 BorderRadius.vertical(top: Radius.circular(20)),
                           ),
-                          builder: (context) => AddingPillForm(pillDate: _now));
+                          builder: (context) => AddingPillForm(
+                              pillDate: _now, dateService: widget.dateService));
                     },
                     child: const Icon(Icons.add));
               }),

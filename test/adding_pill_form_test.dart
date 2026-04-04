@@ -21,7 +21,7 @@ void main() {
 
   Widget getBase() => MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => PillBloc(sharedPreferencesService)),
+          BlocProvider(create: (context) => PillBloc(sharedPreferencesService, dateService)),
         ],
         child: MaterialApp(
           home: Scaffold(

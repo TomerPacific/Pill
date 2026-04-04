@@ -29,7 +29,7 @@ void main() async {
   Widget base = MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (context) => PillBloc(sharedPreferencesService)
+            create: (context) => PillBloc(sharedPreferencesService, dateService)
               ..add(PillsEvent(
                   eventName: PillEvent.loadPills, date: currentDateStorage))),
         BlocProvider(

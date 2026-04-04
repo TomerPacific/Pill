@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/model/pill_taken.dart';
+import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/model/pill_to_take.dart';
@@ -29,43 +30,45 @@ class PillsEvent {
 }
 
 class PillBloc extends Bloc<PillsEvent, PillState> {
-  PillBloc(SharedPreferencesService sharedPreferencesService)
+  final SharedPreferencesService _sharedPreferencesService;
+  final DateService _dateService;
+
+  PillBloc(this._sharedPreferencesService, this._dateService)
       : super(PillState()) {
     on<PillsEvent>((event, emit) {
       switch (event.eventName) {
         case PillEvent.addPill:
-          _onAddPill(event, emit, sharedPreferencesService);
+          _onAddPill(event, emit);
           break;
         case PillEvent.removePill:
-          _onRemovePill(event, emit, sharedPreferencesService);
+          _onRemovePill(event, emit);
           break;
         case PillEvent.updatePill:
-          _onUpdatePill(event, emit, sharedPreferencesService);
+          _onUpdatePill(event, emit);
           break;
         case PillEvent.loadPills:
           final pillsTaken =
-              sharedPreferencesService.getPillsTakenForDate(event.date);
+              _sharedPreferencesService.getPillsTakenForDate(event.date);
           final pillsToTake =
-              sharedPreferencesService.getPillsToTakeForDate(event.date);
+              _sharedPreferencesService.getPillsToTakeForDate(event.date);
           emit(PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken));
           break;
       }
     });
   }
 
-  void _onAddPill(PillsEvent event, Emitter<PillState> emitter,
-      SharedPreferencesService sharedPreferencesService) {
+  void _onAddPill(PillsEvent event, Emitter<PillState> emitter) {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
     // addPillToDates writes to all scheduled dates. We then read back
     // event.date specifically so the emitted state always reflects the
     // correct day's list, regardless of how many days the pill spans.
-    sharedPreferencesService.addPillToDates(
-        event.startDateTime ?? DateTime.now(), pillToTake);
+    _sharedPreferencesService.addPillToDates(
+        event.startDateTime ?? _dateService.now(), pillToTake);
 
     final pillsToTake =
-        sharedPreferencesService.getPillsToTakeForDate(event.date);
+        _sharedPreferencesService.getPillsToTakeForDate(event.date);
 
     emitter(PillState(
       pillsToTake: pillsToTake,
@@ -73,13 +76,12 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     ));
   }
 
-  void _onRemovePill(PillsEvent event, Emitter<PillState> emitter,
-      SharedPreferencesService sharedPreferencesService) {
+  void _onRemovePill(PillsEvent event, Emitter<PillState> emitter) {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
     final updatedPills =
-        sharedPreferencesService.removePillFromDate(pillToTake, event.date);
+        _sharedPreferencesService.removePillFromDate(pillToTake, event.date);
 
     emitter(PillState(
       pillsToTake: updatedPills,
@@ -87,13 +89,12 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     ));
   }
 
-  void _onUpdatePill(PillsEvent event, Emitter<PillState> emitter,
-      SharedPreferencesService sharedPreferencesService) {
+  void _onUpdatePill(PillsEvent event, Emitter<PillState> emitter) {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
     final result =
-        sharedPreferencesService.updatePillForDate(pillToTake, event.date);
+        _sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
     if (result == null) return;
 
