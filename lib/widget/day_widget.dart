@@ -49,7 +49,7 @@ class DayWidget extends StatelessWidget {
                     onDismissed: (direction) {
                       context.read<PillBloc>().add(PillsEvent(
                           eventName: PillEvent.removePill,
-                          date: dateService.formatDateForStorage(date),
+                          date: dateService.formatDateForStorage(DateTime.now()),
                           pillToTake: pillsToTake[index]));
                     })),
           );

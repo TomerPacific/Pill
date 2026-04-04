@@ -16,7 +16,7 @@ void main() async {
   
   Widget base = MultiBlocProvider(providers: [
     BlocProvider(create: (context) => PillBloc(sharedPreferencesService)),
-  ], child: MaterialApp(home: Scaffold(body: AddingPillForm(DateTime.now()))));
+  ], child: const MaterialApp(home: Scaffold(body: AddingPillForm())));
 
   testWidgets("Adding Pill Form - Add A Pill with Defaults", (WidgetTester tester) async {
     await tester.pumpWidget(base);

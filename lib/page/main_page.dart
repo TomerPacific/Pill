@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
@@ -31,6 +32,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   late DateTime _now;
+  Timer? _midnightTimer;
 
   @override
   void initState() {
@@ -39,26 +41,52 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     _now = DateTime.now();
     _loadPillsForToday();
     widget.sharedPreferencesService.clearPillsOfPastDays();
+    _scheduleMidnightRefresh();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _midnightTimer?.cancel();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _updateNow();
       _loadPillsForToday();
     }
   }
 
+  void _scheduleMidnightRefresh() {
+    _midnightTimer?.cancel();
+    final now = DateTime.now();
+    final nextMidnight = DateTime(now.year, now.month, now.day + 1);
+    final duration = nextMidnight.difference(now);
+
+    // Add a 1-second buffer to ensure we've crossed the boundary
+    _midnightTimer = Timer(duration + const Duration(seconds: 1), () {
+      if (mounted) {
+        _loadPillsForToday();
+        _scheduleMidnightRefresh();
+      }
+    });
+  }
+
   void _loadPillsForToday() {
+    final now = DateTime.now();
+    final todayStr = widget.dateService.formatDateForStorage(now);
+    final displayedStr = widget.dateService.formatDateForStorage(_now);
+
+    if (todayStr != displayedStr) {
+      setState(() {
+        _now = now;
+      });
+    }
+
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.loadPills,
-        date: widget.dateService.formatDateForStorage(_now)));
+        date: todayStr));
   }
 
   void _updateNow() {
@@ -91,13 +119,13 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
             Tab(icon: Icon(Icons.settings)),
           ],
           onTap: (tabIndex) {
-            _updateNow();
             switch (tabIndex) {
               case pillsToTakeTabIndex:
               case pillsTakenTabIndex:
                 _loadPillsForToday();
                 break;
               case settingsTabIndex:
+                _updateNow();
                 context
                     .read<ClearPillsBloc>()
                     .add(ClearPillsEvent.updatePillsStatus);
@@ -133,7 +161,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             borderRadius:
                                 BorderRadius.vertical(top: Radius.circular(20)),
                           ),
-                          builder: (context) => AddingPillForm(_now));
+                          builder: (context) => const AddingPillForm());
                     },
                     child: const Icon(Icons.add));
               }),

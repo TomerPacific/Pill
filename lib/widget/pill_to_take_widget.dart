@@ -23,7 +23,7 @@ class PillWidget extends StatelessWidget {
           pillRegiment: pillToTake.pillRegiment - 1, lastTaken: now);
       context.read<PillBloc>().add(PillsEvent(
           eventName: PillEvent.updatePill,
-          date: dateService.formatDateForStorage(date),
+          date: dateService.formatDateForStorage(now),
           pillToTake: updatedPillToTake));
     }
   }

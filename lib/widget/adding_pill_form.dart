@@ -10,9 +10,7 @@ import 'package:pill/service/date_service.dart';
 import 'package:pill/utils.dart';
 
 class AddingPillForm extends StatefulWidget {
-  final DateTime _currentDate;
-
-  const AddingPillForm(this._currentDate, {super.key});
+  const AddingPillForm({super.key});
 
   @override
   AddingPillFormState createState() {
@@ -280,11 +278,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                                   amountOfDaysToTake: int.parse(
                                       _pillAmountOfDaysToTakeController.text));
 
+                              final now = DateTime.now();
                               context.read<PillBloc>().add(PillsEvent(
                                   eventName: PillEvent.addPill,
-                                  date: DateService().formatDateForStorage(
-                                      widget._currentDate),
-                                  startDateTime: widget._currentDate,
+                                  date: DateService().formatDateForStorage(now),
+                                  startDateTime: now,
                                   pillToTake: pill));
 
                               ScaffoldMessenger.of(context).showSnackBar(
