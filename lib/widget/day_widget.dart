@@ -47,7 +47,7 @@ class DayWidget extends StatelessWidget {
                       date: date,
                     ),
                     onDismissed: (direction) {
-                      final now = DateTime.now();
+                      final now = dateService.now();
                       final todayStr = dateService.formatDateForStorage(now);
                       final widgetDateStr =
                           dateService.formatDateForStorage(date);
