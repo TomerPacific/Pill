@@ -58,76 +58,94 @@ class SharedPreferencesService {
         continue;
       }
 
-      String? migratedKey;
-      // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
-      // Old keys are "month/day", new keys are "year/month/day"
-      if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
-        migratedKey = "$currentYear/$key";
-      } else if (key.startsWith(pillsTakenKey)) {
-        final datePart = key.substring(pillsTakenKey.length);
-        if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
-          migratedKey = "$pillsTakenKey$currentYear/$datePart";
-        }
-      }
+      final legacyValue = _sharedPreferences.getString(key);
+      if (legacyValue == null) continue;
 
-      if (migratedKey != null) {
-        final legacyValue = _sharedPreferences.getString(key);
-        final existingYearlyValue = _sharedPreferences.getString(migratedKey);
+      try {
+        if (key.startsWith(pillsTakenKey)) {
+          final datePart = key.substring(pillsTakenKey.length);
+          // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
+          if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
+            final legacyPills = PillTaken.decode(legacyValue);
+            final Map<int, List<PillTaken>> pillsByYear = {};
+            for (final pill in legacyPills) {
+              final year = pill.lastTaken?.year ?? currentYear;
+              pillsByYear.putIfAbsent(year, () => []).add(pill);
+            }
 
-        if (legacyValue != null) {
-          try {
-            String migratedValue;
-            if (key.startsWith(pillsTakenKey)) {
-              final legacyPills = PillTaken.decode(legacyValue);
+            bool currentKeyMigrationSucceeded = true;
+            for (final entry in pillsByYear.entries) {
+              final year = entry.key;
+              final pillsForYear = entry.value;
+              final targetKey = "$pillsTakenKey$year/$datePart";
+              final existingYearlyValue =
+                  _sharedPreferences.getString(targetKey);
+
+              String migratedValue;
               if (existingYearlyValue != null) {
                 final existingPills = PillTaken.decode(existingYearlyValue);
                 // For taken pills, combine and deduplicate exact matches
-                final merged = {...legacyPills, ...existingPills}.toList();
+                final merged = {...pillsForYear, ...existingPills}.toList();
                 migratedValue = PillTaken.encode(merged);
               } else {
-                migratedValue = PillTaken.encode(legacyPills);
+                migratedValue = PillTaken.encode(pillsForYear);
               }
-            } else {
-              final legacyPills = PillToTake.decode(legacyValue);
-              if (existingYearlyValue != null) {
-                final existingPills = PillToTake.decode(existingYearlyValue);
-                // For pills to take, prefer the newer ones if names match
-                final Map<String, PillToTake> mergedMap = {};
-                for (final pill in legacyPills) {
-                  mergedMap[pill.pillName.trim().toLowerCase()] = pill;
-                }
-                for (final pill in existingPills) {
-                  mergedMap[pill.pillName.trim().toLowerCase()] = pill;
-                }
-                migratedValue = PillToTake.encode(mergedMap.values.toList());
-              } else {
-                migratedValue = PillToTake.encode(legacyPills);
+
+              if (!(await _sharedPreferences.setString(
+                  targetKey, migratedValue))) {
+                log("Failed to write migrated value for key '$targetKey'",
+                    level: 1000);
+                currentKeyMigrationSucceeded = false;
               }
             }
 
-            final setSuccess =
-                await _sharedPreferences.setString(migratedKey, migratedValue);
-            if (setSuccess) {
-              final removeSuccess = await _sharedPreferences.remove(key);
-              if (!removeSuccess) {
-                log("Failed to remove legacy key '$key' after successful migration to '$migratedKey'",
+            if (currentKeyMigrationSucceeded) {
+              if (!(await _sharedPreferences.remove(key))) {
+                log("Failed to remove legacy key '$key' after successful migration",
                     level: 1000);
                 allSucceeded = false;
               }
             } else {
-              log("Failed to write migrated value for key '$migratedKey'",
+              allSucceeded = false;
+            }
+          }
+        } else if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
+          // PillToTake key (legacy "M/D")
+          final targetKey = "$currentYear/$key";
+          final legacyPills = PillToTake.decode(legacyValue);
+          final existingYearlyValue = _sharedPreferences.getString(targetKey);
+
+          String migratedValue;
+          if (existingYearlyValue != null) {
+            final existingPills = PillToTake.decode(existingYearlyValue);
+            // For pills to take, prefer the newer ones if names match
+            final Map<String, PillToTake> mergedMap = {};
+            for (final pill in legacyPills) {
+              mergedMap[pill.pillName.trim().toLowerCase()] = pill;
+            }
+            for (final pill in existingPills) {
+              mergedMap[pill.pillName.trim().toLowerCase()] = pill;
+            }
+            migratedValue = PillToTake.encode(mergedMap.values.toList());
+          } else {
+            migratedValue = PillToTake.encode(legacyPills);
+          }
+
+          if (await _sharedPreferences.setString(targetKey, migratedValue)) {
+            if (!(await _sharedPreferences.remove(key))) {
+              log("Failed to remove legacy key '$key' after successful migration to '$targetKey'",
                   level: 1000);
               allSucceeded = false;
             }
-          } catch (e, st) {
-            log("Error migrating key '$key' to '$migratedKey': $e",
-                level: 1000, stackTrace: st);
-            // If decoding or merging fails, we don't remove the legacy key
-            // and don't overwrite the existing yearly value with potentially
-            // corrupted data.
+          } else {
+            log("Failed to write migrated value for key '$targetKey'",
+                level: 1000);
             allSucceeded = false;
           }
         }
+      } catch (e, st) {
+        log("Error migrating key '$key': $e", level: 1000, stackTrace: st);
+        allSucceeded = false;
       }
     }
 
