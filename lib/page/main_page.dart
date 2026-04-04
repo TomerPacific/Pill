@@ -29,17 +29,36 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   late DateTime _now;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _now = DateTime.now();
-    BlocProvider.of<PillBloc>(context).add(PillsEvent(
+    _loadPillsForToday();
+    widget.sharedPreferencesService.clearPillsOfPastDays();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _updateNow();
+      _loadPillsForToday();
+    }
+  }
+
+  void _loadPillsForToday() {
+    context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.loadPills,
         date: widget.dateService.formatDateForStorage(_now)));
-    widget.sharedPreferencesService.clearPillsOfPastDays();
   }
 
   void _updateNow() {
@@ -76,9 +95,7 @@ class _MainPageState extends State<MainPage> {
             switch (tabIndex) {
               case pillsToTakeTabIndex:
               case pillsTakenTabIndex:
-                context.read<PillBloc>().add(PillsEvent(
-                    eventName: PillEvent.loadPills,
-                    date: dateService.formatDateForStorage(_now)));
+                _loadPillsForToday();
                 break;
               case settingsTabIndex:
                 context
@@ -108,6 +125,7 @@ class _MainPageState extends State<MainPage> {
               child: Builder(builder: (context) {
                 return FloatingActionButton(
                     onPressed: () {
+                      _updateNow();
                       showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
