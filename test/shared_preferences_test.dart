@@ -6,7 +6,7 @@ import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() async {
+void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final DateService dateService = DateService();
   late SharedPreferencesService sharedPreferencesService;
