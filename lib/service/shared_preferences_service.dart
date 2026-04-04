@@ -119,8 +119,9 @@ class SharedPreferencesService {
                   level: 1000);
               allSucceeded = false;
             }
-          } catch (e) {
-            log("Error migrating key '$key' to '$migratedKey': $e", level: 1000);
+          } catch (e, st) {
+            log("Error migrating key '$key' to '$migratedKey': $e",
+                level: 1000, stackTrace: st);
             // If decoding or merging fails, we don't remove the legacy key
             // and don't overwrite the existing yearly value with potentially
             // corrupted data.
