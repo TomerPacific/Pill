@@ -11,13 +11,20 @@ import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class MockDateService extends DateService {
+  final DateTime mockDate;
+  MockDateService(this.mockDate);
+  @override
+  DateTime now() => mockDate;
+}
+
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  DateService dateService = DateService();
+  final DateTime date = DateTime(2026, 4, 4);
+  DateService dateService = MockDateService(date);
   SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
-  final DateTime date = DateTime(2026, 4, 4);
   String currentDateStorage = dateService.formatDateForStorage(date);
   String currentDateDisplay = dateService.formatDateForDisplay(date);
   String title = "You do not have to take any pills today 😀";
@@ -101,6 +108,7 @@ void main() async {
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
         date: currentDateStorage,
+        startDateTime: date,
         pillToTake: pillWithInfo));
 
     await tester.pumpAndSettle();
@@ -137,6 +145,7 @@ void main() async {
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
         date: currentDateStorage,
+        startDateTime: date,
         pillToTake: pillWithInfo));
 
     await tester.pumpAndSettle();
@@ -160,6 +169,7 @@ void main() async {
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
         date: currentDateStorage,
+        startDateTime: date,
         pillToTake: pillToTake));
 
     await tester.pumpAndSettle();
