@@ -72,6 +72,7 @@ void main() async {
                                 child: PillWidget(
                                   pillToTake: state.pillsToTake![index],
                                   dateService: dateService,
+                                  date: date,
                                 ),
                                 onDismissed: (direction) {
                                   context.read<PillBloc>().add(PillsEvent(

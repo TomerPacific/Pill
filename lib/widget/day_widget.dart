@@ -44,6 +44,7 @@ class DayWidget extends StatelessWidget {
                     child: PillWidget(
                       pillToTake: pillsToTake[index],
                       dateService: dateService,
+                      date: date,
                     ),
                     onDismissed: (direction) {
                       context.read<PillBloc>().add(PillsEvent(

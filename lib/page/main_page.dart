@@ -30,13 +30,22 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  late DateTime _now;
+
   @override
   void initState() {
     super.initState();
+    _now = DateTime.now();
     BlocProvider.of<PillBloc>(context).add(PillsEvent(
         eventName: PillEvent.loadPills,
-        date: widget.dateService.formatDateForStorage(DateTime.now())));
+        date: widget.dateService.formatDateForStorage(_now)));
     widget.sharedPreferencesService.clearPillsOfPastDays();
+  }
+
+  void _updateNow() {
+    setState(() {
+      _now = DateTime.now();
+    });
   }
 
   @override
@@ -48,80 +57,81 @@ class _MainPageState extends State<MainPage> {
             body: _mainPageTabBarView(
                 widget.dateService, widget.sharedPreferencesService)));
   }
-}
 
-PreferredSizeWidget _mainPageAppBar(
-  BuildContext context,
-  DateService dateService,
-) {
-  return PreferredSize(
-    preferredSize: const Size.fromHeight(50),
-    child: AppBar(
-      bottom: TabBar(
-        tabs: const [
-          Tab(icon: Icon(CustomIcons.pill)),
-          Tab(icon: Icon(Icons.watch_later_rounded)),
-          Tab(icon: Icon(Icons.settings)),
-        ],
-        onTap: (tabIndex) {
-          switch (tabIndex) {
-            case pillsToTakeTabIndex:
-            case pillsTakenTabIndex:
-              context.read<PillBloc>().add(PillsEvent(
-                  eventName: PillEvent.loadPills,
-                  date: dateService.formatDateForStorage(DateTime.now())));
-              break;
-            case settingsTabIndex:
-              context
-                  .read<ClearPillsBloc>()
-                  .add(ClearPillsEvent.updatePillsStatus);
-          }
-        },
+  PreferredSizeWidget _mainPageAppBar(
+    BuildContext context,
+    DateService dateService,
+  ) {
+    return PreferredSize(
+      preferredSize: const Size.fromHeight(50),
+      child: AppBar(
+        bottom: TabBar(
+          tabs: const [
+            Tab(icon: Icon(CustomIcons.pill)),
+            Tab(icon: Icon(Icons.watch_later_rounded)),
+            Tab(icon: Icon(Icons.settings)),
+          ],
+          onTap: (tabIndex) {
+            _updateNow();
+            switch (tabIndex) {
+              case pillsToTakeTabIndex:
+              case pillsTakenTabIndex:
+                context.read<PillBloc>().add(PillsEvent(
+                    eventName: PillEvent.loadPills,
+                    date: dateService.formatDateForStorage(_now)));
+                break;
+              case settingsTabIndex:
+                context
+                    .read<ClearPillsBloc>()
+                    .add(ClearPillsEvent.updatePillsStatus);
+            }
+          },
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-TabBarView _mainPageTabBarView(DateService dateService,
-    SharedPreferencesService sharedPreferencesService) {
-  return TabBarView(children: [
-    Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
+  TabBarView _mainPageTabBarView(DateService dateService,
+      SharedPreferencesService sharedPreferencesService) {
+    return TabBarView(children: [
+      Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          DayWidget(
+              date: _now,
+              mode: DayWidgetMode.toTake,
+              dateService: dateService),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Builder(builder: (context) {
+                return FloatingActionButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (context) => AddingPillForm(_now));
+                    },
+                    child: const Icon(Icons.add));
+              }),
+            ),
+          )
+        ],
+      ),
+      Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         DayWidget(
-            date: DateTime.now(),
-            mode: DayWidgetMode.toTake,
+            date: _now,
+            mode: DayWidgetMode.taken,
             dateService: dateService),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Builder(builder: (context) {
-              return FloatingActionButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(20)),
-                        ),
-                        builder: (context) => AddingPillForm(DateTime.now()));
-                  },
-                  child: const Icon(Icons.add));
-            }),
-          ),
-        )
-      ],
-    ),
-    Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-      DayWidget(
-          date: DateTime.now(),
-          mode: DayWidgetMode.taken,
-          dateService: dateService),
-    ]),
-    BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
-      return SettingsPage(sharedPreferencesService: sharedPreferencesService);
-    })
-  ]);
+      ]),
+      BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
+        return SettingsPage(sharedPreferencesService: sharedPreferencesService);
+      })
+    ]);
+  }
 }

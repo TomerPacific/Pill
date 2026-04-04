@@ -7,10 +7,14 @@ import 'package:pill/service/date_service.dart';
 
 class PillWidget extends StatelessWidget {
   const PillWidget(
-      {super.key, required this.pillToTake, required this.dateService});
+      {super.key,
+      required this.pillToTake,
+      required this.dateService,
+      required this.date});
 
   final PillToTake pillToTake;
   final DateService dateService;
+  final DateTime date;
 
   void _handleOnTap(BuildContext context) {
     if (pillToTake.pillRegiment > 0) {
@@ -19,7 +23,7 @@ class PillWidget extends StatelessWidget {
           pillRegiment: pillToTake.pillRegiment - 1, lastTaken: now);
       context.read<PillBloc>().add(PillsEvent(
           eventName: PillEvent.updatePill,
-          date: dateService.formatDateForStorage(now),
+          date: dateService.formatDateForStorage(date),
           pillToTake: updatedPillToTake));
     }
   }
