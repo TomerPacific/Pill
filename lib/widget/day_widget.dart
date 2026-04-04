@@ -47,9 +47,22 @@ class DayWidget extends StatelessWidget {
                       date: date,
                     ),
                     onDismissed: (direction) {
+                      final now = DateTime.now();
+                      final todayStr = dateService.formatDateForStorage(now);
+                      final widgetDateStr =
+                          dateService.formatDateForStorage(date);
+
+                      if (todayStr != widgetDateStr) {
+                        // Day has rolled over. Refresh the UI instead of
+                        // removing from a stale record.
+                        context.read<PillBloc>().add(PillsEvent(
+                            eventName: PillEvent.loadPills, date: todayStr));
+                        return;
+                      }
+
                       context.read<PillBloc>().add(PillsEvent(
                           eventName: PillEvent.removePill,
-                          date: dateService.formatDateForStorage(date),
+                          date: widgetDateStr,
                           pillToTake: pillsToTake[index]));
                     })),
           );

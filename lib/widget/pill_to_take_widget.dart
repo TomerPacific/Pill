@@ -17,13 +17,25 @@ class PillWidget extends StatelessWidget {
   final DateTime date;
 
   void _handleOnTap(BuildContext context) {
+    final now = DateTime.now();
+    final todayStr = dateService.formatDateForStorage(now);
+    final widgetDateStr = dateService.formatDateForStorage(date);
+
+    if (todayStr != widgetDateStr) {
+      // Day has rolled over. Refresh the UI to show today's pills instead
+      // of updating a stale record with a "now" timestamp.
+      context.read<PillBloc>().add(PillsEvent(
+          eventName: PillEvent.loadPills,
+          date: todayStr));
+      return;
+    }
+
     if (pillToTake.pillRegiment > 0) {
-      final now = DateTime.now();
       PillToTake updatedPillToTake = pillToTake.copyWith(
           pillRegiment: pillToTake.pillRegiment - 1, lastTaken: now);
       context.read<PillBloc>().add(PillsEvent(
           eventName: PillEvent.updatePill,
-          date: dateService.formatDateForStorage(date),
+          date: widgetDateStr,
           pillToTake: updatedPillToTake));
     }
   }
