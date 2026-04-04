@@ -48,7 +48,7 @@ class SharedPreferencesService {
     }
 
     final keys = _sharedPreferences.getKeys();
-    final currentYear = migrationYear ?? DateTime.now().year;
+    final currentYear = migrationYear ?? _dateService.now().year;
     bool allSucceeded = true;
 
     for (String key in keys) {
@@ -253,7 +253,7 @@ class SharedPreferencesService {
   }
 
   void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
-    DateTime now = DateTime.now();
+    DateTime now = _dateService.now();
     DateTime runningDate = dateToRemovePillsFrom;
 
     while (now.difference(runningDate).inDays >= oneDay) {
@@ -265,7 +265,7 @@ class SharedPreferencesService {
   }
 
   void setTimeWhenApplicationWasOpened() {
-    DateTime now = DateTime.now();
+    DateTime now = _dateService.now();
     unawaited(
         _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String()));
   }
@@ -295,7 +295,7 @@ class SharedPreferencesService {
     if (timeWhenApplicationWasOpened == null) {
       setTimeWhenApplicationWasOpened();
     } else {
-      DateTime now = DateTime.now();
+      DateTime now = _dateService.now();
       if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
         clearAllPillsFromDate(timeWhenApplicationWasOpened);
         setTimeWhenApplicationWasOpened();

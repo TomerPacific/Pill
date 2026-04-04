@@ -1,6 +1,9 @@
 const int ten = 10;
 
 class DateService {
+  /// Returns the current date and time.
+  DateTime now() => DateTime.now();
+
   /// Returns a date string formatted as "YYYY/M/D", suitable for storage keys.
   String formatDateForStorage(DateTime date) {
     return "${date.year}/${date.month}/${date.day}";
@@ -23,9 +26,9 @@ class DateService {
     return digit < ten ? "0$digit" : "$digit";
   }
 
-  @Deprecated('Use formatDateForStorage(DateTime.now())')
+  @Deprecated('Use formatDateForStorage(dateService.now())')
   String getCurrentDateAsYearMonthDay() {
-    return formatDateForStorage(DateTime.now());
+    return formatDateForStorage(now());
   }
 
   @Deprecated('Use formatDateForStorage or formatDateForDisplay')
