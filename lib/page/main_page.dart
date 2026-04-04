@@ -156,7 +156,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                             borderRadius:
                                 BorderRadius.vertical(top: Radius.circular(20)),
                           ),
-                          builder: (context) => const AddingPillForm());
+                          builder: (context) => AddingPillForm(pillDate: _now));
                     },
                     child: const Icon(Icons.add));
               }),
