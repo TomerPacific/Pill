@@ -100,15 +100,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     return DefaultTabController(
         length: amountOfTabs,
         child: Scaffold(
-            appBar: _mainPageAppBar(context, widget.dateService),
-            body: _mainPageTabBarView(
-                widget.dateService, widget.sharedPreferencesService)));
+            appBar: _mainPageAppBar(context),
+            body: _mainPageTabBarView()));
   }
 
-  PreferredSizeWidget _mainPageAppBar(
-    BuildContext context,
-    DateService dateService,
-  ) {
+  PreferredSizeWidget _mainPageAppBar(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(50),
       child: AppBar(
@@ -136,8 +132,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     );
   }
 
-  TabBarView _mainPageTabBarView(DateService dateService,
-      SharedPreferencesService sharedPreferencesService) {
+  TabBarView _mainPageTabBarView() {
     return TabBarView(children: [
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -145,7 +140,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           DayWidget(
               date: _now,
               mode: DayWidgetMode.toTake,
-              dateService: dateService),
+              dateService: widget.dateService),
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
@@ -173,10 +168,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         DayWidget(
             date: _now,
             mode: DayWidgetMode.taken,
-            dateService: dateService),
+            dateService: widget.dateService),
       ]),
       BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
-        return SettingsPage(sharedPreferencesService: sharedPreferencesService);
+        return SettingsPage(
+            sharedPreferencesService: widget.sharedPreferencesService);
       })
     ]);
   }
