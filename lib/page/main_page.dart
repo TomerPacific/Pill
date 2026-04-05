@@ -55,6 +55,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _loadPillsForToday();
+      _scheduleMidnightRefresh();
     }
   }
 
