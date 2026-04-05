@@ -47,7 +47,7 @@ class SharedPreferencesService {
       return;
     }
 
-    final keys = _sharedPreferences.getKeys();
+    final keys = _sharedPreferences.getKeys().toList();
     final currentYear = migrationYear ?? _dateService.now().year;
     bool allSucceeded = true;
 
@@ -279,7 +279,7 @@ class SharedPreferencesService {
   }
 
   void clearAllPills() {
-    Set<String> keys = _sharedPreferences.getKeys();
+    final keys = _sharedPreferences.getKeys().toList();
     for (String key in keys) {
       if (key == timeAppOpenedKey ||
           key == darkModeKey ||
