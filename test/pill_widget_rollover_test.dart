@@ -45,6 +45,9 @@ void main() {
     mockPillBloc = MockPillBloc(sharedPreferencesService, dateService);
   });
 
+  tearDown(() async {
+    await mockPillBloc.close();
+  });
   Widget getBase() => BlocProvider<PillBloc>.value(
         value: mockPillBloc,
         child: MaterialApp(
