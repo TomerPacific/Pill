@@ -270,6 +270,12 @@ class AddingPillFormState extends State<AddingPillForm> {
                       ElevatedButton.icon(
                           onPressed: () {
                             if (_formKey.currentState?.validate() ?? false) {
+                              final now = dateService.now();
+                              final bool isStale = dateService.formatDateForStorage(widget.pillDate) !=
+                                  dateService.formatDateForStorage(now);
+
+                              final effectiveDate = isStale ? now : widget.pillDate;
+
                               final trimmedDescription =
                                   _pillDescriptionController.text.trim();
 
@@ -285,12 +291,15 @@ class AddingPillFormState extends State<AddingPillForm> {
 
                               context.read<PillBloc>().add(PillsEvent(
                                   eventName: PillEvent.addPill,
-                                  date: dateService.formatDateForStorage(widget.pillDate),
-                                  startDateTime: widget.pillDate,
+                                  date: dateService.formatDateForStorage(effectiveDate),
+                                  startDateTime: effectiveDate,
                                   pillToTake: pill));
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Pill Added!")),
+                                SnackBar(
+                                    content: Text(isStale
+                                        ? "Day changed! Pill added for today."
+                                        : "Pill Added!")),
                               );
 
                               FocusScope.of(context).unfocus();
