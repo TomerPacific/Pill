@@ -69,8 +69,10 @@ class SharedPreferencesService {
             final legacyPills = PillTaken.decode(legacyValue);
             final Map<int, List<PillTaken>> pillsByYear = {};
             for (final pill in legacyPills) {
-              final year = pill.lastTaken?.year ?? currentYear;
-              pillsByYear.putIfAbsent(year, () => []).add(pill);
+              final normalizedPill =
+                  pill.copyWith(pillName: pill.pillName.trim().toLowerCase());
+              final year = normalizedPill.lastTaken?.year ?? currentYear;
+              pillsByYear.putIfAbsent(year, () => []).add(normalizedPill);
             }
 
             bool currentKeyMigrationSucceeded = true;
@@ -85,7 +87,12 @@ class SharedPreferencesService {
               if (existingYearlyValue != null) {
                 final existingPills = PillTaken.decode(existingYearlyValue);
                 // For taken pills, combine and deduplicate exact matches
-                final merged = {...pillsForYear, ...existingPills}.toList();
+                // and normalize existing ones too
+                final normalizedExisting = existingPills
+                    .map((p) => p.copyWith(pillName: p.pillName.trim().toLowerCase()))
+                    .toList();
+                final merged =
+                    {...pillsForYear, ...normalizedExisting}.toList();
                 migratedValue = PillTaken.encode(merged);
               } else {
                 migratedValue = PillTaken.encode(pillsForYear);
@@ -112,19 +119,23 @@ class SharedPreferencesService {
         } else if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
           // PillToTake key (legacy "M/D")
           final targetKey = "$currentYear/$key";
-          final legacyPills = PillToTake.decode(legacyValue);
+          final legacyPills = PillToTake.decode(legacyValue)
+              .map((p) => p.copyWith(pillName: p.pillName.trim().toLowerCase()))
+              .toList();
           final existingYearlyValue = _sharedPreferences.getString(targetKey);
 
           String migratedValue;
           if (existingYearlyValue != null) {
-            final existingPills = PillToTake.decode(existingYearlyValue);
+            final existingPills = PillToTake.decode(existingYearlyValue)
+                .map((p) => p.copyWith(pillName: p.pillName.trim().toLowerCase()))
+                .toList();
             // For pills to take, prefer the newer ones if names match
             final Map<String, PillToTake> mergedMap = {};
             for (final pill in legacyPills) {
-              mergedMap[pill.pillName.trim().toLowerCase()] = pill;
+              mergedMap[pill.pillName] = pill;
             }
             for (final pill in existingPills) {
-              mergedMap[pill.pillName.trim().toLowerCase()] = pill;
+              mergedMap[pill.pillName] = pill;
             }
             migratedValue = PillToTake.encode(mergedMap.values.toList());
           } else {
@@ -190,11 +201,11 @@ class SharedPreferencesService {
   void addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
-    final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
+    final pillWithNormalizedName = pill.copyWith(pillName: pill.pillName.trim().toLowerCase());
     while (daysToTake > 0) {
       String dateStr = _dateService.formatDateForStorage(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
-      pills.add(pillWithTrimmedName);
+      pills.add(pillWithNormalizedName);
       _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;

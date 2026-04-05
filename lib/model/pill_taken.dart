@@ -65,6 +65,22 @@ class PillTaken extends Equatable {
           .map<PillTaken>((pill) => PillTaken.fromJson(pill))
           .toList();
 
+  PillTaken copyWith({
+    String? pillName,
+    String? pillImage,
+    String? description,
+    DateTime? lastTaken,
+    bool clearDescription = false,
+    bool clearLastTaken = false,
+  }) {
+    return PillTaken(
+      pillName: pillName ?? this.pillName,
+      pillImage: pillImage ?? this.pillImage,
+      description: clearDescription ? null : (description ?? this.description),
+      lastTaken: clearLastTaken ? null : (lastTaken ?? this.lastTaken),
+    );
+  }
+
   @override
   List<Object?> get props => [pillName, pillImage, description, lastTaken];
 }
