@@ -43,6 +43,11 @@ class SharedPreferencesService {
   }
 
   Future<void> _migrateKeys({int? migrationYear}) async {
+    await _migrateToYearlyKeys(migrationYear: migrationYear);
+    await _migrateToPrefixedKeys();
+  }
+
+  Future<void> _migrateToYearlyKeys({int? migrationYear}) async {
     if (_sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false) {
       return;
     }
@@ -54,7 +59,8 @@ class SharedPreferencesService {
     for (String key in keys) {
       if (key == timeAppOpenedKey ||
           key == darkModeKey ||
-          key == migratedToYearlyKeysKey) {
+          key == migratedToYearlyKeysKey ||
+          key == migratedToPrefixedKeysKey) {
         continue;
       }
 
@@ -167,13 +173,58 @@ class SharedPreferencesService {
     }
   }
 
+  Future<void> _migrateToPrefixedKeys() async {
+    if (_sharedPreferences.getBool(migratedToPrefixedKeysKey) ?? false) {
+      return;
+    }
+
+    final keys = _sharedPreferences.getKeys().toList();
+    bool allSucceeded = true;
+
+    for (String key in keys) {
+      if (key == timeAppOpenedKey ||
+          key == darkModeKey ||
+          key == migratedToYearlyKeysKey ||
+          key == migratedToPrefixedKeysKey ||
+          key.startsWith(pillsTakenKey) ||
+          key.startsWith(pillsToTakeKey)) {
+        continue;
+      }
+
+      // Identify keys that are YYYY/M/D (already migrated to yearly format but not yet prefixed)
+      if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
+        final value = _sharedPreferences.getString(key);
+        if (value != null) {
+          final targetKey = "$pillsToTakeKey$key";
+          if (await _sharedPreferences.setString(targetKey, value)) {
+            if (!(await _sharedPreferences.remove(key))) {
+              log("Failed to remove non-prefixed key '$key' after migration to '$targetKey'",
+                  level: 1000);
+              allSucceeded = false;
+            }
+          } else {
+            log("Failed to write prefixed key '$targetKey'", level: 1000);
+            allSucceeded = false;
+          }
+        }
+      }
+    }
+
+    if (allSucceeded) {
+      if (!(await _sharedPreferences.setBool(migratedToPrefixedKeysKey, true))) {
+        log("Failed to set migration completion flag '$migratedToPrefixedKeysKey'",
+            level: 1000);
+      }
+    }
+  }
+
   // The Future returned by SharedPreferences write methods is intentionally
   // unawaited: SharedPreferences commits writes to its in-memory cache
   // synchronously before the Future resolves, so subsequent reads on the same
   // instance always see the updated value immediately.
-  void _setPillsForDate(String currentDate, List<PillToTake> pills) {
-    unawaited(
-        _sharedPreferences.setString(currentDate, PillToTake.encode(pills)));
+  void _setPillsForDate(String date, List<PillToTake> pills) {
+    unawaited(_sharedPreferences.setString(
+        pillsToTakeKey + date, PillToTake.encode(pills)));
   }
 
   void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) {
@@ -181,8 +232,8 @@ class SharedPreferencesService {
         pillsTakenKey + date, PillTaken.encode(pillsTaken)));
   }
 
-  List<PillToTake> getPillsToTakeForDate(String currentDate) {
-    String? encodedPills = _sharedPreferences.getString(currentDate);
+  List<PillToTake> getPillsToTakeForDate(String date) {
+    String? encodedPills = _sharedPreferences.getString(pillsToTakeKey + date);
     if (encodedPills != null) {
       return PillToTake.decode(encodedPills);
     }
@@ -296,7 +347,8 @@ class SharedPreferencesService {
     for (String key in keys) {
       if (key == timeAppOpenedKey ||
           key == darkModeKey ||
-          key == migratedToYearlyKeysKey) {
+          key == migratedToYearlyKeysKey ||
+          key == migratedToPrefixedKeysKey) {
         continue;
       }
       unawaited(_sharedPreferences.remove(key));
@@ -320,8 +372,9 @@ class SharedPreferencesService {
     Set<String> keys = _sharedPreferences.getKeys();
     if (keys.isEmpty) return false;
     for (String key in keys) {
-      if (key.contains(RegExp('[0-9]')) && !key.contains(pillsTakenKey)) {
-        List<PillToTake> pills = getPillsToTakeForDate(key);
+      if (key.startsWith(pillsToTakeKey)) {
+        List<PillToTake> pills =
+            getPillsToTakeForDate(key.substring(pillsToTakeKey.length));
         if (pills.isNotEmpty) return true;
       }
     }
