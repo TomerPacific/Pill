@@ -46,7 +46,7 @@ void main() {
     expect(pills.length, 1);
 
     List<PillToTake> found =
-        pills.where((element) => element.pillName == pill.pillName.toLowerCase()).toList();
+        pills.where((element) => element.pillName == pill.pillName).toList();
 
     expect(found.length, 1);
   });
@@ -194,8 +194,8 @@ void main() {
       final String pillsToTakeValue = PillToTake.encode([pill]);
       final String pillsTakenValue = PillTaken.encode([pillTaken]);
       
-      final String migratedPillsValue = PillToTake.encode([pill.copyWith(pillName: pill.pillName.toLowerCase())]);
-      final String migratedTakenValue = PillTaken.encode([pillTaken.copyWith(pillName: pillTaken.pillName.toLowerCase())]);
+      final String migratedPillsValue = PillToTake.encode([pill]);
+      final String migratedTakenValue = PillTaken.encode([pillTaken]);
 
       const String otherValue = "some_value";
       const int migrationYear = 2023;
@@ -248,8 +248,8 @@ void main() {
       SharedPreferences.setMockInitialValues({
         "3/29": PillToTake.encode([pill1]),
         "pillsTaken3/29": PillTaken.encode([pillTaken1]),
-        "2026/3/29": PillToTake.encode([pill2.copyWith(pillName: "pill b")]),
-        "pillsTaken2026/3/29": PillTaken.encode([pillTaken2.copyWith(pillName: "pill b")]),
+        "2026/3/29": PillToTake.encode([pill2.copyWith(pillName: "Pill B")]),
+        "pillsTaken2026/3/29": PillTaken.encode([pillTaken2.copyWith(pillName: "Pill B")]),
         migratedToYearlyKeysKey: false,
       });
 
@@ -264,12 +264,12 @@ void main() {
           PillTaken.decode(prefs.getString("pillsTaken2026/3/29") ?? "");
 
       expect(migratedPills.length, 2);
-      expect(migratedPills.any((p) => p.pillName == "pill a"), true);
-      expect(migratedPills.any((p) => p.pillName == "pill b"), true);
+      expect(migratedPills.any((p) => p.pillName == "Pill A"), true);
+      expect(migratedPills.any((p) => p.pillName == "Pill B"), true);
 
       expect(migratedTaken.length, 2);
-      expect(migratedTaken.any((p) => p.pillName == "pill a"), true);
-      expect(migratedTaken.any((p) => p.pillName == "pill b"), true);
+      expect(migratedTaken.any((p) => p.pillName == "Pill A"), true);
+      expect(migratedTaken.any((p) => p.pillName == "Pill B"), true);
     });
   });
 }

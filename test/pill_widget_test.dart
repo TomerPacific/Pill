@@ -155,7 +155,7 @@ void main() async {
     await tester.pumpAndSettle();
 
     // If the pill was taken, it would be removed from the list (regiment 1 -> 0)
-    expect(find.text('safe pill'), findsOneWidget);
+    expect(find.text('Safe Pill'), findsOneWidget);
   });
 
   testWidgets("Pill Widget - Taking a Pill", (WidgetTester tester) async {
@@ -176,10 +176,10 @@ void main() async {
 
     // Tap the card (not the info icon)
     // Avoid tapping the top-right corner where the info icon might be (though not here)
-    await tester.tap(find.text('action pill')); 
+    await tester.tap(find.text('Action Pill')); 
     await tester.pumpAndSettle();
 
     // Pill should be gone as regiment is 0
-    expect(find.text('action pill'), findsNothing);
+    expect(find.text('Action Pill'), findsNothing);
   });
 }

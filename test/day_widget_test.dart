@@ -91,7 +91,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PillWidget), findsOneWidget);
-    expect(find.text("test pill"), findsOneWidget);
+    expect(find.text("Test Pill"), findsOneWidget);
     expect(find.text(pillsToTakeHeader), findsNothing);
   });
 
@@ -117,7 +117,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(PillTakenWidget), findsOneWidget);
-    expect(find.text("taken pill"), findsOneWidget);
+    expect(find.text("Taken Pill"), findsOneWidget);
     expect(find.text(pillsTakenHeader), findsNothing);
   });
 
