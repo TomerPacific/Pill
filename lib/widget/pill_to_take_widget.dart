@@ -7,18 +7,35 @@ import 'package:pill/service/date_service.dart';
 
 class PillWidget extends StatelessWidget {
   const PillWidget(
-      {super.key, required this.pillToTake, required this.dateService});
+      {super.key,
+      required this.pillToTake,
+      required this.dateService,
+      required this.date});
 
   final PillToTake pillToTake;
   final DateService dateService;
+  final DateTime date;
 
   void _handleOnTap(BuildContext context) {
+    final now = dateService.now();
+    final todayStr = dateService.formatDateForStorage(now);
+    final widgetDateStr = dateService.formatDateForStorage(date);
+
+    if (todayStr != widgetDateStr) {
+      // Day has rolled over. Refresh the UI to show today's pills instead
+      // of updating a stale record with a "now" timestamp.
+      context.read<PillBloc>().add(PillsEvent(
+          eventName: PillEvent.loadPills,
+          date: todayStr));
+      return;
+    }
+
     if (pillToTake.pillRegiment > 0) {
       PillToTake updatedPillToTake = pillToTake.copyWith(
-          pillRegiment: pillToTake.pillRegiment - 1, lastTaken: DateTime.now());
+          pillRegiment: pillToTake.pillRegiment - 1, lastTaken: now);
       context.read<PillBloc>().add(PillsEvent(
           eventName: PillEvent.updatePill,
-          date: dateService.getCurrentDateAsMonthAndDay(),
+          date: widgetDateStr,
           pillToTake: updatedPillToTake));
     }
   }

@@ -1,7 +1,16 @@
 const int ten = 10;
 
 class DateService {
-  String getDateAsMonthAndDay(DateTime date) {
+  /// Returns the current date and time.
+  DateTime now() => DateTime.now();
+
+  /// Returns a date string formatted as "YYYY/M/D", suitable for storage keys.
+  String formatDateForStorage(DateTime date) {
+    return "${date.year}/${date.month}/${date.day}";
+  }
+
+  /// Returns a date string formatted as "M/D" for user-facing display.
+  String formatDateForDisplay(DateTime date) {
     return "${date.month}/${date.day}";
   }
 
@@ -17,7 +26,13 @@ class DateService {
     return digit < ten ? "0$digit" : "$digit";
   }
 
-  String getCurrentDateAsMonthAndDay() {
-    return getDateAsMonthAndDay(DateTime.now());
+  @Deprecated('Use formatDateForStorage(dateService.now())')
+  String getCurrentDateAsYearMonthDay() {
+    return formatDateForStorage(now());
+  }
+
+  @Deprecated('Use formatDateForStorage or formatDateForDisplay')
+  String getDateAsYearMonthDay(DateTime date) {
+    return formatDateForStorage(date);
   }
 }

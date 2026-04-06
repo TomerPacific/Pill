@@ -41,16 +41,35 @@ class DayWidget extends StatelessWidget {
                 itemCount: pillsToTake.length,
                 itemBuilder: (_, index) => Dismissible(
                     key: ObjectKey(pillsToTake[index].pillName),
+                    confirmDismiss: (direction) async {
+                      final now = dateService.now();
+                      final todayStr = dateService.formatDateForStorage(now);
+                      final widgetDateStr =
+                          dateService.formatDateForStorage(date);
+
+                      if (todayStr != widgetDateStr) {
+                        // Day has rolled over. Refresh the UI instead of
+                        // removing from a stale record.
+                        context.read<PillBloc>().add(PillsEvent(
+                            eventName: PillEvent.loadPills, date: todayStr));
+                        return false;
+                      }
+                      return true;
+                    },
+                    onDismissed: (direction) {
+                      final widgetDateStr =
+                          dateService.formatDateForStorage(date);
+
+                      context.read<PillBloc>().add(PillsEvent(
+                          eventName: PillEvent.removePill,
+                          date: widgetDateStr,
+                          pillToTake: pillsToTake[index]));
+                    },
                     child: PillWidget(
                       pillToTake: pillsToTake[index],
                       dateService: dateService,
-                    ),
-                    onDismissed: (direction) {
-                      context.read<PillBloc>().add(PillsEvent(
-                          eventName: PillEvent.removePill,
-                          date: dateService.getDateAsMonthAndDay(date),
-                          pillToTake: pillsToTake[index]));
-                    })),
+                      date: date,
+                    ))),
           );
   }
 
@@ -86,7 +105,7 @@ class DayWidget extends StatelessWidget {
             alignment: Alignment.topCenter,
             child: Padding(
               padding: const EdgeInsets.only(top: 40.0),
-              child: Text(dateService.getDateAsMonthAndDay(date),
+              child: Text(dateService.formatDateForDisplay(date),
                   style: const TextStyle(
                       fontSize: 25.0, fontWeight: FontWeight.bold)),
             ),

@@ -11,13 +11,22 @@ import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/pill_to_take_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class MockDateService extends DateService {
+  final DateTime mockDate;
+  MockDateService(this.mockDate);
+  @override
+  DateTime now() => mockDate;
+}
+
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  DateService dateService = DateService();
+  final DateTime date = DateTime(2026, 4, 4);
+  DateService dateService = MockDateService(date);
   SharedPreferences.setMockInitialValues({});
   SharedPreferencesService sharedPreferencesService =
       await SharedPreferencesService.create(dateService);
-  String currentDate = dateService.getDateAsMonthAndDay(DateTime.now());
+  String currentDateStorage = dateService.formatDateForStorage(date);
+  String currentDateDisplay = dateService.formatDateForDisplay(date);
   String title = "You do not have to take any pills today 😀";
 
   setUp(() async {
@@ -27,9 +36,9 @@ void main() async {
   Widget base = MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (context) => PillBloc(sharedPreferencesService)
+            create: (context) => PillBloc(sharedPreferencesService, dateService)
               ..add(PillsEvent(
-                  eventName: PillEvent.loadPills, date: currentDate))),
+                  eventName: PillEvent.loadPills, date: currentDateStorage))),
         BlocProvider(
             create: (context) => ThemeBloc(sharedPreferencesService, false)),
         BlocProvider(
@@ -48,7 +57,7 @@ void main() async {
                   alignment: Alignment.topCenter,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 40.0),
-                    child: Text(currentDate,
+                    child: Text(currentDateDisplay,
                         style: const TextStyle(
                             fontSize: 25.0, fontWeight: FontWeight.bold)),
                   ),
@@ -70,11 +79,12 @@ void main() async {
                                 child: PillWidget(
                                   pillToTake: state.pillsToTake![index],
                                   dateService: dateService,
+                                  date: date,
                                 ),
                                 onDismissed: (direction) {
                                   context.read<PillBloc>().add(PillsEvent(
                                       eventName: PillEvent.removePill,
-                                      date: currentDate,
+                                      date: currentDateStorage,
                                       pillToTake: state.pillsToTake![index]));
                                 })),
                       ))
@@ -97,7 +107,8 @@ void main() async {
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
-        date: currentDate,
+        date: currentDateStorage,
+        startDateTime: date,
         pillToTake: pillWithInfo));
 
     await tester.pumpAndSettle();
@@ -133,7 +144,8 @@ void main() async {
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
-        date: currentDate,
+        date: currentDateStorage,
+        startDateTime: date,
         pillToTake: pillWithInfo));
 
     await tester.pumpAndSettle();
@@ -156,7 +168,8 @@ void main() async {
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
         eventName: PillEvent.addPill,
-        date: currentDate,
+        date: currentDateStorage,
+        startDateTime: date,
         pillToTake: pillToTake));
 
     await tester.pumpAndSettle();

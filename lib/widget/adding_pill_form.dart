@@ -7,12 +7,19 @@ import 'package:pill/custom_icons.dart';
 import 'package:pill/model/pill_duration.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
+import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/utils.dart';
 
 class AddingPillForm extends StatefulWidget {
-  final DateTime _currentDate;
+  final DateTime pillDate;
+  final DateService? dateService;
+  final SharedPreferencesService sharedPreferencesService;
 
-  const AddingPillForm(this._currentDate, {super.key});
+  const AddingPillForm(
+      {super.key,
+      required this.pillDate,
+      required this.sharedPreferencesService,
+      this.dateService});
 
   @override
   AddingPillFormState createState() {
@@ -104,6 +111,12 @@ class AddingPillFormState extends State<AddingPillForm> {
 
   @override
   Widget build(BuildContext context) {
+    final dateService = widget.dateService ?? DateService();
+    final now = dateService.now();
+    final bool isStale = dateService.formatDateForStorage(widget.pillDate) !=
+        dateService.formatDateForStorage(now);
+    final effectiveDate = isStale ? now : widget.pillDate;
+
     return Container(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -113,8 +126,7 @@ class AddingPillFormState extends State<AddingPillForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(addingAPillTitle,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 20.0)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0)),
             const SizedBox(height: 25.0),
             Form(
               key: _formKey,
@@ -147,12 +159,16 @@ class AddingPillFormState extends State<AddingPillForm> {
                           return 'Please enter a pill name';
                         }
 
-                        // Duplicate prevention check
-                        final pillBloc = context.read<PillBloc>();
-                        final existingPills = pillBloc.state.pillsToTake ?? [];
+                        // Duplicate prevention check against the target date
+                        final targetDateStr =
+                            dateService.formatDateForStorage(effectiveDate);
+                        final existingPills = widget.sharedPreferencesService
+                            .getPillsToTakeForDate(targetDateStr);
+
                         final normalizedValue = value.trim().toLowerCase();
                         if (existingPills.any((p) =>
-                            p.pillName.trim().toLowerCase() == normalizedValue)) {
+                            p.pillName.trim().toLowerCase() ==
+                            normalizedValue)) {
                           return 'This pill is already in your list';
                         }
 
@@ -282,13 +298,16 @@ class AddingPillFormState extends State<AddingPillForm> {
 
                               context.read<PillBloc>().add(PillsEvent(
                                   eventName: PillEvent.addPill,
-                                  date: DateService().getDateAsMonthAndDay(
-                                      widget._currentDate),
-                                  startDateTime: widget._currentDate,
+                                  date: dateService
+                                      .formatDateForStorage(effectiveDate),
+                                  startDateTime: effectiveDate,
                                   pillToTake: pill));
 
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Pill Added!")),
+                                SnackBar(
+                                    content: Text(isStale
+                                        ? "Day changed! Pill added for today."
+                                        : "Pill Added!")),
                               );
 
                               FocusScope.of(context).unfocus();

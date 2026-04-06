@@ -19,13 +19,14 @@ void main() {
   final dateService = DateService();
 
   final testDate = DateTime(2023, 10, 10);
-  final testDateStr = dateService.getDateAsMonthAndDay(testDate);
+  final testDateStorageStr = dateService.formatDateForStorage(testDate);
+  final testDateDisplayStr = dateService.formatDateForDisplay(testDate);
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     sharedPreferencesService =
         await SharedPreferencesService.create(dateService);
-    pillBloc = PillBloc(sharedPreferencesService);
+    pillBloc = PillBloc(sharedPreferencesService, dateService);
   });
 
   tearDown(() async {
@@ -41,7 +42,7 @@ void main() {
     await tester.runAsync(() async {
       pillBloc.add(PillsEvent(
         eventName: PillEvent.loadPills,
-        date: testDateStr,
+        date: testDateStorageStr,
       ));
       // Wait for the bloc to emit the new state from the loadPills event
       await pillBloc.stream.first;
@@ -74,7 +75,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(pillsToTakeHeader), findsOneWidget);
-    expect(find.text(testDateStr), findsOneWidget);
+    expect(find.text(testDateDisplayStr), findsOneWidget);
 
     // 2. Write to service synchronously, then drive bloc state update via
     //    tester.runAsync so the stream emission fully completes
@@ -109,7 +110,7 @@ void main() {
     await seedBlocState(tester, () {
       sharedPreferencesService.addPillToDates(testDate, pill);
       sharedPreferencesService.updatePillForDate(
-          pill.copyWith(pillRegiment: 0, lastTaken: testDate), testDateStr);
+          pill.copyWith(pillRegiment: 0, lastTaken: testDate), testDateStorageStr);
     });
 
     await tester.pump();

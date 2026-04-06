@@ -4,9 +4,15 @@ import 'package:pill/service/date_service.dart';
 void main() {
   DateService dateService = DateService();
 
-  test("DateService convert date to month and day", () {
+  test("DateService formatDateForStorage returns YYYY/M/D", () {
     final DateTime date = DateTime.parse("2022-05-06");
-    final String str = dateService.getDateAsMonthAndDay(date);
+    final String str = dateService.formatDateForStorage(date);
+    expect(str, equals("2022/5/6"));
+  });
+
+  test("DateService formatDateForDisplay returns M/D", () {
+    final DateTime date = DateTime.parse("2022-05-06");
+    final String str = dateService.formatDateForDisplay(date);
     expect(str, equals("5/6"));
   });
 
