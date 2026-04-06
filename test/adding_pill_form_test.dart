@@ -25,7 +25,9 @@ void main() {
         ],
         child: MaterialApp(
           home: Scaffold(
-            body: AddingPillForm(pillDate: testDate),
+            body: AddingPillForm(
+                pillDate: testDate,
+                sharedPreferencesService: sharedPreferencesService),
           ),
         ),
       );

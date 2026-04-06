@@ -158,7 +158,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
                                 BorderRadius.vertical(top: Radius.circular(20)),
                           ),
                           builder: (context) => AddingPillForm(
-                              pillDate: _now, dateService: widget.dateService));
+                              pillDate: _now,
+                              sharedPreferencesService:
+                                  widget.sharedPreferencesService,
+                              dateService: widget.dateService));
                     },
                     child: const Icon(Icons.add));
               }),
