@@ -41,12 +41,7 @@ class DayWidget extends StatelessWidget {
                 itemCount: pillsToTake.length,
                 itemBuilder: (_, index) => Dismissible(
                     key: ObjectKey(pillsToTake[index].pillName),
-                    child: PillWidget(
-                      pillToTake: pillsToTake[index],
-                      dateService: dateService,
-                      date: date,
-                    ),
-                    onDismissed: (direction) {
+                    confirmDismiss: (direction) async {
                       final now = dateService.now();
                       final todayStr = dateService.formatDateForStorage(now);
                       final widgetDateStr =
@@ -57,14 +52,24 @@ class DayWidget extends StatelessWidget {
                         // removing from a stale record.
                         context.read<PillBloc>().add(PillsEvent(
                             eventName: PillEvent.loadPills, date: todayStr));
-                        return;
+                        return false;
                       }
+                      return true;
+                    },
+                    onDismissed: (direction) {
+                      final widgetDateStr =
+                          dateService.formatDateForStorage(date);
 
                       context.read<PillBloc>().add(PillsEvent(
                           eventName: PillEvent.removePill,
                           date: widgetDateStr,
                           pillToTake: pillsToTake[index]));
-                    })),
+                    },
+                    child: PillWidget(
+                      pillToTake: pillsToTake[index],
+                      dateService: dateService,
+                      date: date,
+                    ))),
           );
   }
 
