@@ -207,7 +207,7 @@ class SharedPreferencesService {
     while (daysToTake > 0) {
       String dateStr = _dateService.formatDateForStorage(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
-      pills.add(pillWithTrimmedName);
+      pills.add(pillWithTrimmedName.copyWith());
       _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
