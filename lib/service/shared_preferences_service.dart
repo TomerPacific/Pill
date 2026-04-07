@@ -178,6 +178,12 @@ class SharedPreferencesService {
   }
 
   Future<void> _migrateToPrefixedKeys() async {
+    final migratedToYearly =
+        _sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false;
+    if (!migratedToYearly) {
+      return;
+    }
+
     if (_sharedPreferences.getBool(migratedToPrefixedKeysKey) ?? false) {
       return;
     }
