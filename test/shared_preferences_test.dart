@@ -185,7 +185,7 @@ void main() {
   });
 
   group("SharedPreferences Service migration", () {
-    test("Standard migration", () async {
+    test("Full migration (Yearly + Prefixed + Delimiter)", () async {
       const pill = PillToTake(
           pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
       final pillTaken = PillTaken(
@@ -205,6 +205,8 @@ void main() {
         "pillsTaken3/29": pillsTakenValue,
         "some_other_key": otherValue,
         migratedToYearlyKeysKey: false,
+        migratedToPrefixedKeysKey: false,
+        migratedToDelimiterKeysKey: false,
       });
 
       // Create a new service instance to trigger migration with a fixed year
@@ -213,20 +215,45 @@ void main() {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      // Verify values were migrated correctly
-      expect(prefs.getString("$migrationYear/3/29"), migratedPillsValue);
-      expect(prefs.getString("$pillsTakenKey$migrationYear/3/29"),
+      // Verify values were migrated correctly to PREFIXED yearly keys WITH delimiter
+      expect(prefs.getString("$pillsToTakePrefix$migrationYear/3/29"), migratedPillsValue);
+      expect(prefs.getString("$pillsTakenPrefix$migrationYear/3/29"),
           migratedTakenValue);
 
       // Verify old keys were removed
       expect(prefs.containsKey("3/29"), false);
       expect(prefs.containsKey("pillsTaken3/29"), false);
+      expect(prefs.containsKey("$migrationYear/3/29"), false);
+      expect(prefs.containsKey("pillsToTake$migrationYear/3/29"), false);
+      expect(prefs.containsKey("pillsTaken$migrationYear/3/29"), false);
 
       // Verify unrelated keys were preserved
       expect(prefs.getString("some_other_key"), otherValue);
 
-      // Verify migration flag was set
+      // Verify migration flags were set
       expect(prefs.getBool(migratedToYearlyKeysKey), true);
+      expect(prefs.getBool(migratedToPrefixedKeysKey), true);
+      expect(prefs.getBool(migratedToDelimiterKeysKey), true);
+    });
+
+    test("Migration from Prefixed to Delimiter only", () async {
+      const pill = PillToTake(
+          pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+      final String pillsValue = PillToTake.encode([pill]);
+
+      SharedPreferences.setMockInitialValues({
+        "pillsToTake2024/1/1": pillsValue,
+        migratedToYearlyKeysKey: true,
+        migratedToPrefixedKeysKey: true,
+        migratedToDelimiterKeysKey: false,
+      });
+
+      await SharedPreferencesService.create(dateService);
+
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString("${pillsToTakePrefix}2024/1/1"), pillsValue);
+      expect(prefs.containsKey("pillsToTake2024/1/1"), false);
+      expect(prefs.getBool(migratedToDelimiterKeysKey), true);
     });
 
     test("Migration with conflict resolution (merge data)", () async {
@@ -251,6 +278,8 @@ void main() {
         "2026/3/29": PillToTake.encode([pill2.copyWith(pillName: "Pill B")]),
         "pillsTaken2026/3/29": PillTaken.encode([pillTaken2.copyWith(pillName: "Pill B")]),
         migratedToYearlyKeysKey: false,
+        migratedToPrefixedKeysKey: false,
+        migratedToDelimiterKeysKey: false,
       });
 
       await SharedPreferencesService.createForTesting(dateService,
@@ -259,9 +288,9 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
 
       final migratedPills =
-          PillToTake.decode(prefs.getString("2026/3/29") ?? "");
+          PillToTake.decode(prefs.getString("${pillsToTakePrefix}2026/3/29") ?? "");
       final migratedTaken =
-          PillTaken.decode(prefs.getString("pillsTaken2026/3/29") ?? "");
+          PillTaken.decode(prefs.getString("${pillsTakenPrefix}2026/3/29") ?? "");
 
       expect(migratedPills.length, 2);
       expect(migratedPills.any((p) => p.pillName == "Pill A"), true);

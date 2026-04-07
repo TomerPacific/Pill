@@ -22,7 +22,10 @@ const String pillsToTakeHeader =
 const String pillsTakenHeader = "You have not taken any pills today";
 
 //SharedPreferences Keys
-const String pillsTakenKey = "pillsTaken";
+const String pillsTakenPrefix = "pillsTaken_";
+const String pillsToTakePrefix = "pillsToTake_";
 const String timeAppOpenedKey = "timeAppOpened";
 const String darkModeKey = "darkMode";
 const String migratedToYearlyKeysKey = "migratedToYearlyKeys";
+const String migratedToPrefixedKeysKey = "migratedToPrefixedKeys";
+const String migratedToDelimiterKeysKey = "migratedToDelimiterKeys";
