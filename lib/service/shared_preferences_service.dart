@@ -44,14 +44,7 @@ class SharedPreferencesService {
 
   Future<void> _migrateKeys({int? migrationYear}) async {
     await _migrateToYearlyKeys(migrationYear: migrationYear);
-    if (!(_sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false)) {
-      return;
-    }
-
     await _migrateToPrefixedKeys();
-    if (!(_sharedPreferences.getBool(migratedToPrefixedKeysKey) ?? false)) {
-      return;
-    }
     await _migrateToDelimiterKeys();
   }
 
@@ -208,18 +201,7 @@ class SharedPreferencesService {
 
       // Identify keys that are YYYY/M/D (already migrated to yearly format but not yet prefixed)
       if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
-        final legacyValue = _sharedPreferences.getString(key);
-        if (legacyValue != null) {
-          try {
-            final targetKey = "$legacyToTakeKey$key";
-            final existingValue = _sharedPreferences.getString(targetKey);
-
-            String migratedValue;
-            if (existingValue != null) {
-              final legacyPills = PillToTake.decode(legacyValue)
-      try {
-        // Identify keys that are YYYY/M/D (already migrated to yearly format but not yet prefixed)
-        if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
+        try {
           final legacyValue = _sharedPreferences.getString(key);
           if (legacyValue != null) {
             final targetKey = "$legacyToTakeKey$key";
@@ -257,16 +239,11 @@ class SharedPreferencesService {
               allSucceeded = false;
             }
           }
+        } catch (e, st) {
+          log("Error migrating prefixed key '$key': $e",
+              level: 1000, stackTrace: st);
+          allSucceeded = false;
         }
-      } catch (e, stackTrace) {
-        final legacyValue = _sharedPreferences.getString(key);
-        log(
-          "Failed to migrate non-prefixed key '$key' with value '$legacyValue'",
-          error: e,
-          stackTrace: stackTrace,
-          level: 1000,
-        );
-        allSucceeded = false;
       }
     }
 
@@ -316,8 +293,9 @@ class SharedPreferencesService {
                 final existingPills = PillTaken.decode(existingValue)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
-                migratedValue = PillTaken.encode(
-                    {...legacyPills, ...existingPills}.toList());
+                // Combine and deduplicate exact matches
+                final merged = {...legacyPills, ...existingPills}.toList();
+                migratedValue = PillTaken.encode(merged);
               } else {
                 final legacyPills = PillToTake.decode(legacyValue)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
@@ -341,8 +319,7 @@ class SharedPreferencesService {
 
             if (await _sharedPreferences.setString(targetKey, migratedValue)) {
               if (!(await _sharedPreferences.remove(key))) {
-                log(
-                    "Failed to remove old key '$key' after migration to '$targetKey'",
+                log("Failed to remove old key '$key' after migration to '$targetKey'",
                     level: 1000);
                 allSucceeded = false;
               }
@@ -351,13 +328,9 @@ class SharedPreferencesService {
               allSucceeded = false;
             }
           }
-        } catch (error, stackTrace) {
-          log(
-            "Failed to migrate key '$key' to '$targetKey'",
-            level: 1000,
-            error: error,
-            stackTrace: stackTrace,
-          );
+        } catch (e, st) {
+          log("Error migrating delimiter key '$key': $e",
+              level: 1000, stackTrace: st);
           allSucceeded = false;
         }
       }
@@ -371,10 +344,6 @@ class SharedPreferencesService {
     }
   }
 
-  // The Future returned by SharedPreferences write methods is intentionally
-  // unawaited: SharedPreferences commits writes to its in-memory cache
-  // synchronously before the Future resolves, so subsequent reads on the same
-  // instance always see the updated value immediately.
   void _setPillsForDate(String date, List<PillToTake> pills) {
     unawaited(_sharedPreferences.setString(
         pillsToTakePrefix + date, PillToTake.encode(pills)));
@@ -403,9 +372,6 @@ class SharedPreferencesService {
     return [];
   }
 
-  // void return: callers should read the specific date they need via
-  // getPillsToTakeForDate(date) after this call, since a pill scheduled
-  // across multiple days updates each date independently.
   void addPillToDates(DateTime startDate, PillToTake pill) {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
@@ -428,8 +394,6 @@ class SharedPreferencesService {
     return pillsTaken;
   }
 
-  // Returns updated lists for currentDate so the BLoC can emit state without
-  // a second read. Returns null if the pill to update was not found.
   ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?
       updatePillForDate(PillToTake pillToTake, String currentDate) {
     List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
@@ -445,7 +409,6 @@ class SharedPreferencesService {
     final existingPill = pillsToTakeList[pillIndex];
     final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
-    // Update taken list
     final updatedPillsTaken = addTakenPill(pillToSave, currentDate);
 
     if (pillToSave.pillRegiment == 0) {
@@ -460,7 +423,6 @@ class SharedPreferencesService {
     return (pillsToTake: pillsToTakeList, pillsTaken: updatedPillsTaken);
   }
 
-  // Returns the updated list for currentDate.
   List<PillToTake> removePillFromDate(
       PillToTake pillToTake, String currentDate) {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
