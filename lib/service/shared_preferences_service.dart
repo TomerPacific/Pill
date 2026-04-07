@@ -256,6 +256,15 @@ class SharedPreferencesService {
   }
 
   Future<void> _migrateToDelimiterKeys() async {
+    final migratedToYearly =
+        _sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false;
+    final migratedToPrefixed =
+        _sharedPreferences.getBool(migratedToPrefixedKeysKey) ?? false;
+
+    if (!migratedToYearly || !migratedToPrefixed) {
+      return;
+    }
+
     if (_sharedPreferences.getBool(migratedToDelimiterKeysKey) ?? false) {
       return;
     }
@@ -269,11 +278,12 @@ class SharedPreferencesService {
     for (String key in keys) {
       String? targetKey;
       bool isTaken = false;
-      if (key.startsWith(legacyTakenKey) && !key.startsWith(pillsTakenPrefix)) {
+
+      // Restrict migration to expected pre-delimiter yearly shapes
+      if (RegExp(r'^pillsTaken\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
         targetKey = "$pillsTakenPrefix${key.substring(legacyTakenKey.length)}";
         isTaken = true;
-      } else if (key.startsWith(legacyToTakeKey) &&
-          !key.startsWith(pillsToTakePrefix)) {
+      } else if (RegExp(r'^pillsToTake\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
         targetKey = "$pillsToTakePrefix${key.substring(legacyToTakeKey.length)}";
         isTaken = false;
       }
