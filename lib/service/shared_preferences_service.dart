@@ -44,7 +44,14 @@ class SharedPreferencesService {
 
   Future<void> _migrateKeys({int? migrationYear}) async {
     await _migrateToYearlyKeys(migrationYear: migrationYear);
+    if (!(_sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false)) {
+      return;
+    }
+
     await _migrateToPrefixedKeys();
+    if (!(_sharedPreferences.getBool(migratedToPrefixedKeysKey) ?? false)) {
+      return;
+    }
     await _migrateToDelimiterKeys();
   }
 
