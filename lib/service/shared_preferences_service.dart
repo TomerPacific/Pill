@@ -284,52 +284,63 @@ class SharedPreferencesService {
       }
 
       if (targetKey != null) {
-        final legacyValue = _sharedPreferences.getString(key);
-        if (legacyValue != null) {
-          final existingValue = _sharedPreferences.getString(targetKey);
+        try {
+          final legacyValue = _sharedPreferences.getString(key);
+          if (legacyValue != null) {
+            final existingValue = _sharedPreferences.getString(targetKey);
 
-          String migratedValue;
-          if (existingValue != null) {
-            if (isTaken) {
-              final legacyPills = PillTaken.decode(legacyValue)
-                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
-                  .toList();
-              final existingPills = PillTaken.decode(existingValue)
-                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
-                  .toList();
-              migratedValue =
-                  PillTaken.encode({...legacyPills, ...existingPills}.toList());
+            String migratedValue;
+            if (existingValue != null) {
+              if (isTaken) {
+                final legacyPills = PillTaken.decode(legacyValue)
+                    .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                    .toList();
+                final existingPills = PillTaken.decode(existingValue)
+                    .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                    .toList();
+                migratedValue = PillTaken.encode(
+                    {...legacyPills, ...existingPills}.toList());
+              } else {
+                final legacyPills = PillToTake.decode(legacyValue)
+                    .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                    .toList();
+                final existingPills = PillToTake.decode(existingValue)
+                    .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                    .toList();
+
+                final Map<String, PillToTake> mergedMap = {};
+                for (final pill in legacyPills) {
+                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                }
+                for (final pill in existingPills) {
+                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                }
+                migratedValue = PillToTake.encode(mergedMap.values.toList());
+              }
             } else {
-              final legacyPills = PillToTake.decode(legacyValue)
-                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
-                  .toList();
-              final existingPills = PillToTake.decode(existingValue)
-                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
-                  .toList();
-
-              final Map<String, PillToTake> mergedMap = {};
-              for (final pill in legacyPills) {
-                mergedMap[pill.pillName.toLowerCase()] = pill;
-              }
-              for (final pill in existingPills) {
-                mergedMap[pill.pillName.toLowerCase()] = pill;
-              }
-              migratedValue = PillToTake.encode(mergedMap.values.toList());
+              migratedValue = legacyValue;
             }
-          } else {
-            migratedValue = legacyValue;
-          }
 
-          if (await _sharedPreferences.setString(targetKey, migratedValue)) {
-            if (!(await _sharedPreferences.remove(key))) {
-              log("Failed to remove old key '$key' after migration to '$targetKey'",
-                  level: 1000);
+            if (await _sharedPreferences.setString(targetKey, migratedValue)) {
+              if (!(await _sharedPreferences.remove(key))) {
+                log(
+                    "Failed to remove old key '$key' after migration to '$targetKey'",
+                    level: 1000);
+                allSucceeded = false;
+              }
+            } else {
+              log("Failed to write delimiter key '$targetKey'", level: 1000);
               allSucceeded = false;
             }
-          } else {
-            log("Failed to write delimiter key '$targetKey'", level: 1000);
-            allSucceeded = false;
           }
+        } catch (error, stackTrace) {
+          log(
+            "Failed to migrate key '$key' to '$targetKey'",
+            level: 1000,
+            error: error,
+            stackTrace: stackTrace,
+          );
+          allSucceeded = false;
         }
       }
     }
