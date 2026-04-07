@@ -101,11 +101,30 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     return DefaultTabController(
         length: amountOfTabs,
         child: Scaffold(
-            appBar: _mainPageAppBar(context),
-            body: _mainPageTabBarView()));
+            appBar: _MainPageAppBar(
+              onPillsTabTapped: _loadPillsForToday,
+              onSettingsTabTapped: _updateNow,
+            ),
+            body: _MainPageTabBarView(
+              now: _now,
+              dateService: widget.dateService,
+              sharedPreferencesService: widget.sharedPreferencesService,
+              onAddPillTapped: _updateNow,
+            )));
   }
+}
 
-  PreferredSizeWidget _mainPageAppBar(BuildContext context) {
+class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final VoidCallback onPillsTabTapped;
+  final VoidCallback onSettingsTabTapped;
+
+  const _MainPageAppBar({
+    required this.onPillsTabTapped,
+    required this.onSettingsTabTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(50),
       child: AppBar(
@@ -119,10 +138,10 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
             switch (tabIndex) {
               case pillsToTakeTabIndex:
               case pillsTakenTabIndex:
-                _loadPillsForToday();
+                onPillsTabTapped();
                 break;
               case settingsTabIndex:
-                _updateNow();
+                onSettingsTabTapped();
                 context
                     .read<ClearPillsBloc>()
                     .add(ClearPillsEvent.updatePillsStatus);
@@ -133,51 +152,67 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     );
   }
 
-  TabBarView _mainPageTabBarView() {
+  @override
+  Size get preferredSize => const Size.fromHeight(50);
+}
+
+class _MainPageTabBarView extends StatelessWidget {
+  final DateTime now;
+  final DateService dateService;
+  final SharedPreferencesService sharedPreferencesService;
+  final VoidCallback onAddPillTapped;
+
+  const _MainPageTabBarView({
+    required this.now,
+    required this.dateService,
+    required this.sharedPreferencesService,
+    required this.onAddPillTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return TabBarView(children: [
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           DayWidget(
-              date: _now,
+              date: now,
               mode: DayWidgetMode.toTake,
-              dateService: widget.dateService),
+              dateService: dateService),
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Builder(builder: (context) {
-                return FloatingActionButton(
-                    onPressed: () {
-                      _updateNow();
-                      showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                          builder: (context) => AddingPillForm(
-                              pillDate: _now,
-                              sharedPreferencesService:
-                                  widget.sharedPreferencesService,
-                              dateService: widget.dateService));
-                    },
-                    child: const Icon(Icons.add));
-              }),
+              child: FloatingActionButton(
+                  onPressed: () {
+                    onAddPillTapped();
+                    showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        builder: (context) => AddingPillForm(
+                            pillDate: now,
+                            sharedPreferencesService:
+                                sharedPreferencesService,
+                            dateService: dateService));
+                  },
+                  child: const Icon(Icons.add)),
             ),
           )
         ],
       ),
       Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         DayWidget(
-            date: _now,
+            date: now,
             mode: DayWidgetMode.taken,
-            dateService: widget.dateService),
+            dateService: dateService),
       ]),
       BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
         return SettingsPage(
-            sharedPreferencesService: widget.sharedPreferencesService);
+            sharedPreferencesService: sharedPreferencesService);
       })
     ]);
   }
