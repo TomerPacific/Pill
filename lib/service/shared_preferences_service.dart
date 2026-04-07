@@ -203,38 +203,49 @@ class SharedPreferencesService {
       if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
         final legacyValue = _sharedPreferences.getString(key);
         if (legacyValue != null) {
-          final targetKey = "$legacyToTakeKey$key";
-          final existingValue = _sharedPreferences.getString(targetKey);
+          try {
+            final targetKey = "$legacyToTakeKey$key";
+            final existingValue = _sharedPreferences.getString(targetKey);
 
-          String migratedValue;
-          if (existingValue != null) {
-            final legacyPills = PillToTake.decode(legacyValue)
-                .map((p) => p.copyWith(pillName: p.pillName.trim()))
-                .toList();
-            final existingPills = PillToTake.decode(existingValue)
-                .map((p) => p.copyWith(pillName: p.pillName.trim()))
-                .toList();
+            String migratedValue;
+            if (existingValue != null) {
+              final legacyPills = PillToTake.decode(legacyValue)
+                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                  .toList();
+              final existingPills = PillToTake.decode(existingValue)
+                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                  .toList();
 
-            final Map<String, PillToTake> mergedMap = {};
-            for (final pill in legacyPills) {
-              mergedMap[pill.pillName.toLowerCase()] = pill;
+              final Map<String, PillToTake> mergedMap = {};
+              for (final pill in legacyPills) {
+                mergedMap[pill.pillName.toLowerCase()] = pill;
+              }
+              for (final pill in existingPills) {
+                mergedMap[pill.pillName.toLowerCase()] = pill;
+              }
+              migratedValue = PillToTake.encode(mergedMap.values.toList());
+            } else {
+              migratedValue = legacyValue;
             }
-            for (final pill in existingPills) {
-              mergedMap[pill.pillName.toLowerCase()] = pill;
-            }
-            migratedValue = PillToTake.encode(mergedMap.values.toList());
-          } else {
-            migratedValue = legacyValue;
-          }
 
-          if (await _sharedPreferences.setString(targetKey, migratedValue)) {
-            if (!(await _sharedPreferences.remove(key))) {
-              log("Failed to remove non-prefixed key '$key' after migration to '$targetKey'",
-                  level: 1000);
+            if (await _sharedPreferences.setString(targetKey, migratedValue)) {
+              if (!(await _sharedPreferences.remove(key))) {
+                log(
+                    "Failed to remove non-prefixed key '$key' after migration to '$targetKey'",
+                    level: 1000);
+                allSucceeded = false;
+              }
+            } else {
+              log("Failed to write prefixed key '$targetKey'", level: 1000);
               allSucceeded = false;
             }
-          } else {
-            log("Failed to write prefixed key '$targetKey'", level: 1000);
+          } catch (e, s) {
+            log(
+              "Failed to migrate non-prefixed key '$key' to prefixed format",
+              error: e,
+              stackTrace: s,
+              level: 1000,
+            );
             allSucceeded = false;
           }
         }
