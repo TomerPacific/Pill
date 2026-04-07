@@ -102,10 +102,12 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         length: amountOfTabs,
         child: Scaffold(
             appBar: _MainPageAppBar(
+              key: const ValueKey('MainPageAppBar'),
               onPillsTabTapped: _loadPillsForToday,
               onSettingsTabTapped: _updateNow,
             ),
             body: _MainPageTabBarView(
+              key: const ValueKey('MainPageTabBarView'),
               now: _now,
               dateService: widget.dateService,
               sharedPreferencesService: widget.sharedPreferencesService,
@@ -119,6 +121,7 @@ class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onSettingsTabTapped;
 
   const _MainPageAppBar({
+    super.key,
     required this.onPillsTabTapped,
     required this.onSettingsTabTapped,
   });
@@ -163,6 +166,7 @@ class _MainPageTabBarView extends StatelessWidget {
   final VoidCallback onAddPillTapped;
 
   const _MainPageTabBarView({
+    super.key,
     required this.now,
     required this.dateService,
     required this.sharedPreferencesService,
@@ -186,6 +190,7 @@ class _MainPageTabBarView extends StatelessWidget {
               child: FloatingActionButton(
                   onPressed: () {
                     onAddPillTapped();
+                    final updatedNow = dateService.now();
                     showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
@@ -194,7 +199,7 @@ class _MainPageTabBarView extends StatelessWidget {
                               BorderRadius.vertical(top: Radius.circular(20)),
                         ),
                         builder: (context) => AddingPillForm(
-                            pillDate: now,
+                            pillDate: updatedNow,
                             sharedPreferencesService:
                                 sharedPreferencesService,
                             dateService: dateService));
