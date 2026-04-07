@@ -217,6 +217,17 @@ class SharedPreferencesService {
             String migratedValue;
             if (existingValue != null) {
               final legacyPills = PillToTake.decode(legacyValue)
+      try {
+        // Identify keys that are YYYY/M/D (already migrated to yearly format but not yet prefixed)
+        if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
+          final legacyValue = _sharedPreferences.getString(key);
+          if (legacyValue != null) {
+            final targetKey = "$legacyToTakeKey$key";
+            final existingValue = _sharedPreferences.getString(targetKey);
+
+            String migratedValue;
+            if (existingValue != null) {
+              final legacyPills = PillToTake.decode(legacyValue)
                   .map((p) => p.copyWith(pillName: p.pillName.trim()))
                   .toList();
               final existingPills = PillToTake.decode(existingValue)
@@ -237,8 +248,7 @@ class SharedPreferencesService {
 
             if (await _sharedPreferences.setString(targetKey, migratedValue)) {
               if (!(await _sharedPreferences.remove(key))) {
-                log(
-                    "Failed to remove non-prefixed key '$key' after migration to '$targetKey'",
+                log("Failed to remove non-prefixed key '$key' after migration to '$targetKey'",
                     level: 1000);
                 allSucceeded = false;
               }
@@ -246,16 +256,17 @@ class SharedPreferencesService {
               log("Failed to write prefixed key '$targetKey'", level: 1000);
               allSucceeded = false;
             }
-          } catch (e, s) {
-            log(
-              "Failed to migrate non-prefixed key '$key' to prefixed format",
-              error: e,
-              stackTrace: s,
-              level: 1000,
-            );
-            allSucceeded = false;
           }
         }
+      } catch (e, stackTrace) {
+        final legacyValue = _sharedPreferences.getString(key);
+        log(
+          "Failed to migrate non-prefixed key '$key' with value '$legacyValue'",
+          error: e,
+          stackTrace: stackTrace,
+          level: 1000,
+        );
+        allSucceeded = false;
       }
     }
 
