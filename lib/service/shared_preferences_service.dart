@@ -45,12 +45,15 @@ class SharedPreferencesService {
   Future<void> _migrateKeys({int? migrationYear}) async {
     await _migrateToYearlyKeys(migrationYear: migrationYear);
     await _migrateToPrefixedKeys();
+    await _migrateToDelimiterKeys();
   }
 
   Future<void> _migrateToYearlyKeys({int? migrationYear}) async {
     if (_sharedPreferences.getBool(migratedToYearlyKeysKey) ?? false) {
       return;
     }
+
+    const String legacyTakenKey = "pillsTaken";
 
     final keys = _sharedPreferences.getKeys().toList();
     final currentYear = migrationYear ?? _dateService.now().year;
@@ -60,7 +63,8 @@ class SharedPreferencesService {
       if (key == timeAppOpenedKey ||
           key == darkModeKey ||
           key == migratedToYearlyKeysKey ||
-          key == migratedToPrefixedKeysKey) {
+          key == migratedToPrefixedKeysKey ||
+          key == migratedToDelimiterKeysKey) {
         continue;
       }
 
@@ -68,8 +72,8 @@ class SharedPreferencesService {
       if (legacyValue == null) continue;
 
       try {
-        if (key.startsWith(pillsTakenKey)) {
-          final datePart = key.substring(pillsTakenKey.length);
+        if (key.startsWith(legacyTakenKey)) {
+          final datePart = key.substring(legacyTakenKey.length);
           // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
           if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
             final legacyPills = PillTaken.decode(legacyValue);
@@ -85,7 +89,7 @@ class SharedPreferencesService {
             for (final entry in pillsByYear.entries) {
               final year = entry.key;
               final pillsForYear = entry.value;
-              final targetKey = "$pillsTakenKey$year/$datePart";
+              final targetKey = "$legacyTakenKey$year/$datePart";
               final existingYearlyValue =
                   _sharedPreferences.getString(targetKey);
 
@@ -178,6 +182,9 @@ class SharedPreferencesService {
       return;
     }
 
+    const String legacyTakenKey = "pillsTaken";
+    const String legacyToTakeKey = "pillsToTake";
+
     final keys = _sharedPreferences.getKeys().toList();
     bool allSucceeded = true;
 
@@ -186,17 +193,41 @@ class SharedPreferencesService {
           key == darkModeKey ||
           key == migratedToYearlyKeysKey ||
           key == migratedToPrefixedKeysKey ||
-          key.startsWith(pillsTakenKey) ||
-          key.startsWith(pillsToTakeKey)) {
+          key == migratedToDelimiterKeysKey ||
+          key.startsWith(legacyTakenKey) ||
+          key.startsWith(legacyToTakeKey)) {
         continue;
       }
 
       // Identify keys that are YYYY/M/D (already migrated to yearly format but not yet prefixed)
       if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
-        final value = _sharedPreferences.getString(key);
-        if (value != null) {
-          final targetKey = "$pillsToTakeKey$key";
-          if (await _sharedPreferences.setString(targetKey, value)) {
+        final legacyValue = _sharedPreferences.getString(key);
+        if (legacyValue != null) {
+          final targetKey = "$legacyToTakeKey$key";
+          final existingValue = _sharedPreferences.getString(targetKey);
+
+          String migratedValue;
+          if (existingValue != null) {
+            final legacyPills = PillToTake.decode(legacyValue)
+                .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                .toList();
+            final existingPills = PillToTake.decode(existingValue)
+                .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                .toList();
+
+            final Map<String, PillToTake> mergedMap = {};
+            for (final pill in legacyPills) {
+              mergedMap[pill.pillName.toLowerCase()] = pill;
+            }
+            for (final pill in existingPills) {
+              mergedMap[pill.pillName.toLowerCase()] = pill;
+            }
+            migratedValue = PillToTake.encode(mergedMap.values.toList());
+          } else {
+            migratedValue = legacyValue;
+          }
+
+          if (await _sharedPreferences.setString(targetKey, migratedValue)) {
             if (!(await _sharedPreferences.remove(key))) {
               log("Failed to remove non-prefixed key '$key' after migration to '$targetKey'",
                   level: 1000);
@@ -218,22 +249,105 @@ class SharedPreferencesService {
     }
   }
 
+  Future<void> _migrateToDelimiterKeys() async {
+    if (_sharedPreferences.getBool(migratedToDelimiterKeysKey) ?? false) {
+      return;
+    }
+
+    const String legacyTakenKey = "pillsTaken";
+    const String legacyToTakeKey = "pillsToTake";
+
+    final keys = _sharedPreferences.getKeys().toList();
+    bool allSucceeded = true;
+
+    for (String key in keys) {
+      String? targetKey;
+      bool isTaken = false;
+      if (key.startsWith(legacyTakenKey) && !key.startsWith(pillsTakenPrefix)) {
+        targetKey = "$pillsTakenPrefix${key.substring(legacyTakenKey.length)}";
+        isTaken = true;
+      } else if (key.startsWith(legacyToTakeKey) &&
+          !key.startsWith(pillsToTakePrefix)) {
+        targetKey = "$pillsToTakePrefix${key.substring(legacyToTakeKey.length)}";
+        isTaken = false;
+      }
+
+      if (targetKey != null) {
+        final legacyValue = _sharedPreferences.getString(key);
+        if (legacyValue != null) {
+          final existingValue = _sharedPreferences.getString(targetKey);
+
+          String migratedValue;
+          if (existingValue != null) {
+            if (isTaken) {
+              final legacyPills = PillTaken.decode(legacyValue)
+                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                  .toList();
+              final existingPills = PillTaken.decode(existingValue)
+                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                  .toList();
+              migratedValue =
+                  PillTaken.encode({...legacyPills, ...existingPills}.toList());
+            } else {
+              final legacyPills = PillToTake.decode(legacyValue)
+                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                  .toList();
+              final existingPills = PillToTake.decode(existingValue)
+                  .map((p) => p.copyWith(pillName: p.pillName.trim()))
+                  .toList();
+
+              final Map<String, PillToTake> mergedMap = {};
+              for (final pill in legacyPills) {
+                mergedMap[pill.pillName.toLowerCase()] = pill;
+              }
+              for (final pill in existingPills) {
+                mergedMap[pill.pillName.toLowerCase()] = pill;
+              }
+              migratedValue = PillToTake.encode(mergedMap.values.toList());
+            }
+          } else {
+            migratedValue = legacyValue;
+          }
+
+          if (await _sharedPreferences.setString(targetKey, migratedValue)) {
+            if (!(await _sharedPreferences.remove(key))) {
+              log("Failed to remove old key '$key' after migration to '$targetKey'",
+                  level: 1000);
+              allSucceeded = false;
+            }
+          } else {
+            log("Failed to write delimiter key '$targetKey'", level: 1000);
+            allSucceeded = false;
+          }
+        }
+      }
+    }
+
+    if (allSucceeded) {
+      if (!(await _sharedPreferences.setBool(migratedToDelimiterKeysKey, true))) {
+        log("Failed to set migration completion flag '$migratedToDelimiterKeysKey'",
+            level: 1000);
+      }
+    }
+  }
+
   // The Future returned by SharedPreferences write methods is intentionally
   // unawaited: SharedPreferences commits writes to its in-memory cache
   // synchronously before the Future resolves, so subsequent reads on the same
   // instance always see the updated value immediately.
   void _setPillsForDate(String date, List<PillToTake> pills) {
     unawaited(_sharedPreferences.setString(
-        pillsToTakeKey + date, PillToTake.encode(pills)));
+        pillsToTakePrefix + date, PillToTake.encode(pills)));
   }
 
   void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) {
     unawaited(_sharedPreferences.setString(
-        pillsTakenKey + date, PillTaken.encode(pillsTaken)));
+        pillsTakenPrefix + date, PillTaken.encode(pillsTaken)));
   }
 
   List<PillToTake> getPillsToTakeForDate(String date) {
-    String? encodedPills = _sharedPreferences.getString(pillsToTakeKey + date);
+    String? encodedPills =
+        _sharedPreferences.getString(pillsToTakePrefix + date);
     if (encodedPills != null) {
       return PillToTake.decode(encodedPills);
     }
@@ -241,7 +355,8 @@ class SharedPreferencesService {
   }
 
   List<PillTaken> getPillsTakenForDate(String date) {
-    String? encodedPills = _sharedPreferences.getString(pillsTakenKey + date);
+    String? encodedPills =
+        _sharedPreferences.getString(pillsTakenPrefix + date);
     if (encodedPills != null) {
       return PillTaken.decode(encodedPills);
     }
@@ -348,7 +463,8 @@ class SharedPreferencesService {
       if (key == timeAppOpenedKey ||
           key == darkModeKey ||
           key == migratedToYearlyKeysKey ||
-          key == migratedToPrefixedKeysKey) {
+          key == migratedToPrefixedKeysKey ||
+          key == migratedToDelimiterKeysKey) {
         continue;
       }
       unawaited(_sharedPreferences.remove(key));
@@ -372,9 +488,9 @@ class SharedPreferencesService {
     Set<String> keys = _sharedPreferences.getKeys();
     if (keys.isEmpty) return false;
     for (String key in keys) {
-      if (key.startsWith(pillsToTakeKey)) {
+      if (key.startsWith(pillsToTakePrefix)) {
         List<PillToTake> pills =
-            getPillsToTakeForDate(key.substring(pillsToTakeKey.length));
+            getPillsToTakeForDate(key.substring(pillsToTakePrefix.length));
         if (pills.isNotEmpty) return true;
       }
     }
