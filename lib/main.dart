@@ -51,7 +51,6 @@ class MyApp extends StatelessWidget {
           darkTheme: ThemeData.dark(),
           themeMode: state,
           home: MainPage(
-              title: appTitle,
               sharedPreferencesService: sharedPreferencesService,
               dateService: dateService),
         );
