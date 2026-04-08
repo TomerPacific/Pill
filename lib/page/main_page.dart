@@ -90,9 +90,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         date: todayStr));
   }
 
-  void _updateNow() {
+  void _updateNow([DateTime? now]) {
     setState(() {
-      _now = widget.dateService.now();
+      _now = now ?? widget.dateService.now();
     });
   }
 
@@ -103,67 +103,69 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         child: Scaffold(
             appBar: _MainPageAppBar(
               key: const ValueKey('MainPageAppBar'),
+              title: widget.title,
               onPillsTabTapped: _loadPillsForToday,
-              onSettingsTabTapped: _updateNow,
+              onSettingsTabTapped: () => _updateNow(),
             ),
             body: _MainPageTabBarView(
               key: const ValueKey('MainPageTabBarView'),
               now: _now,
               dateService: widget.dateService,
               sharedPreferencesService: widget.sharedPreferencesService,
-              onAddPillTapped: _updateNow,
+              onAddPillTapped: (now) => _updateNow(now),
             )));
   }
 }
 
 class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
   final VoidCallback onPillsTabTapped;
   final VoidCallback onSettingsTabTapped;
 
   const _MainPageAppBar({
     super.key,
+    required this.title,
     required this.onPillsTabTapped,
     required this.onSettingsTabTapped,
   });
 
   @override
   Widget build(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(50),
-      child: AppBar(
-        bottom: TabBar(
-          tabs: const [
-            Tab(icon: Icon(CustomIcons.pill)),
-            Tab(icon: Icon(Icons.watch_later_rounded)),
-            Tab(icon: Icon(Icons.settings)),
-          ],
-          onTap: (tabIndex) {
-            switch (tabIndex) {
-              case pillsToTakeTabIndex:
-              case pillsTakenTabIndex:
-                onPillsTabTapped();
-                break;
-              case settingsTabIndex:
-                onSettingsTabTapped();
-                context
-                    .read<ClearPillsBloc>()
-                    .add(ClearPillsEvent.updatePillsStatus);
-            }
-          },
-        ),
+    return AppBar(
+      title: Text(title),
+      bottom: TabBar(
+        tabs: const [
+          Tab(icon: Icon(CustomIcons.pill)),
+          Tab(icon: Icon(Icons.watch_later_rounded)),
+          Tab(icon: Icon(Icons.settings)),
+        ],
+        onTap: (tabIndex) {
+          switch (tabIndex) {
+            case pillsToTakeTabIndex:
+            case pillsTakenTabIndex:
+              onPillsTabTapped();
+              break;
+            case settingsTabIndex:
+              onSettingsTabTapped();
+              context
+                  .read<ClearPillsBloc>()
+                  .add(ClearPillsEvent.updatePillsStatus);
+          }
+        },
       ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(50);
+  Size get preferredSize =>
+      const Size.fromHeight(kToolbarHeight + kTextTabBarHeight);
 }
 
 class _MainPageTabBarView extends StatelessWidget {
   final DateTime now;
   final DateService dateService;
   final SharedPreferencesService sharedPreferencesService;
-  final VoidCallback onAddPillTapped;
+  final ValueChanged<DateTime> onAddPillTapped;
 
   const _MainPageTabBarView({
     super.key,
@@ -189,8 +191,8 @@ class _MainPageTabBarView extends StatelessWidget {
               padding: const EdgeInsets.all(10.0),
               child: FloatingActionButton(
                   onPressed: () {
-                    onAddPillTapped();
                     final updatedNow = dateService.now();
+                    onAddPillTapped(updatedNow);
                     showModalBottomSheet(
                         context: context,
                         isScrollControlled: true,
