@@ -18,11 +18,9 @@ const int settingsTabIndex = 2;
 class MainPage extends StatefulWidget {
   const MainPage(
       {super.key,
-      required this.title,
       required this.sharedPreferencesService,
       required this.dateService});
 
-  final String title;
   final SharedPreferencesService sharedPreferencesService;
   final DateService dateService;
 
@@ -103,7 +101,6 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         child: Scaffold(
             appBar: _MainPageAppBar(
               key: const ValueKey('MainPageAppBar'),
-              title: widget.title,
               onPillsTabTapped: _loadPillsForToday,
               onSettingsTabTapped: () => _updateNow(),
             ),
@@ -118,13 +115,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
 }
 
 class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
   final VoidCallback onPillsTabTapped;
   final VoidCallback onSettingsTabTapped;
 
   const _MainPageAppBar({
     super.key,
-    required this.title,
     required this.onPillsTabTapped,
     required this.onSettingsTabTapped,
   });
@@ -158,7 +153,7 @@ class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(50.0);
+  Size get preferredSize => const Size.fromHeight(kTabLabelHeight);
 }
 
 class _MainPageTabBarView extends StatelessWidget {
