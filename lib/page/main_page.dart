@@ -132,7 +132,7 @@ class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title),
+      toolbarHeight: 0,
       bottom: TabBar(
         tabs: const [
           Tab(icon: Icon(CustomIcons.pill)),
@@ -158,8 +158,7 @@ class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize =>
-      const Size.fromHeight(kToolbarHeight + kTextTabBarHeight);
+  Size get preferredSize => const Size.fromHeight(50.0);
 }
 
 class _MainPageTabBarView extends StatelessWidget {
