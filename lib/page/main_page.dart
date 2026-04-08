@@ -153,7 +153,7 @@ class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kTabLabelHeight);
+  Size get preferredSize => const Size.fromHeight(kTextTabBarHeight);
 }
 
 class _MainPageTabBarView extends StatelessWidget {
