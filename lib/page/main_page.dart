@@ -109,7 +109,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
               now: _now,
               dateService: widget.dateService,
               sharedPreferencesService: widget.sharedPreferencesService,
-              onAddPillTapped: (now) => _updateNow(now),
+              onAddPillTapped: (updatedNow) => _updateNow(updatedNow),
             )));
   }
 }
