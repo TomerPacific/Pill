@@ -18,11 +18,9 @@ const int settingsTabIndex = 2;
 class MainPage extends StatefulWidget {
   const MainPage(
       {super.key,
-      required this.title,
       required this.sharedPreferencesService,
       required this.dateService});
 
-  final String title;
   final SharedPreferencesService sharedPreferencesService;
   final DateService dateService;
 
@@ -90,9 +88,9 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
         date: todayStr));
   }
 
-  void _updateNow() {
+  void _updateNow([DateTime? now]) {
     setState(() {
-      _now = widget.dateService.now();
+      _now = now ?? widget.dateService.now();
     });
   }
 
@@ -101,83 +99,122 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     return DefaultTabController(
         length: amountOfTabs,
         child: Scaffold(
-            appBar: _mainPageAppBar(context),
-            body: _mainPageTabBarView()));
+            appBar: _MainPageAppBar(
+              key: const ValueKey('MainPageAppBar'),
+              onPillsTabTapped: _loadPillsForToday,
+              onSettingsTabTapped: () => _updateNow(),
+            ),
+            body: _MainPageTabBarView(
+              key: const ValueKey('MainPageTabBarView'),
+              now: _now,
+              dateService: widget.dateService,
+              sharedPreferencesService: widget.sharedPreferencesService,
+              onAddPillTapped: (updatedNow) => _updateNow(updatedNow),
+            )));
   }
+}
 
-  PreferredSizeWidget _mainPageAppBar(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(50),
-      child: AppBar(
-        bottom: TabBar(
-          tabs: const [
-            Tab(icon: Icon(CustomIcons.pill)),
-            Tab(icon: Icon(Icons.watch_later_rounded)),
-            Tab(icon: Icon(Icons.settings)),
-          ],
-          onTap: (tabIndex) {
-            switch (tabIndex) {
-              case pillsToTakeTabIndex:
-              case pillsTakenTabIndex:
-                _loadPillsForToday();
-                break;
-              case settingsTabIndex:
-                _updateNow();
-                context
-                    .read<ClearPillsBloc>()
-                    .add(ClearPillsEvent.updatePillsStatus);
-            }
-          },
-        ),
+class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final VoidCallback onPillsTabTapped;
+  final VoidCallback onSettingsTabTapped;
+
+  const _MainPageAppBar({
+    super.key,
+    required this.onPillsTabTapped,
+    required this.onSettingsTabTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      toolbarHeight: 0,
+      bottom: TabBar(
+        tabs: const [
+          Tab(icon: Icon(CustomIcons.pill)),
+          Tab(icon: Icon(Icons.watch_later_rounded)),
+          Tab(icon: Icon(Icons.settings)),
+        ],
+        onTap: (tabIndex) {
+          switch (tabIndex) {
+            case pillsToTakeTabIndex:
+            case pillsTakenTabIndex:
+              onPillsTabTapped();
+              break;
+            case settingsTabIndex:
+              onSettingsTabTapped();
+              context
+                  .read<ClearPillsBloc>()
+                  .add(ClearPillsEvent.updatePillsStatus);
+              break;
+          }
+        },
       ),
     );
   }
 
-  TabBarView _mainPageTabBarView() {
+  @override
+  Size get preferredSize => const Size.fromHeight(kTextTabBarHeight);
+}
+
+class _MainPageTabBarView extends StatelessWidget {
+  final DateTime now;
+  final DateService dateService;
+  final SharedPreferencesService sharedPreferencesService;
+  final ValueChanged<DateTime> onAddPillTapped;
+
+  const _MainPageTabBarView({
+    super.key,
+    required this.now,
+    required this.dateService,
+    required this.sharedPreferencesService,
+    required this.onAddPillTapped,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return TabBarView(children: [
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           DayWidget(
-              date: _now,
+              date: now,
               mode: DayWidgetMode.toTake,
-              dateService: widget.dateService),
+              dateService: dateService),
           Align(
             alignment: Alignment.bottomRight,
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Builder(builder: (context) {
-                return FloatingActionButton(
-                    onPressed: () {
-                      _updateNow();
-                      showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                          builder: (context) => AddingPillForm(
-                              pillDate: _now,
-                              sharedPreferencesService:
-                                  widget.sharedPreferencesService,
-                              dateService: widget.dateService));
-                    },
-                    child: const Icon(Icons.add));
-              }),
+              child: FloatingActionButton(
+                  onPressed: () {
+                    final updatedNow = dateService.now();
+                    onAddPillTapped(updatedNow);
+                    showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20)),
+                        ),
+                        builder: (context) => AddingPillForm(
+                            pillDate: updatedNow,
+                            sharedPreferencesService:
+                                sharedPreferencesService,
+                            dateService: dateService));
+                  },
+                  child: const Icon(Icons.add)),
             ),
           )
         ],
       ),
       Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         DayWidget(
-            date: _now,
+            date: now,
             mode: DayWidgetMode.taken,
-            dateService: widget.dateService),
+            dateService: dateService),
       ]),
       BlocBuilder<ClearPillsBloc, bool>(builder: (context, state) {
         return SettingsPage(
-            sharedPreferencesService: widget.sharedPreferencesService);
+            sharedPreferencesService: sharedPreferencesService);
       })
     ]);
   }
