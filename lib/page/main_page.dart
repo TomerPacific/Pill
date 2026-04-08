@@ -150,6 +150,7 @@ class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
               context
                   .read<ClearPillsBloc>()
                   .add(ClearPillsEvent.updatePillsStatus);
+              break;
           }
         },
       ),
