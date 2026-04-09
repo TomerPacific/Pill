@@ -96,9 +96,11 @@ class AddingPillFormState extends State<AddingPillForm> {
   }
 
   void _incrementPills() {
-    setState(() {
-      _pillsPerDay++;
-    });
+    if (_pillsPerDay < maxPillsPerDay) {
+      setState(() {
+        _pillsPerDay++;
+      });
+    }
   }
 
   void _decrementPills() {
@@ -183,9 +185,10 @@ class AddingPillFormState extends State<AddingPillForm> {
                           style: TextStyle(fontSize: 16)),
                       const Spacer(),
                       IconButton(
-                        onPressed: _decrementPills,
-                        icon: const Icon(Icons.remove_circle_outline,
-                            color: Colors.blue),
+                        onPressed: _pillsPerDay > 1 ? _decrementPills : null,
+                        icon: Icon(Icons.remove_circle_outline,
+                            color:
+                                _pillsPerDay > 1 ? Colors.blue : Colors.grey),
                       ),
                       SizedBox(
                         width: 40,
@@ -197,9 +200,12 @@ class AddingPillFormState extends State<AddingPillForm> {
                         ),
                       ),
                       IconButton(
-                        onPressed: _incrementPills,
-                        icon: const Icon(Icons.add_circle_outline,
-                            color: Colors.blue),
+                        onPressed:
+                            _pillsPerDay < maxPillsPerDay ? _incrementPills : null,
+                        icon: Icon(Icons.add_circle_outline,
+                            color: _pillsPerDay < maxPillsPerDay
+                                ? Colors.blue
+                                : Colors.grey),
                       ),
                     ],
                   ),
