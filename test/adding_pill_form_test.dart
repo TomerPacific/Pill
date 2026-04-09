@@ -54,6 +54,37 @@ void main() {
     expect(find.byType(AddingPillForm), findsNothing);
   });
 
+  testWidgets("Adding Pill Form - Submitting with non-empty description", (WidgetTester tester) async {
+    await pumpForm(tester);
+
+    await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
+    await tester.enterText(find.byKey(const ValueKey("pillDescription")), "Take after meal");
+    
+    final applyButton = find.text("Apply");
+    await tester.ensureVisible(applyButton);
+    await tester.tap(applyButton);
+
+    await tester.pumpAndSettle();
+
+    expect(find.byType(AddingPillForm), findsNothing);
+  });
+
+  testWidgets("Adding Pill Form - Pill name inputFormatter blocks numeric input", (WidgetTester tester) async {
+    await pumpForm(tester);
+
+    final pillNameField = find.byKey(const ValueKey("pillName"));
+    
+    // Try entering numeric only input
+    await tester.enterText(pillNameField, "123");
+    await tester.pump();
+    expect(find.text("123"), findsNothing);
+
+    // Try entering mixed input - the formatter should block the numeric parts or the whole insertion if it doesn't match
+    await tester.enterText(pillNameField, "Pill 123");
+    await tester.pump();
+    expect(find.textContaining("123"), findsNothing);
+  });
+
   testWidgets("Adding Pill Form - Trying to add a pill with an empty name", (WidgetTester tester) async {
     await pumpForm(tester);
 
