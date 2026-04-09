@@ -27,7 +27,8 @@ void main() {
           home: Scaffold(
             body: AddingPillForm(
                 pillDate: testDate,
-                sharedPreferencesService: sharedPreferencesService),
+                sharedPreferencesService: sharedPreferencesService,
+                dateService: dateService),
           ),
         ),
       );

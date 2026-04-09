@@ -12,14 +12,14 @@ import 'package:pill/utils.dart';
 
 class AddingPillForm extends StatefulWidget {
   final DateTime pillDate;
-  final DateService? dateService;
+  final DateService dateService;
   final SharedPreferencesService sharedPreferencesService;
 
   const AddingPillForm(
       {super.key,
       required this.pillDate,
       required this.sharedPreferencesService,
-      this.dateService});
+      required this.dateService});
 
   @override
   AddingPillFormState createState() {
@@ -111,7 +111,7 @@ class AddingPillFormState extends State<AddingPillForm> {
 
   @override
   Widget build(BuildContext context) {
-    final dateService = widget.dateService ?? DateService();
+    final dateService = widget.dateService;
     final now = dateService.now();
     final bool isStale = dateService.formatDateForStorage(widget.pillDate) !=
         dateService.formatDateForStorage(now);
