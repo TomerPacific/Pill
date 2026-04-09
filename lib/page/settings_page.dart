@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
-import 'package:pill/bloc/theme/theme_block.dart';
+import 'package:pill/bloc/theme/theme_bloc.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 
 class SettingsPage extends StatelessWidget {
