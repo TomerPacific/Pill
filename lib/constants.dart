@@ -15,6 +15,7 @@ const double pillImageWidthFactor = 0.6;
 // Default values for adding a pill
 const String defaultPillRegiment = "1";
 const String defaultPillDays = "7";
+const int maxPillsPerDay = 24;
 
 //Screen headers
 const String pillsToTakeHeader =
