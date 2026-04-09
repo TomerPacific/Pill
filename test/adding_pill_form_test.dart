@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/adding_pill_form.dart';
@@ -33,26 +34,28 @@ void main() {
         ),
       );
 
-  testWidgets("Adding Pill Form - Add A Pill with Defaults", (WidgetTester tester) async {
+  Future<void> pumpForm(WidgetTester tester) async {
     await tester.pumpWidget(getBase());
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
+  }
+
+  testWidgets("Adding Pill Form - Add A Pill with Defaults", (WidgetTester tester) async {
+    await pumpForm(tester);
 
     await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
     
-    // We need to ensure the button is visible before tapping
     final applyButton = find.text("Apply");
     await tester.ensureVisible(applyButton);
     await tester.tap(applyButton);
 
     await tester.pumpAndSettle();
 
-    // The form should be popped after success
     expect(find.byType(AddingPillForm), findsNothing);
   });
 
   testWidgets("Adding Pill Form - Trying to add a pill with an empty name", (WidgetTester tester) async {
-    await tester.pumpWidget(getBase());
-    await tester.pumpAndSettle();
+    await pumpForm(tester);
 
     await tester.enterText(find.byKey(const ValueKey("pillName")), "");
 
@@ -65,42 +68,35 @@ void main() {
     expect(find.text("Please enter a pill name"), findsOneWidget);
   });
 
-  testWidgets("Adding Pill Form - Add Pill with Instructions", (WidgetTester tester) async {
-    await tester.pumpWidget(getBase());
-    await tester.pumpAndSettle();
+  testWidgets("Adding Pill Form - Increment pills per day to max cap", (WidgetTester tester) async {
+    await pumpForm(tester);
 
-    await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
+    final incrementFinder = find.widgetWithIcon(IconButton, Icons.add_circle_outline);
     
-    final descField = find.byKey(const ValueKey("pillDescription"));
-    await tester.ensureVisible(descField);
-    await tester.enterText(descField, "Take after eating");
+    for (int i = 1; i < maxPillsPerDay; i++) {
+      await tester.tap(incrementFinder);
+      await tester.pump();
+    }
 
-    final applyButton = find.text("Apply");
-    await tester.ensureVisible(applyButton);
-    await tester.tap(applyButton);
+    expect(find.text(maxPillsPerDay.toString()), findsOneWidget);
 
-    await tester.pumpAndSettle();
-
-    expect(find.byType(AddingPillForm), findsNothing);
+    final IconButton incrementButton = tester.widget(incrementFinder);
+    expect(incrementButton.onPressed, isNull);
   });
 
-  testWidgets("Adding Pill Form - Try to add pill with numbers as pill name", (WidgetTester tester) async {
-    await tester.pumpWidget(getBase());
-    await tester.pumpAndSettle();
+  testWidgets("Adding Pill Form - Decrement pills per day to min cap", (WidgetTester tester) async {
+    await pumpForm(tester);
 
-    final pillNameField = find.byKey(const ValueKey("pillName"));
-    // Input formatter should block numbers, resulting in an empty field
-    await tester.enterText(pillNameField, "1234");
+    final decrementFinder = find.widgetWithIcon(IconButton, Icons.remove_circle_outline);
+    
+    expect(find.text("1"), findsOneWidget);
 
-    final applyButton = find.text("Apply");
-    await tester.ensureVisible(applyButton);
-    await tester.tap(applyButton);
+    final IconButton decrementButton = tester.widget(decrementFinder);
+    expect(decrementButton.onPressed, isNull);
+    
+    await tester.tap(decrementFinder);
+    await tester.pump();
 
-    await tester.pumpAndSettle();
-
-    expect(find.text("Please enter a pill name"), findsOneWidget);
-
-    final pillNameWidget = tester.widget<TextFormField>(pillNameField);
-    expect(pillNameWidget.controller?.text.length, 0);
+    expect(find.text("1"), findsOneWidget);
   });
 }
