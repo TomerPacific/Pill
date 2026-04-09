@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/bloc/clearPills/clear_pills_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
 import 'package:pill/bloc/pill/pill_state.dart';
-import 'package:pill/bloc/theme/theme_block.dart';
+import 'package:pill/bloc/theme/theme_bloc.dart';
 import 'package:pill/model/pill_to_take.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
