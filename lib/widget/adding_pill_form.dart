@@ -96,9 +96,11 @@ class AddingPillFormState extends State<AddingPillForm> {
   }
 
   void _incrementPills() {
-    setState(() {
-      _pillsPerDay++;
-    });
+    if (_pillsPerDay < maxPillsPerDay) {
+      setState(() {
+        _pillsPerDay++;
+      });
+    }
   }
 
   void _decrementPills() {
@@ -147,10 +149,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                           prefixIcon:
                               Icon(CustomIcons.pill, color: Colors.red)),
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(
-                            r'^[\p{L}\s]*$',
-                            multiLine: false,
-                            caseSensitive: true,
+                        FilteringTextInputFormatter.allow(RegExp(r'[\p{L}\s]',
                             unicode: true)),
                         FilteringTextInputFormatter.singleLineFormatter
                       ],
@@ -183,9 +182,10 @@ class AddingPillFormState extends State<AddingPillForm> {
                           style: TextStyle(fontSize: 16)),
                       const Spacer(),
                       IconButton(
-                        onPressed: _decrementPills,
-                        icon: const Icon(Icons.remove_circle_outline,
-                            color: Colors.blue),
+                        onPressed: _pillsPerDay > 1 ? _decrementPills : null,
+                        color: Colors.blue,
+                        disabledColor: Colors.grey,
+                        icon: const Icon(Icons.remove_circle_outline),
                       ),
                       SizedBox(
                         width: 40,
@@ -197,9 +197,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                         ),
                       ),
                       IconButton(
-                        onPressed: _incrementPills,
-                        icon: const Icon(Icons.add_circle_outline,
-                            color: Colors.blue),
+                        onPressed:
+                            _pillsPerDay < maxPillsPerDay ? _incrementPills : null,
+                        color: Colors.blue,
+                        disabledColor: Colors.grey,
+                        icon: const Icon(Icons.add_circle_outline),
                       ),
                     ],
                   ),

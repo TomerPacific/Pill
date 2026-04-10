@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
+import 'package:pill/constants.dart';
 import 'package:pill/service/date_service.dart';
 import 'package:pill/service/shared_preferences_service.dart';
 import 'package:pill/widget/adding_pill_form.dart';
@@ -33,26 +34,68 @@ void main() {
         ),
       );
 
-  testWidgets("Adding Pill Form - Add A Pill with Defaults", (WidgetTester tester) async {
+  Future<void> pumpForm(WidgetTester tester) async {
     await tester.pumpWidget(getBase());
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
+  }
+
+  testWidgets("Adding Pill Form - Add A Pill with Defaults", (WidgetTester tester) async {
+    await pumpForm(tester);
 
     await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
     
-    // We need to ensure the button is visible before tapping
     final applyButton = find.text("Apply");
     await tester.ensureVisible(applyButton);
     await tester.tap(applyButton);
 
     await tester.pumpAndSettle();
 
-    // The form should be popped after success
     expect(find.byType(AddingPillForm), findsNothing);
   });
 
-  testWidgets("Adding Pill Form - Trying to add a pill with an empty name", (WidgetTester tester) async {
-    await tester.pumpWidget(getBase());
+  testWidgets("Adding Pill Form - Submitting with non-empty description", (WidgetTester tester) async {
+    await pumpForm(tester);
+
+    await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
+    await tester.enterText(find.byKey(const ValueKey("pillDescription")), "Take after meal");
+    
+    final applyButton = find.text("Apply");
+    await tester.ensureVisible(applyButton);
+    await tester.tap(applyButton);
+
     await tester.pumpAndSettle();
+
+    expect(find.byType(AddingPillForm), findsNothing);
+  });
+
+  testWidgets("Adding Pill Form - Pill name inputFormatter blocks numeric input", (WidgetTester tester) async {
+    await pumpForm(tester);
+
+    final pillNameField = find.byKey(const ValueKey("pillName"));
+    
+    // 1. Try entering numeric only input
+    await tester.enterText(pillNameField, "123");
+    await tester.pump();
+    expect(tester.widget<TextFormField>(pillNameField).controller?.text, isEmpty);
+
+    // 2. Enter valid text first
+    await tester.enterText(pillNameField, "Pill");
+    await tester.pump();
+    expect(tester.widget<TextFormField>(pillNameField).controller?.text, "Pill");
+
+    // 3. Try entering mixed input (simulating an update)
+    // The formatter should filter out the digits but keep the alphabetic characters and spaces.
+    await tester.enterText(pillNameField, "Pill 123");
+    await tester.pump();
+    
+    final textAfterMixedInput = tester.widget<TextFormField>(pillNameField).controller?.text;
+    expect(textAfterMixedInput, "Pill ");
+    expect(textAfterMixedInput, isNot(contains("123")));
+  });
+
+  testWidgets("Adding Pill Form - Trying to add a pill with an empty name", (WidgetTester tester) async {
+    await pumpForm(tester);
 
     await tester.enterText(find.byKey(const ValueKey("pillName")), "");
 
@@ -65,42 +108,61 @@ void main() {
     expect(find.text("Please enter a pill name"), findsOneWidget);
   });
 
-  testWidgets("Adding Pill Form - Add Pill with Instructions", (WidgetTester tester) async {
-    await tester.pumpWidget(getBase());
-    await tester.pumpAndSettle();
+  testWidgets("Adding Pill Form - Increment pills per day to max cap", (WidgetTester tester) async {
+    await pumpForm(tester);
 
-    await tester.enterText(find.byKey(const ValueKey("pillName")), "Test Pill");
+    final incrementButtonFinder = find.widgetWithIcon(IconButton, Icons.add_circle_outline);
+    await tester.ensureVisible(incrementButtonFinder);
     
-    final descField = find.byKey(const ValueKey("pillDescription"));
-    await tester.ensureVisible(descField);
-    await tester.enterText(descField, "Take after eating");
-
-    final applyButton = find.text("Apply");
-    await tester.ensureVisible(applyButton);
-    await tester.tap(applyButton);
-
+    // Initial value is 1
+    expect(find.text("1"), findsOneWidget);
+    
+    // Increment to maxPillsPerDay
+    for (int i = 1; i < maxPillsPerDay; i++) {
+      await tester.tap(incrementButtonFinder);
+      await tester.pump();
+    }
     await tester.pumpAndSettle();
 
-    expect(find.byType(AddingPillForm), findsNothing);
+    // Verify maxReached
+    expect(find.text(maxPillsPerDay.toString()), findsOneWidget);
+
+    // Verify button is disabled
+    final IconButton incrementButton = tester.widget(incrementButtonFinder);
+    expect(incrementButton.onPressed, isNull);
+    
+    // Verify UI cue: icon color changed to disabledColor (Colors.grey)
+    final iconFinder = find.descendant(of: incrementButtonFinder, matching: find.byType(Icon));
+    final iconColor = IconTheme.of(tester.element(iconFinder)).color;
+    expect(iconColor, Colors.grey);
+
+    // Assert the value remains capped after an additional tap attempt
+    await tester.tap(incrementButtonFinder, warnIfMissed: false);
+    await tester.pump();
+    expect(find.text(maxPillsPerDay.toString()), findsOneWidget);
   });
 
-  testWidgets("Adding Pill Form - Try to add pill with numbers as pill name", (WidgetTester tester) async {
-    await tester.pumpWidget(getBase());
-    await tester.pumpAndSettle();
+  testWidgets("Adding Pill Form - Decrement pills per day to min cap", (WidgetTester tester) async {
+    await pumpForm(tester);
 
-    final pillNameField = find.byKey(const ValueKey("pillName"));
-    // Input formatter should block numbers, resulting in an empty field
-    await tester.enterText(pillNameField, "1234");
+    final decrementButtonFinder = find.widgetWithIcon(IconButton, Icons.remove_circle_outline);
+    await tester.ensureVisible(decrementButtonFinder);
+    
+    // Starts at 1, which is the min cap
+    expect(find.text("1"), findsOneWidget);
 
-    final applyButton = find.text("Apply");
-    await tester.ensureVisible(applyButton);
-    await tester.tap(applyButton);
-
-    await tester.pumpAndSettle();
-
-    expect(find.text("Please enter a pill name"), findsOneWidget);
-
-    final pillNameWidget = tester.widget<TextFormField>(pillNameField);
-    expect(pillNameWidget.controller?.text.length, 0);
+    // Verify button is disabled
+    final IconButton decrementButton = tester.widget(decrementButtonFinder);
+    expect(decrementButton.onPressed, isNull);
+    
+    // Verify UI cue: icon color is disabledColor (Colors.grey)
+    final iconFinder = find.descendant(of: decrementButtonFinder, matching: find.byType(Icon));
+    final iconColor = IconTheme.of(tester.element(iconFinder)).color;
+    expect(iconColor, Colors.grey);
+    
+    // Assert the value remains capped at 1 after an additional tap attempt
+    await tester.tap(decrementButtonFinder, warnIfMissed: false);
+    await tester.pump();
+    expect(find.text("1"), findsOneWidget);
   });
 }
