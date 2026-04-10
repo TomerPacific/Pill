@@ -111,30 +111,61 @@ void main() {
   testWidgets("Adding Pill Form - Increment pills per day to max cap", (WidgetTester tester) async {
     await pumpForm(tester);
 
-    final incrementFinder = find.widgetWithIcon(IconButton, Icons.add_circle_outline);
+    final incrementIconFinder = find.byIcon(Icons.add_circle_outline);
+    await tester.ensureVisible(incrementIconFinder);
     
+    // Initial value is 1
+    expect(find.text("1"), findsOneWidget);
+    
+    // Increment to maxPillsPerDay
     for (int i = 1; i < maxPillsPerDay; i++) {
-      await tester.tap(incrementFinder);
+      await tester.tap(incrementIconFinder);
       await tester.pump();
     }
+    await tester.pumpAndSettle();
 
+    // Verify maxReached
     expect(find.text(maxPillsPerDay.toString()), findsOneWidget);
 
-    final IconButton incrementButton = tester.widget(incrementFinder);
+    final incrementButtonFinder = find.ancestor(
+      of: incrementIconFinder,
+      matching: find.byType(IconButton),
+    );
+    final IconButton incrementButton = tester.widget(incrementButtonFinder);
     expect(incrementButton.onPressed, isNull);
+    
+    // Verify icon color matches disabledColor (Colors.grey)
+    final iconColor = IconTheme.of(tester.element(incrementIconFinder)).color;
+    expect(iconColor, Colors.grey);
+
+    // Verify value remains capped after additional tap attempt
+    await tester.tap(incrementIconFinder, warnIfMissed: false);
+    await tester.pump();
+    expect(find.text(maxPillsPerDay.toString()), findsOneWidget);
   });
 
   testWidgets("Adding Pill Form - Decrement pills per day to min cap", (WidgetTester tester) async {
     await pumpForm(tester);
 
-    final decrementFinder = find.widgetWithIcon(IconButton, Icons.remove_circle_outline);
+    final decrementIconFinder = find.byIcon(Icons.remove_circle_outline);
+    await tester.ensureVisible(decrementIconFinder);
     
+    // Starts at 1, which is the min cap
     expect(find.text("1"), findsOneWidget);
 
-    final IconButton decrementButton = tester.widget(decrementFinder);
+    final decrementButtonFinder = find.ancestor(
+      of: decrementIconFinder,
+      matching: find.byType(IconButton),
+    );
+    final IconButton decrementButton = tester.widget(decrementButtonFinder);
     expect(decrementButton.onPressed, isNull);
     
-    await tester.tap(decrementFinder);
+    // Verify icon color matches disabledColor (Colors.grey)
+    final iconColor = IconTheme.of(tester.element(decrementIconFinder)).color;
+    expect(iconColor, Colors.grey);
+    
+    // Verify value remains capped after additional tap attempt
+    await tester.tap(decrementIconFinder, warnIfMissed: false);
     await tester.pump();
 
     expect(find.text("1"), findsOneWidget);
