@@ -77,12 +77,18 @@ void main() {
     // Try entering numeric only input
     await tester.enterText(pillNameField, "123");
     await tester.pump();
-    expect(find.text("123"), findsNothing);
+    
+    // Verify via controller text
+    final TextFormField widget = tester.widget(pillNameField);
+    expect(widget.controller?.text, isEmpty);
 
-    // Try entering mixed input - the formatter should block the numeric parts or the whole insertion if it doesn't match
+    // Try entering mixed input
     await tester.enterText(pillNameField, "Pill 123");
     await tester.pump();
-    expect(find.textContaining("123"), findsNothing);
+    
+    final TextFormField widgetMixed = tester.widget(pillNameField);
+    // The formatter should have blocked the numeric parts
+    expect(widgetMixed.controller?.text, isNot(contains("123")));
   });
 
   testWidgets("Adding Pill Form - Trying to add a pill with an empty name", (WidgetTester tester) async {
