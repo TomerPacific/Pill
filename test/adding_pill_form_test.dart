@@ -74,21 +74,24 @@ void main() {
 
     final pillNameField = find.byKey(const ValueKey("pillName"));
     
-    // Try entering numeric only input
+    // 1. Try entering numeric only input
     await tester.enterText(pillNameField, "123");
     await tester.pump();
-    
-    // Verify via controller text
-    final TextFormField widget = tester.widget(pillNameField);
-    expect(widget.controller?.text, isEmpty);
+    expect(tester.widget<TextFormField>(pillNameField).controller?.text, isEmpty);
 
-    // Try entering mixed input
+    // 2. Enter valid text first
+    await tester.enterText(pillNameField, "Pill");
+    await tester.pump();
+    expect(tester.widget<TextFormField>(pillNameField).controller?.text, "Pill");
+
+    // 3. Try entering mixed input (simulating an update)
+    // The formatter should filter out the digits but keep the alphabetic characters and spaces.
     await tester.enterText(pillNameField, "Pill 123");
     await tester.pump();
     
-    final TextFormField widgetMixed = tester.widget(pillNameField);
-    // The formatter should have blocked the numeric parts
-    expect(widgetMixed.controller?.text, isNot(contains("123")));
+    final textAfterMixedInput = tester.widget<TextFormField>(pillNameField).controller?.text;
+    expect(textAfterMixedInput, "Pill ");
+    expect(textAfterMixedInput, isNot(contains("123")));
   });
 
   testWidgets("Adding Pill Form - Trying to add a pill with an empty name", (WidgetTester tester) async {
