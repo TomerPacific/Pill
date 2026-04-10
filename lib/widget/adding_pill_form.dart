@@ -149,10 +149,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                           prefixIcon:
                               Icon(CustomIcons.pill, color: Colors.red)),
                       inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(
-                            r'^[\p{L}\s]*$',
-                            multiLine: false,
-                            caseSensitive: true,
+                        FilteringTextInputFormatter.allow(RegExp(r'[\p{L}\s]',
                             unicode: true)),
                         FilteringTextInputFormatter.singleLineFormatter
                       ],
@@ -186,9 +183,9 @@ class AddingPillFormState extends State<AddingPillForm> {
                       const Spacer(),
                       IconButton(
                         onPressed: _pillsPerDay > 1 ? _decrementPills : null,
-                        icon: Icon(Icons.remove_circle_outline,
-                            color:
-                                _pillsPerDay > 1 ? Colors.blue : Colors.grey),
+                        color: Colors.blue,
+                        disabledColor: Colors.grey,
+                        icon: const Icon(Icons.remove_circle_outline),
                       ),
                       SizedBox(
                         width: 40,
@@ -202,10 +199,9 @@ class AddingPillFormState extends State<AddingPillForm> {
                       IconButton(
                         onPressed:
                             _pillsPerDay < maxPillsPerDay ? _incrementPills : null,
-                        icon: Icon(Icons.add_circle_outline,
-                            color: _pillsPerDay < maxPillsPerDay
-                                ? Colors.blue
-                                : Colors.grey),
+                        color: Colors.blue,
+                        disabledColor: Colors.grey,
+                        icon: const Icon(Icons.add_circle_outline),
                       ),
                     ],
                   ),
