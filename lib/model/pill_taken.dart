@@ -30,9 +30,14 @@ class PillTaken extends Equatable {
       log("Error parsing PillTaken lastTaken value: $e", level: 1000);
     }
 
-    final String name = jsonData[pillNameKey]?.toString() ?? 'Unknown';
-    final String image = jsonData[pillImageKey]?.toString() ?? defaultPillTakenImage;
-    final String? description = jsonData[pillDescriptionKey]?.toString();
+    final nameValue = jsonData[pillNameKey];
+    final String name = nameValue is String ? nameValue : 'Unknown';
+
+    final imageValue = jsonData[pillImageKey];
+    final String image = imageValue is String ? imageValue : defaultPillTakenImage;
+
+    final descriptionValue = jsonData[pillDescriptionKey];
+    final String? description = descriptionValue is String ? descriptionValue : null;
 
     return PillTaken(
         pillName: name,
@@ -64,10 +69,20 @@ class PillTaken extends Equatable {
             .toList(),
       );
 
-  static List<PillTaken> decode(String pills) =>
-      (json.decode(pills) as List<dynamic>)
-          .map<PillTaken>((pill) => PillTaken.fromJson(pill))
-          .toList();
+  static List<PillTaken> decode(String pills) {
+    try {
+      final decoded = json.decode(pills);
+      if (decoded is List) {
+        return decoded
+            .whereType<Map<String, dynamic>>()
+            .map<PillTaken>((pill) => PillTaken.fromJson(pill))
+            .toList();
+      }
+    } catch (e) {
+      log("Error decoding PillTaken list: $e", level: 1000);
+    }
+    return [];
+  }
 
   PillTaken copyWith({
     String? pillName,

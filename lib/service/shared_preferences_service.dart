@@ -68,8 +68,9 @@ class SharedPreferencesService {
         continue;
       }
 
-      final legacyValue = _sharedPreferences.getString(key);
-      if (legacyValue == null) continue;
+      final rawValue = _sharedPreferences.get(key);
+      if (rawValue is! String) continue;
+      final legacyValue = rawValue;
 
       try {
         if (key.startsWith(legacyTakenKey)) {
@@ -208,14 +209,14 @@ class SharedPreferencesService {
       // Identify keys that are YYYY/M/D (already migrated to yearly format but not yet prefixed)
       if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
         try {
-          final legacyValue = _sharedPreferences.getString(key);
-          if (legacyValue != null) {
+          final rawValue = _sharedPreferences.get(key);
+          if (rawValue is String) {
             final targetKey = "$legacyToTakeKey$key";
             final existingValue = _sharedPreferences.getString(targetKey);
 
             String migratedValue;
             if (existingValue != null) {
-              final legacyPills = PillToTake.decode(legacyValue)
+              final legacyPills = PillToTake.decode(rawValue)
                   .map((p) => p.copyWith(pillName: p.pillName.trim()))
                   .toList();
               final existingPills = PillToTake.decode(existingValue)
@@ -231,7 +232,7 @@ class SharedPreferencesService {
               }
               migratedValue = PillToTake.encode(mergedMap.values.toList());
             } else {
-              migratedValue = legacyValue;
+              migratedValue = rawValue;
             }
 
             if (await _sharedPreferences.setString(targetKey, migratedValue)) {
@@ -296,14 +297,14 @@ class SharedPreferencesService {
 
       if (targetKey != null) {
         try {
-          final legacyValue = _sharedPreferences.getString(key);
-          if (legacyValue != null) {
+          final rawValue = _sharedPreferences.get(key);
+          if (rawValue is String) {
             final existingValue = _sharedPreferences.getString(targetKey);
 
             String migratedValue;
             if (existingValue != null) {
               if (isTaken) {
-                final legacyPills = PillTaken.decode(legacyValue)
+                final legacyPills = PillTaken.decode(rawValue)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
                 final existingPills = PillTaken.decode(existingValue)
@@ -313,7 +314,7 @@ class SharedPreferencesService {
                 final merged = {...legacyPills, ...existingPills}.toList();
                 migratedValue = PillTaken.encode(merged);
               } else {
-                final legacyPills = PillToTake.decode(legacyValue)
+                final legacyPills = PillToTake.decode(rawValue)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
                 final existingPills = PillToTake.decode(existingValue)
@@ -330,7 +331,7 @@ class SharedPreferencesService {
                 migratedValue = PillToTake.encode(mergedMap.values.toList());
               }
             } else {
-              migratedValue = legacyValue;
+              migratedValue = rawValue;
             }
 
             if (await _sharedPreferences.setString(targetKey, migratedValue)) {
@@ -371,19 +372,17 @@ class SharedPreferencesService {
   }
 
   List<PillToTake> getPillsToTakeForDate(String date) {
-    String? encodedPills =
-        _sharedPreferences.getString(pillsToTakePrefix + date);
-    if (encodedPills != null) {
-      return PillToTake.decode(encodedPills);
+    final rawValue = _sharedPreferences.get(pillsToTakePrefix + date);
+    if (rawValue is String) {
+      return PillToTake.decode(rawValue);
     }
     return [];
   }
 
   List<PillTaken> getPillsTakenForDate(String date) {
-    String? encodedPills =
-        _sharedPreferences.getString(pillsTakenPrefix + date);
-    if (encodedPills != null) {
-      return PillTaken.decode(encodedPills);
+    final rawValue = _sharedPreferences.get(pillsTakenPrefix + date);
+    if (rawValue is String) {
+      return PillTaken.decode(rawValue);
     }
     return [];
   }
@@ -468,11 +467,15 @@ class SharedPreferencesService {
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
-    String? timeApplicationWasOpened =
-        _sharedPreferences.getString(timeAppOpenedKey);
-    return timeApplicationWasOpened != null
-        ? DateTime.parse(timeApplicationWasOpened)
-        : null;
+    try {
+      final rawValue = _sharedPreferences.get(timeAppOpenedKey);
+      if (rawValue is String) {
+        return DateTime.parse(rawValue);
+      }
+    } catch (e) {
+      log("Error parsing $timeAppOpenedKey: $e", level: 1000);
+    }
+    return null;
   }
 
   void clearAllPills() {

@@ -32,15 +32,19 @@ class PillToTake extends Equatable {
       log("Error parsing PillToTake lastTaken value: $e", level: 1000);
     }
 
-    final String name = jsonData[pillNameKey]?.toString() ?? 'Unknown';
+    final nameValue = jsonData[pillNameKey];
+    final String name = nameValue is String ? nameValue : 'Unknown';
     
     final regimentValue = jsonData[pillRegimentKey];
     final int regiment = regimentValue is int 
         ? regimentValue 
         : int.tryParse(regimentValue?.toString() ?? '') ?? 1;
 
-    final String image = jsonData[pillImageKey]?.toString() ?? defaultPillToTakeImage;
-    final String? description = jsonData[pillDescriptionKey]?.toString();
+    final imageValue = jsonData[pillImageKey];
+    final String image = imageValue is String ? imageValue : defaultPillToTakeImage;
+    
+    final descriptionValue = jsonData[pillDescriptionKey];
+    final String? description = descriptionValue is String ? descriptionValue : null;
 
     final daysValue = jsonData[pillAmountOfDaysToTakeKey];
     final int amountOfDays = daysValue is int 
@@ -71,10 +75,20 @@ class PillToTake extends Equatable {
             .toList(),
       );
 
-  static List<PillToTake> decode(String pills) =>
-      (json.decode(pills) as List<dynamic>)
-          .map<PillToTake>((pill) => PillToTake.fromJson(pill))
-          .toList();
+  static List<PillToTake> decode(String pills) {
+    try {
+      final decoded = json.decode(pills);
+      if (decoded is List) {
+        return decoded
+            .whereType<Map<String, dynamic>>()
+            .map<PillToTake>((pill) => PillToTake.fromJson(pill))
+            .toList();
+      }
+    } catch (e) {
+      log("Error decoding PillToTake list: $e", level: 1000);
+    }
+    return [];
+  }
 
   PillToTake copyWith({
     String? pillName,
