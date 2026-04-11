@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pill/model/pill_to_take.dart';
+import 'package:pill/constants.dart';
 
 void main() {
   group('PillToTake copyWith', () {
@@ -32,6 +33,47 @@ void main() {
       final pillWithDate = pill.copyWith(lastTaken: now);
       final updated = pillWithDate.copyWith(clearLastTaken: true);
       expect(updated.lastTaken, isNull);
+    });
+  });
+
+  group('PillToTake.fromJson', () {
+    test('should parse numeric values from double', () {
+      final json = {
+        pillNameKey: 'Test Pill',
+        pillRegimentKey: 2.0,
+        pillAmountOfDaysToTakeKey: 7.0,
+      };
+
+      final pill = PillToTake.fromJson(json);
+
+      expect(pill.pillRegiment, 2);
+      expect(pill.amountOfDaysToTake, 7);
+    });
+
+    test('should parse numeric values from string double', () {
+      final json = {
+        pillNameKey: 'Test Pill',
+        pillRegimentKey: '2.0',
+        pillAmountOfDaysToTakeKey: '7.0',
+      };
+
+      final pill = PillToTake.fromJson(json);
+
+      expect(pill.pillRegiment, 2);
+      expect(pill.amountOfDaysToTake, 7);
+    });
+
+    test('should fallback to 1 for invalid values', () {
+      final json = {
+        pillNameKey: 'Test Pill',
+        pillRegimentKey: 'abc',
+        pillAmountOfDaysToTakeKey: null,
+      };
+
+      final pill = PillToTake.fromJson(json);
+
+      expect(pill.pillRegiment, 1);
+      expect(pill.amountOfDaysToTake, 1);
     });
   });
 }
