@@ -22,7 +22,9 @@ class PillToTake extends Equatable {
       this.lastTaken});
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
-    String? lastTaken = jsonData[pillLastTakenKey] as String?;
+    final lastTakenValue = jsonData[pillLastTakenKey];
+    final String? lastTaken = lastTakenValue is String ? lastTakenValue : null;
+
     DateTime? lastTakenDate;
 
     try {
@@ -33,12 +35,18 @@ class PillToTake extends Equatable {
       log("Error parsing PillToTake lastTaken value: $e", level: 1000);
     }
 
+    final nameValue = jsonData[pillNameKey];
+    final regimentValue = jsonData[pillRegimentKey];
+    final imageValue = jsonData[pillImageKey];
+    final descValue = jsonData[pillDescriptionKey];
+    final daysValue = jsonData[pillAmountOfDaysToTakeKey];
+
     return PillToTake(
-        pillName: jsonData[pillNameKey] as String? ?? 'Unknown',
-        pillRegiment: jsonData[pillRegimentKey] as int? ?? 1,
-        pillImage: jsonData[pillImageKey] as String? ?? defaultPillToTakeImage,
-        description: jsonData[pillDescriptionKey] as String?,
-        amountOfDaysToTake: jsonData[pillAmountOfDaysToTakeKey] as int? ?? 1,
+        pillName: nameValue is String ? nameValue : 'Unknown',
+        pillRegiment: regimentValue is int ? regimentValue : 1,
+        pillImage: imageValue is String ? imageValue : defaultPillToTakeImage,
+        description: descValue is String ? descValue : null,
+        amountOfDaysToTake: daysValue is int ? daysValue : 1,
         lastTaken: lastTakenDate);
   }
 
