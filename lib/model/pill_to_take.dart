@@ -22,31 +22,37 @@ class PillToTake extends Equatable {
       this.lastTaken});
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
-    final lastTakenValue = jsonData[pillLastTakenKey];
-    final String? lastTaken = lastTakenValue is String ? lastTakenValue : null;
-
     DateTime? lastTakenDate;
-
     try {
-      if (lastTaken != null) {
-        lastTakenDate = DateTime.parse(lastTaken);
+      final lastTakenValue = jsonData[pillLastTakenKey];
+      if (lastTakenValue is String) {
+        lastTakenDate = DateTime.parse(lastTakenValue);
       }
     } catch (e) {
       log("Error parsing PillToTake lastTaken value: $e", level: 1000);
     }
 
-    final nameValue = jsonData[pillNameKey];
+    final String name = jsonData[pillNameKey]?.toString() ?? 'Unknown';
+    
     final regimentValue = jsonData[pillRegimentKey];
-    final imageValue = jsonData[pillImageKey];
-    final descValue = jsonData[pillDescriptionKey];
+    final int regiment = regimentValue is int 
+        ? regimentValue 
+        : int.tryParse(regimentValue?.toString() ?? '') ?? 1;
+
+    final String image = jsonData[pillImageKey]?.toString() ?? defaultPillToTakeImage;
+    final String? description = jsonData[pillDescriptionKey]?.toString();
+
     final daysValue = jsonData[pillAmountOfDaysToTakeKey];
+    final int amountOfDays = daysValue is int 
+        ? daysValue 
+        : int.tryParse(daysValue?.toString() ?? '') ?? 1;
 
     return PillToTake(
-        pillName: nameValue is String ? nameValue : 'Unknown',
-        pillRegiment: regimentValue is int ? regimentValue : 1,
-        pillImage: imageValue is String ? imageValue : defaultPillToTakeImage,
-        description: descValue is String ? descValue : null,
-        amountOfDaysToTake: daysValue is int ? daysValue : 1,
+        pillName: name,
+        pillRegiment: regiment,
+        pillImage: image,
+        description: description,
+        amountOfDaysToTake: amountOfDays,
         lastTaken: lastTakenDate);
   }
 
