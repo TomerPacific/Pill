@@ -36,9 +36,9 @@ class PillToTake extends Equatable {
     final String name = nameValue is String ? nameValue : 'Unknown';
     
     final regimentValue = jsonData[pillRegimentKey];
-    final int regiment = regimentValue is int 
-        ? regimentValue 
-        : int.tryParse(regimentValue?.toString() ?? '') ?? 1;
+    final int regiment = regimentValue is num 
+        ? regimentValue.toInt() 
+        : num.tryParse(regimentValue?.toString() ?? '')?.toInt() ?? 1;
 
     final imageValue = jsonData[pillImageKey];
     final String image = imageValue is String ? imageValue : defaultPillToTakeImage;
@@ -47,9 +47,9 @@ class PillToTake extends Equatable {
     final String? description = descriptionValue is String ? descriptionValue : null;
 
     final daysValue = jsonData[pillAmountOfDaysToTakeKey];
-    final int amountOfDays = daysValue is int 
-        ? daysValue 
-        : int.tryParse(daysValue?.toString() ?? '') ?? 1;
+    final int amountOfDays = daysValue is num 
+        ? daysValue.toInt() 
+        : num.tryParse(daysValue?.toString() ?? '')?.toInt() ?? 1;
 
     return PillToTake(
         pillName: name,
