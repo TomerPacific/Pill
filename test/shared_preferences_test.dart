@@ -321,7 +321,7 @@ void main() {
       expect(service.getTimeWhenApplicationWasOpened(), isNull);
     });
 
-    test("clearPillsOfPastDays handles null timeAppOpenedKey by resetting it", () async {
+    test("clearPillsOfPastDays handles invalid timeAppOpenedKey by resetting it", () async {
       SharedPreferences.setMockInitialValues({
         timeAppOpenedKey: "invalid-date",
       });
