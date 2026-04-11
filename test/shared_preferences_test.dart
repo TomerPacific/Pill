@@ -301,4 +301,37 @@ void main() {
       expect(migratedTaken.any((p) => p.pillName == "Pill B"), true);
     });
   });
+
+  group("SharedPreferences Service getTimeWhenApplicationWasOpened robustness", () {
+    test("returns null when timeAppOpenedKey is an invalid string", () async {
+      SharedPreferences.setMockInitialValues({
+        timeAppOpenedKey: "not-a-date",
+      });
+      final service = await SharedPreferencesService.create(dateService);
+      
+      expect(service.getTimeWhenApplicationWasOpened(), isNull);
+    });
+
+    test("returns null when timeAppOpenedKey is a non-string type", () async {
+      SharedPreferences.setMockInitialValues({
+        timeAppOpenedKey: 12345, // int instead of String
+      });
+      final service = await SharedPreferencesService.create(dateService);
+      
+      expect(service.getTimeWhenApplicationWasOpened(), isNull);
+    });
+
+    test("clearPillsOfPastDays handles null timeAppOpenedKey by resetting it", () async {
+      SharedPreferences.setMockInitialValues({
+        timeAppOpenedKey: "invalid-date",
+      });
+      final service = await SharedPreferencesService.create(dateService);
+      
+      service.clearPillsOfPastDays();
+      
+      final appOpened = service.getTimeWhenApplicationWasOpened();
+      expect(appOpened, isNotNull);
+      expect(appOpened, fixedNow);
+    });
+  });
 }
