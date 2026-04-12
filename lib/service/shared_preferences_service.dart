@@ -361,14 +361,14 @@ class SharedPreferencesService {
     }
   }
 
-  void _setPillsForDate(String date, List<PillToTake> pills) {
-    unawaited(_sharedPreferences.setString(
-        pillsToTakePrefix + date, PillToTake.encode(pills)));
+  Future<void> _setPillsForDate(String date, List<PillToTake> pills) async {
+    await _sharedPreferences.setString(
+        pillsToTakePrefix + date, PillToTake.encode(pills));
   }
 
-  void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) {
-    unawaited(_sharedPreferences.setString(
-        pillsTakenPrefix + date, PillTaken.encode(pillsTaken)));
+  Future<void> _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) async {
+    await _sharedPreferences.setString(
+        pillsTakenPrefix + date, PillTaken.encode(pillsTaken));
   }
 
   List<PillToTake> getPillsToTakeForDate(String date) {
@@ -387,7 +387,7 @@ class SharedPreferencesService {
     return [];
   }
 
-  void addPillToDates(DateTime startDate, PillToTake pill) {
+  Future<void> addPillToDates(DateTime startDate, PillToTake pill) async {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
     final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
@@ -395,22 +395,22 @@ class SharedPreferencesService {
       String dateStr = _dateService.formatDateForStorage(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pillWithTrimmedName);
-      _setPillsForDate(dateStr, pills);
+      await _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
     }
   }
 
-  List<PillTaken> addTakenPill(PillToTake pillToTake, String date) {
+  Future<List<PillTaken>> addTakenPill(PillToTake pillToTake, String date) async {
     PillTaken pill = PillTaken.extractFromPillToTake(pillToTake);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
     pillsTaken.add(pill);
-    _setPillsTakenForDate(date, pillsTaken);
+    await _setPillsTakenForDate(date, pillsTaken);
     return pillsTaken;
   }
 
-  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?
-      updatePillForDate(PillToTake pillToTake, String currentDate) {
+  Future<({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?>
+      updatePillForDate(PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
@@ -424,46 +424,45 @@ class SharedPreferencesService {
     final existingPill = pillsToTakeList[pillIndex];
     final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
-    final updatedPillsTaken = addTakenPill(pillToSave, currentDate);
+    final updatedPillsTaken = await addTakenPill(pillToSave, currentDate);
 
     if (pillToSave.pillRegiment == 0) {
       pillsToTakeList.removeWhere(
           (element) => element.pillName.trim().toLowerCase() == normalizedName);
-      _setPillsForDate(currentDate, pillsToTakeList);
+      await _setPillsForDate(currentDate, pillsToTakeList);
     } else {
       pillsToTakeList[pillIndex] = pillToSave;
-      _setPillsForDate(currentDate, pillsToTakeList);
+      await _setPillsForDate(currentDate, pillsToTakeList);
     }
 
     return (pillsToTake: pillsToTakeList, pillsTaken: updatedPillsTaken);
   }
 
-  List<PillToTake> removePillFromDate(
-      PillToTake pillToTake, String currentDate) {
+  Future<List<PillToTake>> removePillFromDate(
+      PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     pills.removeWhere(
         (element) => element.pillName.trim().toLowerCase() == normalizedName);
-    _setPillsForDate(currentDate, pills);
+    await _setPillsForDate(currentDate, pills);
     return pills;
   }
 
-  void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
+  Future<void> clearAllPillsFromDate(DateTime dateToRemovePillsFrom) async {
     DateTime now = _dateService.now();
     DateTime runningDate = dateToRemovePillsFrom;
 
     while (now.difference(runningDate).inDays >= oneDay) {
       String converted = _dateService.formatDateForStorage(runningDate);
-      _setPillsForDate(converted, []);
-      _setPillsTakenForDate(converted, []);
+      await _setPillsForDate(converted, []);
+      await _setPillsTakenForDate(converted, []);
       runningDate = runningDate.add(const Duration(days: oneDay));
     }
   }
 
-  void setTimeWhenApplicationWasOpened() {
+  Future<void> setTimeWhenApplicationWasOpened() async {
     DateTime now = _dateService.now();
-    unawaited(
-        _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String()));
+    await _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
@@ -478,7 +477,7 @@ class SharedPreferencesService {
     return null;
   }
 
-  void clearAllPills() {
+  Future<void> clearAllPills() async {
     final keys = _sharedPreferences.getKeys().toList();
     for (String key in keys) {
       if (key == timeAppOpenedKey ||
@@ -488,19 +487,19 @@ class SharedPreferencesService {
           key == migratedToDelimiterKeysKey) {
         continue;
       }
-      unawaited(_sharedPreferences.remove(key));
+      await _sharedPreferences.remove(key);
     }
   }
 
-  void clearPillsOfPastDays() {
+  Future<void> clearPillsOfPastDays() async {
     DateTime? timeWhenApplicationWasOpened = getTimeWhenApplicationWasOpened();
     if (timeWhenApplicationWasOpened == null) {
-      setTimeWhenApplicationWasOpened();
+      await setTimeWhenApplicationWasOpened();
     } else {
       DateTime now = _dateService.now();
       if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
-        clearAllPillsFromDate(timeWhenApplicationWasOpened);
-        setTimeWhenApplicationWasOpened();
+        await clearAllPillsFromDate(timeWhenApplicationWasOpened);
+        await setTimeWhenApplicationWasOpened();
       }
     }
   }
@@ -518,8 +517,8 @@ class SharedPreferencesService {
     return false;
   }
 
-  void saveThemeStatus(bool isDarkModeEnabled) {
-    unawaited(_sharedPreferences.setBool(darkModeKey, isDarkModeEnabled));
+  Future<void> saveThemeStatus(bool isDarkModeEnabled) async {
+    await _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
   }
 
   bool getThemeStatus() {

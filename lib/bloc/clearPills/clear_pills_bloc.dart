@@ -6,7 +6,7 @@ enum ClearPillsEvent { updatePillsStatus, clearAllPills }
 class ClearPillsBloc extends Bloc<ClearPillsEvent, bool> {
   ClearPillsBloc(SharedPreferencesService sharedPreferencesService)
       : super(false) {
-    on<ClearPillsEvent>((event, emit) {
+    on<ClearPillsEvent>((event, emit) async {
       switch (event) {
         case ClearPillsEvent.updatePillsStatus:
           bool anyPillsLeftToTake =
@@ -14,7 +14,7 @@ class ClearPillsBloc extends Bloc<ClearPillsEvent, bool> {
           emit(anyPillsLeftToTake);
           break;
         case ClearPillsEvent.clearAllPills:
-          sharedPreferencesService.clearAllPills();
+          await sharedPreferencesService.clearAllPills();
           emit(false);
           break;
       }

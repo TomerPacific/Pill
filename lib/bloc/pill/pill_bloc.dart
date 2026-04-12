@@ -35,16 +35,16 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
 
   PillBloc(this._sharedPreferencesService, this._dateService)
       : super(PillState()) {
-    on<PillsEvent>((event, emit) {
+    on<PillsEvent>((event, emit) async {
       switch (event.eventName) {
         case PillEvent.addPill:
-          _onAddPill(event, emit);
+          await _onAddPill(event, emit);
           break;
         case PillEvent.removePill:
-          _onRemovePill(event, emit);
+          await _onRemovePill(event, emit);
           break;
         case PillEvent.updatePill:
-          _onUpdatePill(event, emit);
+          await _onUpdatePill(event, emit);
           break;
         case PillEvent.loadPills:
           final pillsTaken =
@@ -57,14 +57,14 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     });
   }
 
-  void _onAddPill(PillsEvent event, Emitter<PillState> emitter) {
+  Future<void> _onAddPill(PillsEvent event, Emitter<PillState> emitter) async {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
     // addPillToDates writes to all scheduled dates. We then read back
     // event.date specifically so the emitted state always reflects the
     // correct day's list, regardless of how many days the pill spans.
-    _sharedPreferencesService.addPillToDates(
+    await _sharedPreferencesService.addPillToDates(
         event.startDateTime ?? _dateService.now(), pillToTake);
 
     final pillsToTake =
@@ -76,12 +76,12 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     ));
   }
 
-  void _onRemovePill(PillsEvent event, Emitter<PillState> emitter) {
+  Future<void> _onRemovePill(PillsEvent event, Emitter<PillState> emitter) async {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
     final updatedPills =
-        _sharedPreferencesService.removePillFromDate(pillToTake, event.date);
+        await _sharedPreferencesService.removePillFromDate(pillToTake, event.date);
 
     emitter(PillState(
       pillsToTake: updatedPills,
@@ -89,12 +89,12 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     ));
   }
 
-  void _onUpdatePill(PillsEvent event, Emitter<PillState> emitter) {
+  Future<void> _onUpdatePill(PillsEvent event, Emitter<PillState> emitter) async {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
     final result =
-        _sharedPreferencesService.updatePillForDate(pillToTake, event.date);
+        await _sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
     if (result == null) return;
 
