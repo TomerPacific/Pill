@@ -36,10 +36,10 @@ void main() {
     expect(pills.length, 0);
   });
 
-  test("SharedPreferences Service add pill to date", () {
+  test("SharedPreferences Service add pill to date", () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(fixedNow, pill);
+    await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
 
@@ -51,16 +51,16 @@ void main() {
     expect(found.length, 1);
   });
 
-  test("SharedPreferences Service remove pill from date", () {
+  test("SharedPreferences Service remove pill from date", () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(fixedNow, pill);
+    await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
 
     expect(pills.length, 1);
 
-    sharedPreferencesService.removePillFromDate(pill, fixedDate);
+    await sharedPreferencesService.removePillFromDate(pill, fixedDate);
 
     pills = sharedPreferencesService.getPillsToTakeForDate(fixedDate);
 
@@ -69,26 +69,26 @@ void main() {
 
   test(
       "SharedPreferences Service remove pill from date (case-insensitive and trimmed)",
-      () {
+      () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(fixedNow, pill);
+    await sharedPreferencesService.addPillToDates(fixedNow, pill);
 
     // Attempt removal with different casing and whitespace
     const PillToTake pillToRemove = PillToTake(
         pillName: "  test pill  ", pillRegiment: 2, amountOfDaysToTake: 1);
 
-    sharedPreferencesService.removePillFromDate(pillToRemove, fixedDate);
+    await sharedPreferencesService.removePillFromDate(pillToRemove, fixedDate);
 
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
     expect(pills.length, 0);
   });
 
-  test("SharedPreferences Service update pill from date", () {
+  test("SharedPreferences Service update pill from date", () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(fixedNow, pill);
+    await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
 
@@ -96,7 +96,7 @@ void main() {
 
     final PillToTake updatedPillInstance = pill.copyWith(pillRegiment: 10);
 
-    sharedPreferencesService.updatePillForDate(updatedPillInstance, fixedDate);
+    await sharedPreferencesService.updatePillForDate(updatedPillInstance, fixedDate);
 
     pills = sharedPreferencesService.getPillsToTakeForDate(fixedDate);
 
@@ -107,16 +107,16 @@ void main() {
 
   test(
       "SharedPreferences Service update pill from date (case-insensitive and trimmed)",
-      () {
+      () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(fixedNow, pill);
+    await sharedPreferencesService.addPillToDates(fixedNow, pill);
 
     // Update with different casing and whitespace
     const PillToTake updatedPillInstance = PillToTake(
         pillName: "  test pill  ", pillRegiment: 10, amountOfDaysToTake: 1);
 
-    sharedPreferencesService.updatePillForDate(updatedPillInstance, fixedDate);
+    await sharedPreferencesService.updatePillForDate(updatedPillInstance, fixedDate);
 
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
@@ -126,12 +126,12 @@ void main() {
 
   test(
       "SharedPreferences Service update pill from date - pill not found guard",
-      () {
+      () async {
     const PillToTake pill = PillToTake(
         pillName: "Non Existent Pill", pillRegiment: 2, amountOfDaysToTake: 1);
 
     // This should not throw RangeError
-    sharedPreferencesService.updatePillForDate(pill, fixedDate);
+    await sharedPreferencesService.updatePillForDate(pill, fixedDate);
 
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
@@ -143,7 +143,7 @@ void main() {
     expect(pillsTaken.length, 0);
   });
 
-  test("SharedPreferences Service pillImage persistence", () {
+  test("SharedPreferences Service pillImage persistence", () async {
     const String customImage = "assets/images/custom_pill.png";
     const PillToTake pill = PillToTake(
         pillName: "Custom Image Pill",
@@ -151,22 +151,22 @@ void main() {
         amountOfDaysToTake: 1,
         pillImage: customImage);
 
-    sharedPreferencesService.addPillToDates(fixedNow, pill);
+    await sharedPreferencesService.addPillToDates(fixedNow, pill);
 
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
     expect(pills[0].pillImage, customImage);
 
-    sharedPreferencesService.updatePillForDate(pill, fixedDate);
+    await sharedPreferencesService.updatePillForDate(pill, fixedDate);
     List<PillTaken> pillsTaken =
         sharedPreferencesService.getPillsTakenForDate(fixedDate);
     expect(pillsTaken[0].pillImage, customImage);
   });
 
-  test("SharedPreferences Service Clearing All Pills", () {
+  test("SharedPreferences Service Clearing All Pills", () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
-    sharedPreferencesService.addPillToDates(fixedNow, pill);
+    await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
 
@@ -177,7 +177,7 @@ void main() {
 
     expect(areTherePillsToTake, true);
 
-    sharedPreferencesService.clearAllPills();
+    await sharedPreferencesService.clearAllPills();
 
     areTherePillsToTake = sharedPreferencesService.areThereAnyPillsToTake();
 
@@ -327,7 +327,7 @@ void main() {
       });
       final service = await SharedPreferencesService.create(dateService);
       
-      service.clearPillsOfPastDays();
+      await service.clearPillsOfPastDays();
       
       final appOpened = service.getTimeWhenApplicationWasOpened();
       expect(appOpened, isNotNull);
