@@ -37,8 +37,8 @@ void main() {
   /// event in a real async zone (tester.runAsync), so the bloc's state is
   /// fully updated BEFORE pumpWidget renders the widget tree.
   Future<void> seedBlocState(
-      WidgetTester tester, void Function() serviceSetup) async {
-    serviceSetup();
+      WidgetTester tester, Future<void> Function() serviceSetup) async {
+    await serviceSetup();
     await tester.runAsync(() async {
       pillBloc.add(PillsEvent(
         eventName: PillEvent.loadPills,
@@ -82,8 +82,8 @@ void main() {
     const pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
-    await seedBlocState(tester, () {
-      sharedPreferencesService.addPillToDates(testDate, pill);
+    await seedBlocState(tester, () async {
+      await sharedPreferencesService.addPillToDates(testDate, pill);
     });
 
     // 3. Pump the widget tree so BlocBuilder reacts to the already-emitted state
@@ -107,9 +107,9 @@ void main() {
         pillName: "Taken Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
     // 2. Add AND mark taken synchronously in the service, then drive bloc state
-    await seedBlocState(tester, () {
-      sharedPreferencesService.addPillToDates(testDate, pill);
-      sharedPreferencesService.updatePillForDate(
+    await seedBlocState(tester, () async {
+      await sharedPreferencesService.addPillToDates(testDate, pill);
+      await sharedPreferencesService.updatePillForDate(
           pill.copyWith(pillRegiment: 0, lastTaken: testDate), testDateStorageStr);
     });
 
@@ -129,8 +129,8 @@ void main() {
 
     expect(tester.takeException(), isNull);
 
-    await seedBlocState(tester, () {
-      sharedPreferencesService.addPillToDates(
+    await seedBlocState(tester, () async {
+      await sharedPreferencesService.addPillToDates(
           testDate,
           const PillToTake(
               pillName: "Layout Pill", pillRegiment: 1, amountOfDaysToTake: 1));
