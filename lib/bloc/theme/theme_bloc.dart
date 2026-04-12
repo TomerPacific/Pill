@@ -7,11 +7,11 @@ enum ThemeEvent { enableDarkMode, enableLightMode }
 class ThemeBloc extends Bloc<ThemeEvent, ThemeMode> {
   ThemeBloc(SharedPreferencesService sharedPreferencesService, bool isDarkMode)
       : super(isDarkMode ? ThemeMode.dark : ThemeMode.light) {
-    on<ThemeEvent>((event, emit) {
+    on<ThemeEvent>((event, emit) async {
       ThemeMode themeMode =
           event == ThemeEvent.enableDarkMode ? ThemeMode.dark : ThemeMode.light;
       emit(themeMode);
-      sharedPreferencesService
+      await sharedPreferencesService
           .saveThemeStatus(themeMode == ThemeMode.dark);
     });
   }
