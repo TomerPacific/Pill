@@ -38,7 +38,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     _now = widget.dateService.now();
     _loadPillsForToday();
-    widget.sharedPreferencesService.clearPillsOfPastDays();
+    unawaited(widget.sharedPreferencesService.clearPillsOfPastDays());
     _scheduleMidnightRefresh();
   }
 
