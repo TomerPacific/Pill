@@ -361,14 +361,22 @@ class SharedPreferencesService {
     }
   }
 
-  Future<void> _setPillsForDate(String date, List<PillToTake> pills) async {
-    await _sharedPreferences.setString(
+  Future<bool> _setPillsForDate(String date, List<PillToTake> pills) async {
+    final success = await _sharedPreferences.setString(
         pillsToTakePrefix + date, PillToTake.encode(pills));
+    if (!success) {
+      log("Failed to set pills for date: $date", level: 1000);
+    }
+    return success;
   }
 
-  Future<void> _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) async {
-    await _sharedPreferences.setString(
+  Future<bool> _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) async {
+    final success = await _sharedPreferences.setString(
         pillsTakenPrefix + date, PillTaken.encode(pillsTaken));
+    if (!success) {
+      log("Failed to set pills taken for date: $date", level: 1000);
+    }
+    return success;
   }
 
   List<PillToTake> getPillsToTakeForDate(String date) {
@@ -460,9 +468,13 @@ class SharedPreferencesService {
     }
   }
 
-  Future<void> setTimeWhenApplicationWasOpened() async {
+  Future<bool> setTimeWhenApplicationWasOpened() async {
     DateTime now = _dateService.now();
-    await _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
+    final success = await _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
+    if (!success) {
+      log("Failed to set $timeAppOpenedKey", level: 1000);
+    }
+    return success;
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
@@ -477,8 +489,9 @@ class SharedPreferencesService {
     return null;
   }
 
-  Future<void> clearAllPills() async {
+  Future<bool> clearAllPills() async {
     final keys = _sharedPreferences.getKeys().toList();
+    bool allSucceeded = true;
     for (String key in keys) {
       if (key == timeAppOpenedKey ||
           key == darkModeKey ||
@@ -487,20 +500,29 @@ class SharedPreferencesService {
           key == migratedToDelimiterKeysKey) {
         continue;
       }
-      await _sharedPreferences.remove(key);
+      if (!(await _sharedPreferences.remove(key))) {
+        log("Failed to remove key: $key", level: 1000);
+        allSucceeded = false;
+      }
     }
+    return allSucceeded;
   }
 
   Future<void> clearPillsOfPastDays() async {
-    DateTime? timeWhenApplicationWasOpened = getTimeWhenApplicationWasOpened();
-    if (timeWhenApplicationWasOpened == null) {
-      await setTimeWhenApplicationWasOpened();
-    } else {
-      DateTime now = _dateService.now();
-      if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
-        await clearAllPillsFromDate(timeWhenApplicationWasOpened);
+    try {
+      DateTime? timeWhenApplicationWasOpened =
+          getTimeWhenApplicationWasOpened();
+      if (timeWhenApplicationWasOpened == null) {
         await setTimeWhenApplicationWasOpened();
+      } else {
+        DateTime now = _dateService.now();
+        if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
+          await clearAllPillsFromDate(timeWhenApplicationWasOpened);
+          await setTimeWhenApplicationWasOpened();
+        }
       }
+    } catch (e, st) {
+      log("Error clearing pills of past days: $e", level: 1000, stackTrace: st);
     }
   }
 
@@ -517,8 +539,12 @@ class SharedPreferencesService {
     return false;
   }
 
-  Future<void> saveThemeStatus(bool isDarkModeEnabled) async {
-    await _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
+  Future<bool> saveThemeStatus(bool isDarkModeEnabled) async {
+    final success = await _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
+    if (!success) {
+      log("Failed to set $darkModeKey", level: 1000);
+    }
+    return success;
   }
 
   bool getThemeStatus() {
