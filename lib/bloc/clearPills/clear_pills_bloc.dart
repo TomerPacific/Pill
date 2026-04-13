@@ -15,7 +15,7 @@ class ClearPillsBloc extends Bloc<ClearPillsEvent, bool> {
           break;
         case ClearPillsEvent.clearAllPills:
           await sharedPreferencesService.clearAllPills();
-          emit(false);
+          emit(sharedPreferencesService.areThereAnyPillsToTake());
           break;
       }
     });
