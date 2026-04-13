@@ -456,16 +456,22 @@ class SharedPreferencesService {
     return pills;
   }
 
-  Future<void> clearAllPillsFromDate(DateTime dateToRemovePillsFrom) async {
+  Future<bool> clearAllPillsFromDate(DateTime dateToRemovePillsFrom) async {
     DateTime now = _dateService.now();
     DateTime runningDate = dateToRemovePillsFrom;
+    bool allSucceeded = true;
 
     while (now.difference(runningDate).inDays >= oneDay) {
       String converted = _dateService.formatDateForStorage(runningDate);
-      await _setPillsForDate(converted, []);
-      await _setPillsTakenForDate(converted, []);
+      if (!(await _setPillsForDate(converted, []))) {
+        allSucceeded = false;
+      }
+      if (!(await _setPillsTakenForDate(converted, []))) {
+        allSucceeded = false;
+      }
       runningDate = runningDate.add(const Duration(days: oneDay));
     }
+    return allSucceeded;
   }
 
   Future<bool> setTimeWhenApplicationWasOpened() async {
@@ -517,8 +523,11 @@ class SharedPreferencesService {
       } else {
         DateTime now = _dateService.now();
         if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
-          await clearAllPillsFromDate(timeWhenApplicationWasOpened);
-          await setTimeWhenApplicationWasOpened();
+          if (await clearAllPillsFromDate(timeWhenApplicationWasOpened)) {
+            await setTimeWhenApplicationWasOpened();
+          } else {
+            log("Failed to clear some pills of past days", level: 1000);
+          }
         }
       }
     } catch (e, st) {
