@@ -79,7 +79,11 @@ class SharedPreferencesService {
           // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
           if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
             if (!_isValidJsonList(legacyValue, key)) {
-              await _sharedPreferences.remove(key);
+              if (!(await _sharedPreferences.remove(key))) {
+                log("Failed to remove invalid JSON key '$key' during yearly migration (taken)",
+                    level: 1000);
+                allSucceeded = false;
+              }
               continue;
             }
             final legacyPills = PillTaken.decode(legacyValue);
@@ -135,7 +139,11 @@ class SharedPreferencesService {
           // PillToTake key (legacy "M/D")
           final targetKey = "$currentYear/$key";
           if (!_isValidJsonList(legacyValue, key)) {
-            await _sharedPreferences.remove(key);
+            if (!(await _sharedPreferences.remove(key))) {
+              log("Failed to remove invalid JSON key '$key' during yearly migration (to take)",
+                  level: 1000);
+              allSucceeded = false;
+            }
             continue;
           }
           final legacyPills = PillToTake.decode(legacyValue)
@@ -221,7 +229,11 @@ class SharedPreferencesService {
           final rawValue = _sharedPreferences.get(key);
           if (rawValue is String) {
             if (!_isValidJsonList(rawValue, key)) {
-              await _sharedPreferences.remove(key);
+              if (!(await _sharedPreferences.remove(key))) {
+                log("Failed to remove invalid JSON key '$key' during prefixed migration",
+                    level: 1000);
+                allSucceeded = false;
+              }
               continue;
             }
             final targetKey = "$legacyToTakeKey$key";
@@ -313,7 +325,11 @@ class SharedPreferencesService {
           final rawValue = _sharedPreferences.get(key);
           if (rawValue is String) {
             if (!_isValidJsonList(rawValue, key)) {
-              await _sharedPreferences.remove(key);
+              if (!(await _sharedPreferences.remove(key))) {
+                log("Failed to remove invalid JSON key '$key' during delimiter migration",
+                    level: 1000);
+                allSucceeded = false;
+              }
               continue;
             }
             final existingValue = _sharedPreferences.getString(targetKey);
