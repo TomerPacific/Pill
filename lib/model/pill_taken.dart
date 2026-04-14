@@ -70,6 +70,7 @@ class PillTaken extends Equatable {
       );
 
   static List<PillTaken> decode(String pills) {
+    if (pills.isEmpty) return [];
     try {
       final decoded = json.decode(pills);
       if (decoded is List) {
@@ -77,6 +78,8 @@ class PillTaken extends Equatable {
             .whereType<Map<String, dynamic>>()
             .map<PillTaken>((pill) => PillTaken.fromJson(pill))
             .toList();
+      } else {
+        log("PillTaken.decode: decoded JSON is not a list. Actual type: ${decoded.runtimeType}", level: 1000);
       }
     } catch (e) {
       log("Error decoding PillTaken list: $e", level: 1000);
