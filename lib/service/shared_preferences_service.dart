@@ -78,7 +78,10 @@ class SharedPreferencesService {
           final datePart = key.substring(legacyTakenKey.length);
           // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
           if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
-            _assertIsJsonList(legacyValue, key);
+            if (!_isValidJsonList(legacyValue, key)) {
+              await _sharedPreferences.remove(key);
+              continue;
+            }
             final legacyPills = PillTaken.decode(legacyValue);
             final Map<int, List<PillTaken>> pillsByYear = {};
             for (final pill in legacyPills) {
@@ -131,7 +134,10 @@ class SharedPreferencesService {
         } else if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
           // PillToTake key (legacy "M/D")
           final targetKey = "$currentYear/$key";
-          _assertIsJsonList(legacyValue, key);
+          if (!_isValidJsonList(legacyValue, key)) {
+            await _sharedPreferences.remove(key);
+            continue;
+          }
           final legacyPills = PillToTake.decode(legacyValue)
               .map((p) => p.copyWith(pillName: p.pillName.trim()))
               .toList();
@@ -214,7 +220,10 @@ class SharedPreferencesService {
         try {
           final rawValue = _sharedPreferences.get(key);
           if (rawValue is String) {
-            _assertIsJsonList(rawValue, key);
+            if (!_isValidJsonList(rawValue, key)) {
+              await _sharedPreferences.remove(key);
+              continue;
+            }
             final targetKey = "$legacyToTakeKey$key";
             final existingValue = _sharedPreferences.getString(targetKey);
 
@@ -303,7 +312,10 @@ class SharedPreferencesService {
         try {
           final rawValue = _sharedPreferences.get(key);
           if (rawValue is String) {
-            _assertIsJsonList(rawValue, key);
+            if (!_isValidJsonList(rawValue, key)) {
+              await _sharedPreferences.remove(key);
+              continue;
+            }
             final existingValue = _sharedPreferences.getString(targetKey);
 
             String migratedValue;
@@ -565,11 +577,17 @@ class SharedPreferencesService {
     return _sharedPreferences.getBool(darkModeKey) ?? false;
   }
 
-  void _assertIsJsonList(String value, String key) {
-    final decoded = json.decode(value);
-    if (decoded is! List) {
-      throw FormatException(
-          "Value for key '$key' is not a JSON list (type: ${decoded.runtimeType})");
+  bool _isValidJsonList(String value, String key) {
+    try {
+      final decoded = json.decode(value);
+      if (decoded is List) {
+        return true;
+      }
+      log("Value for key '$key' is not a JSON list (type: ${decoded.runtimeType})",
+          level: 1000);
+    } catch (e) {
+      log("Value for key '$key' is not valid JSON: $e", level: 1000);
     }
+    return false;
   }
 }
