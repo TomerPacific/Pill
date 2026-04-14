@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/model/pill_taken.dart';
 import 'package:pill/service/date_service.dart';
@@ -54,7 +55,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           emit(PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken));
           break;
       }
-    });
+    }, transformer: sequential());
   }
 
   Future<void> _onAddPill(PillsEvent event, Emitter<PillState> emitter) async {
