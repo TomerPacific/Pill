@@ -78,7 +78,8 @@ class SharedPreferencesService {
           final datePart = key.substring(legacyTakenKey.length);
           // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
           if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
-            if (!_isValidJsonList(legacyValue, key)) {
+            final decodedList = _getValidJsonList(legacyValue, key);
+            if (decodedList == null) {
               if (!(await _sharedPreferences.remove(key))) {
                 log("Failed to remove invalid JSON key '$key' during yearly migration (taken)",
                     level: 1000);
@@ -86,7 +87,7 @@ class SharedPreferencesService {
               }
               continue;
             }
-            final legacyPills = PillTaken.decode(legacyValue);
+            final legacyPills = PillTaken.fromJsonList(decodedList);
             final Map<int, List<PillTaken>> pillsByYear = {};
             for (final pill in legacyPills) {
               final trimmedPill =
@@ -138,7 +139,8 @@ class SharedPreferencesService {
         } else if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
           // PillToTake key (legacy "M/D")
           final targetKey = "$currentYear/$key";
-          if (!_isValidJsonList(legacyValue, key)) {
+          final decodedList = _getValidJsonList(legacyValue, key);
+          if (decodedList == null) {
             if (!(await _sharedPreferences.remove(key))) {
               log("Failed to remove invalid JSON key '$key' during yearly migration (to take)",
                   level: 1000);
@@ -146,7 +148,7 @@ class SharedPreferencesService {
             }
             continue;
           }
-          final legacyPills = PillToTake.decode(legacyValue)
+          final legacyPills = PillToTake.fromJsonList(decodedList)
               .map((p) => p.copyWith(pillName: p.pillName.trim()))
               .toList();
           final existingYearlyValue = _sharedPreferences.getString(targetKey);
@@ -228,7 +230,8 @@ class SharedPreferencesService {
         try {
           final rawValue = _sharedPreferences.get(key);
           if (rawValue is String) {
-            if (!_isValidJsonList(rawValue, key)) {
+            final decodedList = _getValidJsonList(rawValue, key);
+            if (decodedList == null) {
               if (!(await _sharedPreferences.remove(key))) {
                 log("Failed to remove invalid JSON key '$key' during prefixed migration",
                     level: 1000);
@@ -241,7 +244,7 @@ class SharedPreferencesService {
 
             String migratedValue;
             if (existingValue != null) {
-              final legacyPills = PillToTake.decode(rawValue)
+              final legacyPills = PillToTake.fromJsonList(decodedList)
                   .map((p) => p.copyWith(pillName: p.pillName.trim()))
                   .toList();
               final existingPills = PillToTake.decode(existingValue)
@@ -324,7 +327,8 @@ class SharedPreferencesService {
         try {
           final rawValue = _sharedPreferences.get(key);
           if (rawValue is String) {
-            if (!_isValidJsonList(rawValue, key)) {
+            final decodedList = _getValidJsonList(rawValue, key);
+            if (decodedList == null) {
               if (!(await _sharedPreferences.remove(key))) {
                 log("Failed to remove invalid JSON key '$key' during delimiter migration",
                     level: 1000);
@@ -337,7 +341,7 @@ class SharedPreferencesService {
             String migratedValue;
             if (existingValue != null) {
               if (isTaken) {
-                final legacyPills = PillTaken.decode(rawValue)
+                final legacyPills = PillTaken.fromJsonList(decodedList)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
                 final existingPills = PillTaken.decode(existingValue)
@@ -347,7 +351,7 @@ class SharedPreferencesService {
                 final merged = {...legacyPills, ...existingPills}.toList();
                 migratedValue = PillTaken.encode(merged);
               } else {
-                final legacyPills = PillToTake.decode(rawValue)
+                final legacyPills = PillToTake.fromJsonList(decodedList)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
                 final existingPills = PillToTake.decode(existingValue)
@@ -593,17 +597,17 @@ class SharedPreferencesService {
     return _sharedPreferences.getBool(darkModeKey) ?? false;
   }
 
-  bool _isValidJsonList(String value, String key) {
+  List<dynamic>? _getValidJsonList(String value, String key) {
     try {
       final decoded = json.decode(value);
       if (decoded is List) {
-        return true;
+        return decoded;
       }
       log("Value for key '$key' is not a JSON list (type: ${decoded.runtimeType})",
           level: 1000);
     } catch (e) {
       log("Value for key '$key' is not valid JSON: $e", level: 1000);
     }
-    return false;
+    return null;
   }
 }

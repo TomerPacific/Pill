@@ -74,10 +74,7 @@ class PillTaken extends Equatable {
     try {
       final decoded = json.decode(pills);
       if (decoded is List) {
-        return decoded
-            .whereType<Map<String, dynamic>>()
-            .map<PillTaken>((pill) => PillTaken.fromJson(pill))
-            .toList();
+        return fromJsonList(decoded);
       } else {
         log("PillTaken.decode: decoded JSON is not a list. Actual type: ${decoded.runtimeType}", level: 1000);
       }
@@ -85,6 +82,13 @@ class PillTaken extends Equatable {
       log("Error decoding PillTaken list: $e", level: 1000);
     }
     return [];
+  }
+
+  static List<PillTaken> fromJsonList(List<dynamic> list) {
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map<PillTaken>((pill) => PillTaken.fromJson(pill))
+        .toList();
   }
 
   PillTaken copyWith({
