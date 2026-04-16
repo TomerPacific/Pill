@@ -446,6 +446,13 @@ class SharedPreferencesService {
     }
   }
 
+  Future<List<PillToTake>> addPillToDate(PillToTake pill, String date) async {
+    List<PillToTake> pills = getPillsToTakeForDate(date);
+    pills.add(pill.copyWith(pillName: pill.pillName.trim()));
+    await _setPillsForDate(date, pills);
+    return pills;
+  }
+
   Future<List<PillTaken>> addTakenPill(PillToTake pillToTake, String date) async {
     PillTaken pill = PillTaken.extractFromPillToTake(pillToTake);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
