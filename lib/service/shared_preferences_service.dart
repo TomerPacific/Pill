@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'package:meta/meta.dart';
 import 'package:pill/model/pill_taken.dart';
@@ -68,15 +69,25 @@ class SharedPreferencesService {
         continue;
       }
 
-      final legacyValue = _sharedPreferences.getString(key);
-      if (legacyValue == null) continue;
+      final rawValue = _sharedPreferences.get(key);
+      if (rawValue is! String) continue;
+      final legacyValue = rawValue;
 
       try {
         if (key.startsWith(legacyTakenKey)) {
           final datePart = key.substring(legacyTakenKey.length);
           // Match "M/D" or "MM/DD" but NOT "YYYY/M/D"
           if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(datePart)) {
-            final legacyPills = PillTaken.decode(legacyValue);
+            final decodedList = _getValidJsonList(legacyValue, key);
+            if (decodedList == null) {
+              if (!(await _sharedPreferences.remove(key))) {
+                log("Failed to remove invalid JSON key '$key' during yearly migration (taken)",
+                    level: 1000);
+                allSucceeded = false;
+              }
+              continue;
+            }
+            final legacyPills = PillTaken.fromJsonList(decodedList);
             final Map<int, List<PillTaken>> pillsByYear = {};
             for (final pill in legacyPills) {
               final trimmedPill =
@@ -128,7 +139,16 @@ class SharedPreferencesService {
         } else if (RegExp(r'^\d{1,2}/\d{1,2}$').hasMatch(key)) {
           // PillToTake key (legacy "M/D")
           final targetKey = "$currentYear/$key";
-          final legacyPills = PillToTake.decode(legacyValue)
+          final decodedList = _getValidJsonList(legacyValue, key);
+          if (decodedList == null) {
+            if (!(await _sharedPreferences.remove(key))) {
+              log("Failed to remove invalid JSON key '$key' during yearly migration (to take)",
+                  level: 1000);
+              allSucceeded = false;
+            }
+            continue;
+          }
+          final legacyPills = PillToTake.fromJsonList(decodedList)
               .map((p) => p.copyWith(pillName: p.pillName.trim()))
               .toList();
           final existingYearlyValue = _sharedPreferences.getString(targetKey);
@@ -208,14 +228,23 @@ class SharedPreferencesService {
       // Identify keys that are YYYY/M/D (already migrated to yearly format but not yet prefixed)
       if (RegExp(r'^\d{4}/\d{1,2}/\d{1,2}$').hasMatch(key)) {
         try {
-          final legacyValue = _sharedPreferences.getString(key);
-          if (legacyValue != null) {
+          final rawValue = _sharedPreferences.get(key);
+          if (rawValue is String) {
+            final decodedList = _getValidJsonList(rawValue, key);
+            if (decodedList == null) {
+              if (!(await _sharedPreferences.remove(key))) {
+                log("Failed to remove invalid JSON key '$key' during prefixed migration",
+                    level: 1000);
+                allSucceeded = false;
+              }
+              continue;
+            }
             final targetKey = "$legacyToTakeKey$key";
             final existingValue = _sharedPreferences.getString(targetKey);
 
             String migratedValue;
             if (existingValue != null) {
-              final legacyPills = PillToTake.decode(legacyValue)
+              final legacyPills = PillToTake.fromJsonList(decodedList)
                   .map((p) => p.copyWith(pillName: p.pillName.trim()))
                   .toList();
               final existingPills = PillToTake.decode(existingValue)
@@ -231,7 +260,7 @@ class SharedPreferencesService {
               }
               migratedValue = PillToTake.encode(mergedMap.values.toList());
             } else {
-              migratedValue = legacyValue;
+              migratedValue = rawValue;
             }
 
             if (await _sharedPreferences.setString(targetKey, migratedValue)) {
@@ -296,14 +325,23 @@ class SharedPreferencesService {
 
       if (targetKey != null) {
         try {
-          final legacyValue = _sharedPreferences.getString(key);
-          if (legacyValue != null) {
+          final rawValue = _sharedPreferences.get(key);
+          if (rawValue is String) {
+            final decodedList = _getValidJsonList(rawValue, key);
+            if (decodedList == null) {
+              if (!(await _sharedPreferences.remove(key))) {
+                log("Failed to remove invalid JSON key '$key' during delimiter migration",
+                    level: 1000);
+                allSucceeded = false;
+              }
+              continue;
+            }
             final existingValue = _sharedPreferences.getString(targetKey);
 
             String migratedValue;
             if (existingValue != null) {
               if (isTaken) {
-                final legacyPills = PillTaken.decode(legacyValue)
+                final legacyPills = PillTaken.fromJsonList(decodedList)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
                 final existingPills = PillTaken.decode(existingValue)
@@ -313,7 +351,7 @@ class SharedPreferencesService {
                 final merged = {...legacyPills, ...existingPills}.toList();
                 migratedValue = PillTaken.encode(merged);
               } else {
-                final legacyPills = PillToTake.decode(legacyValue)
+                final legacyPills = PillToTake.fromJsonList(decodedList)
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
                 final existingPills = PillToTake.decode(existingValue)
@@ -330,7 +368,7 @@ class SharedPreferencesService {
                 migratedValue = PillToTake.encode(mergedMap.values.toList());
               }
             } else {
-              migratedValue = legacyValue;
+              migratedValue = rawValue;
             }
 
             if (await _sharedPreferences.setString(targetKey, migratedValue)) {
@@ -360,35 +398,41 @@ class SharedPreferencesService {
     }
   }
 
-  void _setPillsForDate(String date, List<PillToTake> pills) {
-    unawaited(_sharedPreferences.setString(
-        pillsToTakePrefix + date, PillToTake.encode(pills)));
+  Future<bool> _setPillsForDate(String date, List<PillToTake> pills) async {
+    final success = await _sharedPreferences.setString(
+        pillsToTakePrefix + date, PillToTake.encode(pills));
+    if (!success) {
+      log("Failed to set pills for date: $date", level: 1000);
+    }
+    return success;
   }
 
-  void _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) {
-    unawaited(_sharedPreferences.setString(
-        pillsTakenPrefix + date, PillTaken.encode(pillsTaken)));
+  Future<bool> _setPillsTakenForDate(String date, List<PillTaken> pillsTaken) async {
+    final success = await _sharedPreferences.setString(
+        pillsTakenPrefix + date, PillTaken.encode(pillsTaken));
+    if (!success) {
+      log("Failed to set pills taken for date: $date", level: 1000);
+    }
+    return success;
   }
 
   List<PillToTake> getPillsToTakeForDate(String date) {
-    String? encodedPills =
-        _sharedPreferences.getString(pillsToTakePrefix + date);
-    if (encodedPills != null) {
-      return PillToTake.decode(encodedPills);
+    final rawValue = _sharedPreferences.get(pillsToTakePrefix + date);
+    if (rawValue is String) {
+      return PillToTake.decode(rawValue);
     }
     return [];
   }
 
   List<PillTaken> getPillsTakenForDate(String date) {
-    String? encodedPills =
-        _sharedPreferences.getString(pillsTakenPrefix + date);
-    if (encodedPills != null) {
-      return PillTaken.decode(encodedPills);
+    final rawValue = _sharedPreferences.get(pillsTakenPrefix + date);
+    if (rawValue is String) {
+      return PillTaken.decode(rawValue);
     }
     return [];
   }
 
-  void addPillToDates(DateTime startDate, PillToTake pill) {
+  Future<void> addPillToDates(DateTime startDate, PillToTake pill) async {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
     final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
@@ -396,22 +440,22 @@ class SharedPreferencesService {
       String dateStr = _dateService.formatDateForStorage(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
       pills.add(pillWithTrimmedName);
-      _setPillsForDate(dateStr, pills);
+      await _setPillsForDate(dateStr, pills);
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
     }
   }
 
-  List<PillTaken> addTakenPill(PillToTake pillToTake, String date) {
+  Future<List<PillTaken>> addTakenPill(PillToTake pillToTake, String date) async {
     PillTaken pill = PillTaken.extractFromPillToTake(pillToTake);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
     pillsTaken.add(pill);
-    _setPillsTakenForDate(date, pillsTaken);
+    await _setPillsTakenForDate(date, pillsTaken);
     return pillsTaken;
   }
 
-  ({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?
-      updatePillForDate(PillToTake pillToTake, String currentDate) {
+  Future<({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?>
+      updatePillForDate(PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
@@ -425,58 +469,72 @@ class SharedPreferencesService {
     final existingPill = pillsToTakeList[pillIndex];
     final pillToSave = pillToTake.copyWith(pillName: existingPill.pillName);
 
-    final updatedPillsTaken = addTakenPill(pillToSave, currentDate);
+    final updatedPillsTaken = await addTakenPill(pillToSave, currentDate);
 
     if (pillToSave.pillRegiment == 0) {
       pillsToTakeList.removeWhere(
           (element) => element.pillName.trim().toLowerCase() == normalizedName);
-      _setPillsForDate(currentDate, pillsToTakeList);
+      await _setPillsForDate(currentDate, pillsToTakeList);
     } else {
       pillsToTakeList[pillIndex] = pillToSave;
-      _setPillsForDate(currentDate, pillsToTakeList);
+      await _setPillsForDate(currentDate, pillsToTakeList);
     }
 
     return (pillsToTake: pillsToTakeList, pillsTaken: updatedPillsTaken);
   }
 
-  List<PillToTake> removePillFromDate(
-      PillToTake pillToTake, String currentDate) {
+  Future<List<PillToTake>> removePillFromDate(
+      PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     pills.removeWhere(
         (element) => element.pillName.trim().toLowerCase() == normalizedName);
-    _setPillsForDate(currentDate, pills);
+    await _setPillsForDate(currentDate, pills);
     return pills;
   }
 
-  void clearAllPillsFromDate(DateTime dateToRemovePillsFrom) {
+  Future<bool> clearAllPillsFromDate(DateTime dateToRemovePillsFrom) async {
     DateTime now = _dateService.now();
     DateTime runningDate = dateToRemovePillsFrom;
+    bool allSucceeded = true;
 
     while (now.difference(runningDate).inDays >= oneDay) {
       String converted = _dateService.formatDateForStorage(runningDate);
-      _setPillsForDate(converted, []);
-      _setPillsTakenForDate(converted, []);
+      if (!(await _setPillsForDate(converted, []))) {
+        allSucceeded = false;
+      }
+      if (!(await _setPillsTakenForDate(converted, []))) {
+        allSucceeded = false;
+      }
       runningDate = runningDate.add(const Duration(days: oneDay));
     }
+    return allSucceeded;
   }
 
-  void setTimeWhenApplicationWasOpened() {
+  Future<bool> setTimeWhenApplicationWasOpened() async {
     DateTime now = _dateService.now();
-    unawaited(
-        _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String()));
+    final success = await _sharedPreferences.setString(timeAppOpenedKey, now.toIso8601String());
+    if (!success) {
+      log("Failed to set $timeAppOpenedKey", level: 1000);
+    }
+    return success;
   }
 
   DateTime? getTimeWhenApplicationWasOpened() {
-    String? timeApplicationWasOpened =
-        _sharedPreferences.getString(timeAppOpenedKey);
-    return timeApplicationWasOpened != null
-        ? DateTime.parse(timeApplicationWasOpened)
-        : null;
+    try {
+      final rawValue = _sharedPreferences.get(timeAppOpenedKey);
+      if (rawValue is String) {
+        return DateTime.parse(rawValue);
+      }
+    } catch (e) {
+      log("Error parsing $timeAppOpenedKey: $e", level: 1000);
+    }
+    return null;
   }
 
-  void clearAllPills() {
+  Future<bool> clearAllPills() async {
     final keys = _sharedPreferences.getKeys().toList();
+    bool allSucceeded = true;
     for (String key in keys) {
       if (key == timeAppOpenedKey ||
           key == darkModeKey ||
@@ -485,20 +543,32 @@ class SharedPreferencesService {
           key == migratedToDelimiterKeysKey) {
         continue;
       }
-      unawaited(_sharedPreferences.remove(key));
+      if (!(await _sharedPreferences.remove(key))) {
+        log("Failed to remove key: $key", level: 1000);
+        allSucceeded = false;
+      }
     }
+    return allSucceeded;
   }
 
-  void clearPillsOfPastDays() {
-    DateTime? timeWhenApplicationWasOpened = getTimeWhenApplicationWasOpened();
-    if (timeWhenApplicationWasOpened == null) {
-      setTimeWhenApplicationWasOpened();
-    } else {
-      DateTime now = _dateService.now();
-      if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
-        clearAllPillsFromDate(timeWhenApplicationWasOpened);
-        setTimeWhenApplicationWasOpened();
+  Future<void> clearPillsOfPastDays() async {
+    try {
+      DateTime? timeWhenApplicationWasOpened =
+          getTimeWhenApplicationWasOpened();
+      if (timeWhenApplicationWasOpened == null) {
+        await setTimeWhenApplicationWasOpened();
+      } else {
+        DateTime now = _dateService.now();
+        if (now.difference(timeWhenApplicationWasOpened).inDays >= oneDay) {
+          if (await clearAllPillsFromDate(timeWhenApplicationWasOpened)) {
+            await setTimeWhenApplicationWasOpened();
+          } else {
+            log("Failed to clear some pills of past days", level: 1000);
+          }
+        }
       }
+    } catch (e, st) {
+      log("Error clearing pills of past days: $e", level: 1000, stackTrace: st);
     }
   }
 
@@ -515,11 +585,29 @@ class SharedPreferencesService {
     return false;
   }
 
-  void saveThemeStatus(bool isDarkModeEnabled) {
-    unawaited(_sharedPreferences.setBool(darkModeKey, isDarkModeEnabled));
+  Future<bool> saveThemeStatus(bool isDarkModeEnabled) async {
+    final success = await _sharedPreferences.setBool(darkModeKey, isDarkModeEnabled);
+    if (!success) {
+      log("Failed to set $darkModeKey", level: 1000);
+    }
+    return success;
   }
 
   bool getThemeStatus() {
     return _sharedPreferences.getBool(darkModeKey) ?? false;
+  }
+
+  List<dynamic>? _getValidJsonList(String value, String key) {
+    try {
+      final decoded = json.decode(value);
+      if (decoded is List) {
+        return decoded;
+      }
+      log("Value for key '$key' is not a JSON list (type: ${decoded.runtimeType})",
+          level: 1000);
+    } catch (e) {
+      log("Value for key '$key' is not valid JSON: $e", level: 1000);
+    }
+    return null;
   }
 }

@@ -22,23 +22,41 @@ class PillToTake extends Equatable {
       this.lastTaken});
 
   factory PillToTake.fromJson(Map<String, dynamic> jsonData) {
-    String? lastTaken = jsonData[pillLastTakenKey];
     DateTime? lastTakenDate;
-
     try {
-      if (lastTaken != null) {
-        lastTakenDate = DateTime.parse(lastTaken);
+      final lastTakenValue = jsonData[pillLastTakenKey];
+      if (lastTakenValue is String) {
+        lastTakenDate = DateTime.parse(lastTakenValue);
       }
     } catch (e) {
       log("Error parsing PillToTake lastTaken value: $e", level: 1000);
     }
 
+    final nameValue = jsonData[pillNameKey];
+    final String name = nameValue is String ? nameValue : 'Unknown';
+    
+    final regimentValue = jsonData[pillRegimentKey];
+    final int regiment = regimentValue is num 
+        ? regimentValue.toInt() 
+        : num.tryParse(regimentValue?.toString() ?? '')?.toInt() ?? 1;
+
+    final imageValue = jsonData[pillImageKey];
+    final String image = imageValue is String ? imageValue : defaultPillToTakeImage;
+    
+    final descriptionValue = jsonData[pillDescriptionKey];
+    final String? description = descriptionValue is String ? descriptionValue : null;
+
+    final daysValue = jsonData[pillAmountOfDaysToTakeKey];
+    final int amountOfDays = daysValue is num 
+        ? daysValue.toInt() 
+        : num.tryParse(daysValue?.toString() ?? '')?.toInt() ?? 1;
+
     return PillToTake(
-        pillName: jsonData[pillNameKey],
-        pillRegiment: jsonData[pillRegimentKey],
-        pillImage: jsonData[pillImageKey] ?? defaultPillToTakeImage,
-        description: jsonData[pillDescriptionKey],
-        amountOfDaysToTake: jsonData[pillAmountOfDaysToTakeKey],
+        pillName: name,
+        pillRegiment: regiment,
+        pillImage: image,
+        description: description,
+        amountOfDaysToTake: amountOfDays,
         lastTaken: lastTakenDate);
   }
 
@@ -57,10 +75,27 @@ class PillToTake extends Equatable {
             .toList(),
       );
 
-  static List<PillToTake> decode(String pills) =>
-      (json.decode(pills) as List<dynamic>)
-          .map<PillToTake>((pill) => PillToTake.fromJson(pill))
-          .toList();
+  static List<PillToTake> decode(String pills) {
+    if (pills.isEmpty) return [];
+    try {
+      final decoded = json.decode(pills);
+      if (decoded is List) {
+        return fromJsonList(decoded);
+      } else {
+        log("PillToTake.decode: decoded JSON is not a list. Actual type: ${decoded.runtimeType}", level: 1000);
+      }
+    } catch (e) {
+      log("Error decoding PillToTake list: $e", level: 1000);
+    }
+    return [];
+  }
+
+  static List<PillToTake> fromJsonList(List<dynamic> list) {
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map<PillToTake>((pill) => PillToTake.fromJson(pill))
+        .toList();
+  }
 
   PillToTake copyWith({
     String? pillName,

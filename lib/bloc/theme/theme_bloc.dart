@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/service/shared_preferences_service.dart';
@@ -7,12 +8,12 @@ enum ThemeEvent { enableDarkMode, enableLightMode }
 class ThemeBloc extends Bloc<ThemeEvent, ThemeMode> {
   ThemeBloc(SharedPreferencesService sharedPreferencesService, bool isDarkMode)
       : super(isDarkMode ? ThemeMode.dark : ThemeMode.light) {
-    on<ThemeEvent>((event, emit) {
+    on<ThemeEvent>((event, emit) async {
       ThemeMode themeMode =
           event == ThemeEvent.enableDarkMode ? ThemeMode.dark : ThemeMode.light;
       emit(themeMode);
-      sharedPreferencesService
+      await sharedPreferencesService
           .saveThemeStatus(themeMode == ThemeMode.dark);
-    });
+    }, transformer: sequential());
   }
 }

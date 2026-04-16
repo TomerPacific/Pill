@@ -30,7 +30,7 @@ void main() async {
   String title = "You do not have to take any pills today 😀";
 
   setUp(() async {
-    sharedPreferencesService.clearAllPills();
+    await sharedPreferencesService.clearAllPills();
   });
 
   Widget base = MultiBlocProvider(

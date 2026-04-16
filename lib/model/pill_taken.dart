@@ -20,20 +20,29 @@ class PillTaken extends Equatable {
       required this.lastTaken});
 
   factory PillTaken.fromJson(Map<String, dynamic> jsonData) {
-    String? lastTaken = jsonData[pillLastTakenKey];
     DateTime? lastTakenDate;
     try {
-      if (lastTaken != null) {
-        lastTakenDate = DateTime.parse(lastTaken);
+      final lastTakenValue = jsonData[pillLastTakenKey];
+      if (lastTakenValue is String) {
+        lastTakenDate = DateTime.parse(lastTakenValue);
       }
     } catch (e) {
       log("Error parsing PillTaken lastTaken value: $e", level: 1000);
     }
 
+    final nameValue = jsonData[pillNameKey];
+    final String name = nameValue is String ? nameValue : 'Unknown';
+
+    final imageValue = jsonData[pillImageKey];
+    final String image = imageValue is String ? imageValue : defaultPillTakenImage;
+
+    final descriptionValue = jsonData[pillDescriptionKey];
+    final String? description = descriptionValue is String ? descriptionValue : null;
+
     return PillTaken(
-        pillName: jsonData[pillNameKey],
-        pillImage: jsonData[pillImageKey] ?? defaultPillTakenImage,
-        description: jsonData[pillDescriptionKey],
+        pillName: name,
+        pillImage: image,
+        description: description,
         lastTaken: lastTakenDate);
   }
 
@@ -60,10 +69,27 @@ class PillTaken extends Equatable {
             .toList(),
       );
 
-  static List<PillTaken> decode(String pills) =>
-      (json.decode(pills) as List<dynamic>)
-          .map<PillTaken>((pill) => PillTaken.fromJson(pill))
-          .toList();
+  static List<PillTaken> decode(String pills) {
+    if (pills.isEmpty) return [];
+    try {
+      final decoded = json.decode(pills);
+      if (decoded is List) {
+        return fromJsonList(decoded);
+      } else {
+        log("PillTaken.decode: decoded JSON is not a list. Actual type: ${decoded.runtimeType}", level: 1000);
+      }
+    } catch (e) {
+      log("Error decoding PillTaken list: $e", level: 1000);
+    }
+    return [];
+  }
+
+  static List<PillTaken> fromJsonList(List<dynamic> list) {
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map<PillTaken>((pill) => PillTaken.fromJson(pill))
+        .toList();
+  }
 
   PillTaken copyWith({
     String? pillName,
