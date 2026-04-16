@@ -27,6 +27,36 @@ class DayWidget extends StatelessWidget {
   String get _header =>
       mode == DayWidgetMode.toTake ? pillsToTakeHeader : pillsTakenHeader;
 
+  Widget _dismissibleBackground() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.red.shade400, Colors.red.shade700],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            "Delete",
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
+          SizedBox(width: 12),
+          Icon(Icons.delete_outline, color: Colors.white, size: 28),
+        ],
+      ),
+    );
+  }
+
   Widget _pillsToTakeList(BuildContext context, PillState state) {
     List<PillToTake>? pillsToTake = state.pillsToTake;
     return (pillsToTake == null || pillsToTake.isEmpty)
@@ -41,6 +71,9 @@ class DayWidget extends StatelessWidget {
                 itemCount: pillsToTake.length,
                 itemBuilder: (_, index) => Dismissible(
                     key: ObjectKey(pillsToTake[index].pillName),
+                    direction: DismissDirection.endToStart,
+                    background: Container(), // Not used for endToStart
+                    secondaryBackground: _dismissibleBackground(),
                     confirmDismiss: (direction) async {
                       final now = dateService.now();
                       final todayStr = dateService.formatDateForStorage(now);
@@ -59,11 +92,32 @@ class DayWidget extends StatelessWidget {
                     onDismissed: (direction) {
                       final widgetDateStr =
                           dateService.formatDateForStorage(date);
+                      final removedPill = pillsToTake[index];
 
                       context.read<PillBloc>().add(PillsEvent(
                           eventName: PillEvent.removePill,
                           date: widgetDateStr,
-                          pillToTake: pillsToTake[index]));
+                          pillToTake: removedPill));
+
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${removedPill.pillName} removed'),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            onPressed: () {
+                              context.read<PillBloc>().add(PillsEvent(
+                                  eventName: PillEvent.addPillToDate,
+                                  date: widgetDateStr,
+                                  pillToTake: removedPill));
+                            },
+                          ),
+                        ),
+                      );
                     },
                     child: PillWidget(
                       pillToTake: pillsToTake[index],
