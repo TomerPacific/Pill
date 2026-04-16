@@ -106,7 +106,7 @@ void main() async {
 
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
-        eventName: PillEvent.addPill,
+        eventName: PillEvent.addPillRegimen,
         date: currentDateStorage,
         startDateTime: date,
         pillToTake: pillWithInfo));
@@ -143,7 +143,7 @@ void main() async {
 
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
-        eventName: PillEvent.addPill,
+        eventName: PillEvent.addPillRegimen,
         date: currentDateStorage,
         startDateTime: date,
         pillToTake: pillWithInfo));
@@ -167,7 +167,7 @@ void main() async {
 
     BuildContext context = tester.element(find.byType(Scaffold));
     context.read<PillBloc>().add(PillsEvent(
-        eventName: PillEvent.addPill,
+        eventName: PillEvent.addPillRegimen,
         date: currentDateStorage,
         startDateTime: date,
         pillToTake: pillToTake));
