@@ -72,7 +72,7 @@ class DayWidget extends StatelessWidget {
                 itemBuilder: (_, index) => Dismissible(
                     key: ObjectKey(pillsToTake[index].pillName),
                     direction: DismissDirection.endToStart,
-                    background: Container(), // Not used for endToStart
+                    background: _dismissibleBackground(),
                     secondaryBackground: _dismissibleBackground(),
                     confirmDismiss: (direction) async {
                       final now = dateService.now();
@@ -81,8 +81,6 @@ class DayWidget extends StatelessWidget {
                           dateService.formatDateForStorage(date);
 
                       if (todayStr != widgetDateStr) {
-                        // Day has rolled over. Refresh the UI instead of
-                        // removing from a stale record.
                         context.read<PillBloc>().add(PillsEvent(
                             eventName: PillEvent.loadPills, date: todayStr));
                         return false;
