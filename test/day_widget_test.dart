@@ -109,8 +109,9 @@ void main() {
     // 2. Add AND mark taken synchronously in the service, then drive bloc state
     await seedBlocState(tester, () async {
       await sharedPreferencesService.addPillToDates(testDate, pill);
-      await sharedPreferencesService.updatePillForDate(
-          pill.copyWith(pillRegiment: 0, lastTaken: testDate), testDateStorageStr);
+      // Create the pill in state exactly as updatePillForDate would
+      final updatedPill = pill.copyWith(pillRegiment: 0, lastTaken: testDate);
+      await sharedPreferencesService.updatePillForDate(updatedPill, testDateStorageStr);
     });
 
     await tester.pump();

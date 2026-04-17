@@ -51,6 +51,62 @@ void main() {
     expect(found.length, 1);
   });
 
+  group("SharedPreferences Service addPillToDate", () {
+    test("persists correctly", () async {
+      const PillToTake pill = PillToTake(
+          pillName: "Single Date Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+      
+      final returnedPills = await sharedPreferencesService.addPillToDate(pill, fixedDate);
+      
+      expect(returnedPills.length, 1);
+      expect(returnedPills[0].pillName, "Single Date Pill");
+      
+      final storedPills = sharedPreferencesService.getPillsToTakeForDate(fixedDate);
+      expect(storedPills.length, 1);
+      expect(storedPills[0].pillName, "Single Date Pill");
+    });
+
+    test("trims pill name before persisting", () async {
+      const PillToTake pill = PillToTake(
+          pillName: "  Trim Me  ", pillRegiment: 1, amountOfDaysToTake: 1);
+      
+      await sharedPreferencesService.addPillToDate(pill, fixedDate);
+      
+      final storedPills = sharedPreferencesService.getPillsToTakeForDate(fixedDate);
+      expect(storedPills[0].pillName, "Trim Me");
+    });
+
+    test("prevents duplicates (case-insensitive and trimmed)", () async {
+      const PillToTake pill1 = PillToTake(
+          pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 1);
+      const PillToTake pill2 = PillToTake(
+          pillName: "  pill a  ", pillRegiment: 2, amountOfDaysToTake: 1);
+      
+      await sharedPreferencesService.addPillToDate(pill1, fixedDate);
+      final result = await sharedPreferencesService.addPillToDate(pill2, fixedDate);
+      
+      expect(result.length, 1);
+      expect(result[0].pillName, "Pill A");
+      expect(result[0].pillRegiment, 1); // Should not have updated to 2
+      
+      final storedPills = sharedPreferencesService.getPillsToTakeForDate(fixedDate);
+      expect(storedPills.length, 1);
+    });
+
+    test("allows different pills", () async {
+      const PillToTake pill1 = PillToTake(
+          pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 1);
+      const PillToTake pill2 = PillToTake(
+          pillName: "Pill B", pillRegiment: 1, amountOfDaysToTake: 1);
+      
+      await sharedPreferencesService.addPillToDate(pill1, fixedDate);
+      await sharedPreferencesService.addPillToDate(pill2, fixedDate);
+      
+      final storedPills = sharedPreferencesService.getPillsToTakeForDate(fixedDate);
+      expect(storedPills.length, 2);
+    });
+  });
+
   test("SharedPreferences Service remove pill from date", () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);

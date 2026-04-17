@@ -435,12 +435,21 @@ class SharedPreferencesService {
   Future<void> addPillToDates(DateTime startDate, PillToTake pill) async {
     DateTime runningDate = startDate;
     int daysToTake = pill.amountOfDaysToTake;
-    final pillWithTrimmedName = pill.copyWith(pillName: pill.pillName.trim());
+    final trimmedName = pill.pillName.trim();
+    final normalizedName = trimmedName.toLowerCase();
+    final pillWithTrimmedName = pill.copyWith(pillName: trimmedName);
+
     while (daysToTake > 0) {
       String dateStr = _dateService.formatDateForStorage(runningDate);
       List<PillToTake> pills = getPillsToTakeForDate(dateStr);
-      pills.add(pillWithTrimmedName);
-      await _setPillsForDate(dateStr, pills);
+      final alreadyExists = pills.any(
+          (p) => p.pillName.trim().toLowerCase() == normalizedName);
+
+      if (!alreadyExists) {
+        pills.add(pillWithTrimmedName);
+        await _setPillsForDate(dateStr, pills);
+      }
+
       runningDate = runningDate.add(const Duration(days: oneDay));
       daysToTake--;
     }
@@ -448,6 +457,15 @@ class SharedPreferencesService {
 
   Future<List<PillToTake>> addPillToDate(PillToTake pill, String date) async {
     List<PillToTake> pills = getPillsToTakeForDate(date);
+    final normalizedName = pill.pillName.trim().toLowerCase();
+
+    final alreadyExists = pills.any(
+        (p) => p.pillName.trim().toLowerCase() == normalizedName);
+
+    if (alreadyExists) {
+      return pills;
+    }
+
     pills.add(pill.copyWith(pillName: pill.pillName.trim()));
     await _setPillsForDate(date, pills);
     return pills;

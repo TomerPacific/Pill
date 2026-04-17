@@ -299,7 +299,7 @@ class AddingPillFormState extends State<AddingPillForm> {
                                       _pillAmountOfDaysToTakeController.text));
 
                               context.read<PillBloc>().add(PillsEvent(
-                                  eventName: PillEvent.addPillRegimen,
+                                  eventName: PillEvent.addPillRegiment,
                                   date: dateService
                                       .formatDateForStorage(effectiveDate),
                                   startDateTime: effectiveDate,
