@@ -11,18 +11,29 @@ import 'package:pill/widget/pill_to_take_widget.dart';
 import 'package:pill/widget/pill_taken_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+class MockDateService extends DateService {
+  final DateTime _now;
+  MockDateService(this._now);
+  @override
+  DateTime now() => _now;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late PillBloc pillBloc;
   late SharedPreferencesService sharedPreferencesService;
-  final dateService = DateService();
+  late DateService dateService;
 
   final testDate = DateTime(2023, 10, 10);
-  final testDateStorageStr = dateService.formatDateForStorage(testDate);
-  final testDateDisplayStr = dateService.formatDateForDisplay(testDate);
+  late String testDateStorageStr;
+  late String testDateDisplayStr;
 
   setUp(() async {
+    dateService = MockDateService(testDate);
+    testDateStorageStr = dateService.formatDateForStorage(testDate);
+    testDateDisplayStr = dateService.formatDateForDisplay(testDate);
+    
     SharedPreferences.setMockInitialValues({});
     sharedPreferencesService =
         await SharedPreferencesService.create(dateService);
@@ -141,5 +152,68 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('DayWidget dismisses pill, shows SnackBar, and undos',
+          (WidgetTester tester) async {
+        const pill = PillToTake(
+            pillName: "Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+
+        await seedBlocState(tester, () async {
+          await sharedPreferencesService.addPillToDates(testDate, pill);
+        });
+
+        await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(PillWidget), findsOneWidget);
+
+        // Swipe right to left (end to start) to dismiss
+        await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
+        await tester.pumpAndSettle();
+
+        // Verify pill is gone and SnackBar is shown
+        expect(find.byType(PillWidget), findsNothing);
+        expect(find.text("Dismiss Pill removed"), findsOneWidget);
+        expect(find.text("Undo"), findsOneWidget);
+
+        // Tap Undo and wait for the bloc to emit the restored state
+        await tester.runAsync(() async {
+          await tester.tap(find.text("Undo"));
+          await pillBloc.stream.first;   // ← wait for addPillToDate → loadPills state
+        });
+
+        await tester.pump();
+        await tester.pumpAndSettle();
+
+        // Verify pill is back
+        expect(find.byType(PillWidget), findsOneWidget);
+        expect(find.text("Dismiss Pill"), findsOneWidget);
+      });
+
+  testWidgets('DayWidget swipe start-to-end does NOT dismiss',
+      (WidgetTester tester) async {
+    const pill = PillToTake(
+        pillName: "No Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+
+    await seedBlocState(tester, () async {
+      await sharedPreferencesService.addPillToDates(testDate, pill);
+    });
+
+    await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.byType(PillWidget), findsOneWidget);
+
+    // Swipe left to right (start to end)
+    await tester.drag(find.byType(Dismissible), const Offset(500, 0));
+    // Settle the "bounce back" animation since it won't dismiss
+    await tester.pumpAndSettle();
+
+    // Verify pill is STILL there
+    expect(find.byType(PillWidget), findsOneWidget);
+    expect(find.text("No Dismiss Pill"), findsOneWidget);
+    expect(find.text("No Dismiss Pill removed"), findsNothing);
   });
 }
