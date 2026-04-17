@@ -180,7 +180,7 @@ void main() {
         // Tap Undo and wait for the bloc to emit the restored state
         await tester.runAsync(() async {
           await tester.tap(find.text("Undo"));
-          await pillBloc.stream.first;   // ← wait for addPillToDate → loadPills state
+          await pillBloc.stream.first;   // Wait for the restored state emitted by addPillToDate.
         });
 
         await tester.pump();
