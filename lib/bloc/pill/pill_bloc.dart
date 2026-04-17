@@ -7,7 +7,7 @@ import 'package:pill/bloc/pill/pill_state.dart';
 import 'package:pill/model/pill_to_take.dart';
 
 enum PillEvent {
-  addPillRegimen,
+  addPillRegiment,
   addPillToDate,
   removePill,
   updatePill,
@@ -39,8 +39,8 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
       : super(PillState()) {
     on<PillsEvent>((event, emit) async {
       switch (event.eventName) {
-        case PillEvent.addPillRegimen:
-          await _onAddPillRegimen(event, emit);
+        case PillEvent.addPillRegiment:
+          await _onAddPillRegiment(event, emit);
           break;
         case PillEvent.addPillToDate:
           await _onAddPillToDate(event, emit);
@@ -62,7 +62,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     }, transformer: sequential());
   }
 
-  Future<void> _onAddPillRegimen(PillsEvent event, Emitter<PillState> emitter) async {
+  Future<void> _onAddPillRegiment(PillsEvent event, Emitter<PillState> emitter) async {
     final pillToTake = event.pillToTake;
     if (pillToTake == null) return;
 
