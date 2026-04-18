@@ -168,25 +168,21 @@ void main() {
 
         expect(find.byType(PillWidget), findsOneWidget);
 
-        // Swipe right to left (end to start) to dismiss
+        // Swipe right to left to dismiss
         await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
         await tester.pumpAndSettle();
 
-        // Verify pill is gone and SnackBar is shown
         expect(find.byType(PillWidget), findsNothing);
         expect(find.text("Dismiss Pill removed"), findsOneWidget);
         expect(find.text("Undo"), findsOneWidget);
 
-        // Tap Undo and wait for the bloc to emit the restored state
-        await tester.runAsync(() async {
-          await tester.tap(find.text("Undo"));
-          await pillBloc.stream.first;   // Wait for the restored state emitted by addPillToDate.
-        });
+        // Wait for TWO emissions: addPill state + subsequent loadPills state
+        final stateAfterUndo = pillBloc.stream.skip(1).first;
 
-        await tester.pump();
+        await tester.tap(find.text("Undo"));
+        await tester.runAsync(() => stateAfterUndo);
         await tester.pumpAndSettle();
 
-        // Verify pill is back
         expect(find.byType(PillWidget), findsOneWidget);
         expect(find.text("Dismiss Pill"), findsOneWidget);
       });
