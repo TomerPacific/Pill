@@ -209,10 +209,21 @@ class _DayWidgetState extends State<DayWidget> {
                   return !listEquals(previous.pillsTaken, current.pillsTaken);
                 },
                 listener: (context, state) {
+                  final blocPills = state.pillsToTake != null
+                      ? List<PillToTake>.from(state.pillsToTake!)
+                      : <PillToTake>[];
+                  final localPills = _localPills ?? <PillToTake>[];
+
+                  final blocWouldReintroduceLocallyRemovedPills =
+                      localPills.isNotEmpty &&
+                          blocPills.any((pill) => !localPills.contains(pill));
+
+                  if (blocWouldReintroduceLocallyRemovedPills) {
+                    return;
+                  }
+
                   setState(() {
-                    _localPills = state.pillsToTake != null
-                        ? List.from(state.pillsToTake!)
-                        : [];
+                    _localPills = blocPills;
                   });
                 },
                 builder: (context, state) {
