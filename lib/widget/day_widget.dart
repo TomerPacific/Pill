@@ -95,7 +95,7 @@ class _DayWidgetState extends State<DayWidget> {
         itemBuilder: (_, index) {
           final pill = pills[index];
           return Dismissible(
-            key: ObjectKey(pill.pillName),
+            key: ValueKey(pill.pillName),
             direction: DismissDirection.endToStart,
             background: const SizedBox.shrink(),
             secondaryBackground: _dismissibleBackground(),
@@ -197,6 +197,10 @@ class _DayWidgetState extends State<DayWidget> {
             ),
             Expanded(
               child: BlocConsumer<PillBloc, PillState>(
+                listenWhen: (previous, current) {
+                  return widget.mode == DayWidgetMode.toTake &&
+                      previous.pillsToTake != current.pillsToTake;
+                },
                 listener: (context, state) {
                   setState(() {
                     _localPills = state.pillsToTake != null
