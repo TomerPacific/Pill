@@ -54,12 +54,12 @@ class _DayWidgetState extends State<DayWidget> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [Colors.red.shade400, Colors.red.shade700],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+          begin: AlignmentDirectional.centerStart,
+          end: AlignmentDirectional.centerEnd,
         ),
         borderRadius: BorderRadius.circular(12),
       ),
-      alignment: Alignment.centerRight,
+      alignment: AlignmentDirectional.centerEnd,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -97,7 +97,7 @@ class _DayWidgetState extends State<DayWidget> {
           return Dismissible(
             key: ObjectKey(pill.pillName),
             direction: DismissDirection.endToStart,
-            background: _dismissibleBackground(),
+            background: const SizedBox.shrink(),
             secondaryBackground: _dismissibleBackground(),
             confirmDismiss: (direction) async {
               final now = widget.dateService.now();
