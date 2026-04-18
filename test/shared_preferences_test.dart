@@ -107,6 +107,43 @@ void main() {
     });
   });
 
+  group("SharedPreferences Service addPillToDates", () {
+    test("prevents duplicates across multiple days (case-insensitive and trimmed)", () async {
+      const PillToTake pill1 = PillToTake(
+          pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 2);
+      
+      // Add pill1 for 2 days
+      await sharedPreferencesService.addPillToDates(fixedNow, pill1);
+      
+      // Attempt to add a duplicate with different casing/spacing
+      const PillToTake pill2 = PillToTake(
+          pillName: "  pill a  ", pillRegiment: 2, amountOfDaysToTake: 2);
+      await sharedPreferencesService.addPillToDates(fixedNow, pill2);
+
+      // Verify for both days
+      for (int i = 0; i < 2; i++) {
+        final date = dateService.formatDateForStorage(fixedNow.add(Duration(days: i)));
+        final storedPills = sharedPreferencesService.getPillsToTakeForDate(date);
+        expect(storedPills.length, 1, reason: "Date offset $i should only have 1 pill");
+        expect(storedPills[0].pillName, "Pill A");
+        expect(storedPills[0].pillRegiment, 1);
+      }
+    });
+
+    test("trims pill name before persisting for all dates", () async {
+      const PillToTake pill = PillToTake(
+          pillName: "  Trim Me  ", pillRegiment: 1, amountOfDaysToTake: 2);
+      
+      await sharedPreferencesService.addPillToDates(fixedNow, pill);
+      
+      for (int i = 0; i < 2; i++) {
+        final date = dateService.formatDateForStorage(fixedNow.add(Duration(days: i)));
+        final storedPills = sharedPreferencesService.getPillsToTakeForDate(date);
+        expect(storedPills[0].pillName, "Trim Me");
+      }
+    });
+  });
+
   test("SharedPreferences Service remove pill from date", () async {
     const PillToTake pill = PillToTake(
         pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);

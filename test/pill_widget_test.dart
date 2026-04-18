@@ -74,7 +74,7 @@ void main() async {
                         child: ListView.builder(
                             itemCount: state.pillsToTake!.length,
                             itemBuilder: (_, index) => Dismissible(
-                                key: ObjectKey(
+                                key: ValueKey(
                                     state.pillsToTake![index].pillName),
                                 child: PillWidget(
                                   pillToTake: state.pillsToTake![index],
