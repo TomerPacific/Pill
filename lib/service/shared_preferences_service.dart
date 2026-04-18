@@ -158,13 +158,13 @@ class SharedPreferencesService {
             final existingPills = PillToTake.decode(existingYearlyValue)
                 .map((p) => p.copyWith(pillName: p.pillName.trim()))
                 .toList();
-            // For pills to take, prefer the newer ones if names match (case-insensitive)
+            // For pills to take, prefer the newer ones if IDs match, else names (case-insensitive)
             final Map<String, PillToTake> mergedMap = {};
             for (final pill in legacyPills) {
-              mergedMap[pill.pillName.toLowerCase()] = pill;
+              mergedMap[pill.id] = pill;
             }
             for (final pill in existingPills) {
-              mergedMap[pill.pillName.toLowerCase()] = pill;
+              mergedMap[pill.id] = pill;
             }
             migratedValue = PillToTake.encode(mergedMap.values.toList());
           } else {
@@ -253,10 +253,10 @@ class SharedPreferencesService {
 
               final Map<String, PillToTake> mergedMap = {};
               for (final pill in legacyPills) {
-                mergedMap[pill.pillName.toLowerCase()] = pill;
+                mergedMap[pill.id] = pill;
               }
               for (final pill in existingPills) {
-                mergedMap[pill.pillName.toLowerCase()] = pill;
+                mergedMap[pill.id] = pill;
               }
               migratedValue = PillToTake.encode(mergedMap.values.toList());
             } else {
@@ -360,10 +360,10 @@ class SharedPreferencesService {
 
                 final Map<String, PillToTake> mergedMap = {};
                 for (final pill in legacyPills) {
-                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                  mergedMap[pill.id] = pill;
                 }
                 for (final pill in existingPills) {
-                  mergedMap[pill.pillName.toLowerCase()] = pill;
+                  mergedMap[pill.id] = pill;
                 }
                 migratedValue = PillToTake.encode(mergedMap.values.toList());
               }
@@ -483,9 +483,8 @@ class SharedPreferencesService {
       updatePillForDate(PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
 
-    final normalizedName = pillToTake.pillName.trim().toLowerCase();
     int pillIndex = pillsToTakeList.indexWhere(
-        (element) => element.pillName.trim().toLowerCase() == normalizedName);
+        (element) => element.id == pillToTake.id);
 
     if (pillIndex == -1) {
       return null;
@@ -498,7 +497,7 @@ class SharedPreferencesService {
 
     if (pillToSave.pillRegiment == 0) {
       pillsToTakeList.removeWhere(
-          (element) => element.pillName.trim().toLowerCase() == normalizedName);
+          (element) => element.id == pillToTake.id);
       await _setPillsForDate(currentDate, pillsToTakeList);
     } else {
       pillsToTakeList[pillIndex] = pillToSave;
@@ -511,9 +510,8 @@ class SharedPreferencesService {
   Future<List<PillToTake>> removePillFromDate(
       PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
-    final normalizedName = pillToTake.pillName.trim().toLowerCase();
     pills.removeWhere(
-        (element) => element.pillName.trim().toLowerCase() == normalizedName);
+        (element) => element.id == pillToTake.id);
     await _setPillsForDate(currentDate, pills);
     return pills;
   }

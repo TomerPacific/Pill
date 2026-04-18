@@ -287,10 +287,11 @@ class AddingPillFormState extends State<AddingPillForm> {
                             if (_formKey.currentState?.validate() ?? false) {
                               final trimmedDescription =
                                   _pillDescriptionController.text.trim();
+                              final pillName = _pillNameTextEditingController.text.trim();
 
                               PillToTake pill = PillToTake(
-                                  pillName: _pillNameTextEditingController.text
-                                      .trim(),
+                                  id: "${pillName}_${DateTime.now().millisecondsSinceEpoch}",
+                                  pillName: pillName,
                                   pillRegiment: _pillsPerDay,
                                   description: trimmedDescription.isEmpty
                                       ? ''

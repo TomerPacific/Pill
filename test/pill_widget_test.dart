@@ -96,6 +96,7 @@ void main() async {
 
   testWidgets("Pill Widget - Info Icon Display and Tooltip", (WidgetTester tester) async {
     const PillToTake pillWithInfo = PillToTake(
+        id: '1',
         pillRegiment: 1, 
         pillName: "Info Pill", 
         amountOfDaysToTake: 1,
@@ -133,6 +134,7 @@ void main() async {
 
   testWidgets("Pill Widget - Event Isolation (Info tap doesn't take pill)", (WidgetTester tester) async {
     const PillToTake pillWithInfo = PillToTake(
+        id: '2',
         pillRegiment: 1, 
         pillName: "Safe Pill", 
         amountOfDaysToTake: 1,
@@ -160,7 +162,7 @@ void main() async {
 
   testWidgets("Pill Widget - Taking a Pill", (WidgetTester tester) async {
     const PillToTake pillToTake = PillToTake(
-        pillRegiment: 1, pillName: "Action Pill", amountOfDaysToTake: 1);
+        id: '3', pillRegiment: 1, pillName: "Action Pill", amountOfDaysToTake: 1);
 
     await tester.pumpWidget(base);
     await tester.pumpAndSettle();

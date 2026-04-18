@@ -54,6 +54,7 @@ void main() {
           home: Scaffold(
             body: PillWidget(
               pillToTake: const PillToTake(
+                  id: '1',
                   pillName: "Test Pill",
                   pillRegiment: 1,
                   amountOfDaysToTake: 1),

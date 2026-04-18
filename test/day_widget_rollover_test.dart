@@ -45,6 +45,7 @@ void main() {
   late SharedPreferencesService sharedPreferencesService;
   final DateTime widgetDate = DateTime(2023, 1, 1);
   const testPill = PillToTake(
+      id: '1',
       pillName: "Test Pill",
       pillRegiment: 1,
       amountOfDaysToTake: 1);

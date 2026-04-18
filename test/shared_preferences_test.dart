@@ -38,7 +38,7 @@ void main() {
 
   test("SharedPreferences Service add pill to date", () async {
     const PillToTake pill = PillToTake(
-        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "test_id", pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
@@ -46,7 +46,7 @@ void main() {
     expect(pills.length, 1);
 
     List<PillToTake> found =
-        pills.where((element) => element.pillName == pill.pillName).toList();
+        pills.where((element) => element.id == pill.id).toList();
 
     expect(found.length, 1);
   });
@@ -54,7 +54,7 @@ void main() {
   group("SharedPreferences Service addPillToDate", () {
     test("persists correctly", () async {
       const PillToTake pill = PillToTake(
-          pillName: "Single Date Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+          id: "id1", pillName: "Single Date Pill", pillRegiment: 1, amountOfDaysToTake: 1);
       
       final returnedPills = await sharedPreferencesService.addPillToDate(pill, fixedDate);
       
@@ -68,7 +68,7 @@ void main() {
 
     test("trims pill name before persisting", () async {
       const PillToTake pill = PillToTake(
-          pillName: "  Trim Me  ", pillRegiment: 1, amountOfDaysToTake: 1);
+          id: "id1", pillName: "  Trim Me  ", pillRegiment: 1, amountOfDaysToTake: 1);
       
       await sharedPreferencesService.addPillToDate(pill, fixedDate);
       
@@ -78,9 +78,9 @@ void main() {
 
     test("prevents duplicates (case-insensitive and trimmed)", () async {
       const PillToTake pill1 = PillToTake(
-          pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 1);
+          id: "id1", pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 1);
       const PillToTake pill2 = PillToTake(
-          pillName: "  pill a  ", pillRegiment: 2, amountOfDaysToTake: 1);
+          id: "id2", pillName: "  pill a  ", pillRegiment: 2, amountOfDaysToTake: 1);
       
       await sharedPreferencesService.addPillToDate(pill1, fixedDate);
       final result = await sharedPreferencesService.addPillToDate(pill2, fixedDate);
@@ -95,9 +95,9 @@ void main() {
 
     test("allows different pills", () async {
       const PillToTake pill1 = PillToTake(
-          pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 1);
+          id: "id1", pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 1);
       const PillToTake pill2 = PillToTake(
-          pillName: "Pill B", pillRegiment: 1, amountOfDaysToTake: 1);
+          id: "id2", pillName: "Pill B", pillRegiment: 1, amountOfDaysToTake: 1);
       
       await sharedPreferencesService.addPillToDate(pill1, fixedDate);
       await sharedPreferencesService.addPillToDate(pill2, fixedDate);
@@ -110,14 +110,14 @@ void main() {
   group("SharedPreferences Service addPillToDates", () {
     test("prevents duplicates across multiple days (case-insensitive and trimmed)", () async {
       const PillToTake pill1 = PillToTake(
-          pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 2);
+          id: "id1", pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 2);
       
       // Add pill1 for 2 days
       await sharedPreferencesService.addPillToDates(fixedNow, pill1);
       
       // Attempt to add a duplicate with different casing/spacing
       const PillToTake pill2 = PillToTake(
-          pillName: "  pill a  ", pillRegiment: 2, amountOfDaysToTake: 2);
+          id: "id2", pillName: "  pill a  ", pillRegiment: 2, amountOfDaysToTake: 2);
       await sharedPreferencesService.addPillToDates(fixedNow, pill2);
 
       // Verify for both days
@@ -132,7 +132,7 @@ void main() {
 
     test("trims pill name before persisting for all dates", () async {
       const PillToTake pill = PillToTake(
-          pillName: "  Trim Me  ", pillRegiment: 1, amountOfDaysToTake: 2);
+          id: "id1", pillName: "  Trim Me  ", pillRegiment: 1, amountOfDaysToTake: 2);
       
       await sharedPreferencesService.addPillToDates(fixedNow, pill);
       
@@ -146,7 +146,7 @@ void main() {
 
   test("SharedPreferences Service remove pill from date", () async {
     const PillToTake pill = PillToTake(
-        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "id1", pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
@@ -164,12 +164,12 @@ void main() {
       "SharedPreferences Service remove pill from date (case-insensitive and trimmed)",
       () async {
     const PillToTake pill = PillToTake(
-        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "id1", pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     await sharedPreferencesService.addPillToDates(fixedNow, pill);
 
     // Attempt removal with different casing and whitespace
     const PillToTake pillToRemove = PillToTake(
-        pillName: "  test pill  ", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "id1", pillName: "  test pill  ", pillRegiment: 2, amountOfDaysToTake: 1);
 
     await sharedPreferencesService.removePillFromDate(pillToRemove, fixedDate);
 
@@ -180,7 +180,7 @@ void main() {
 
   test("SharedPreferences Service update pill from date", () async {
     const PillToTake pill = PillToTake(
-        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "id1", pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
@@ -202,12 +202,12 @@ void main() {
       "SharedPreferences Service update pill from date (case-insensitive and trimmed)",
       () async {
     const PillToTake pill = PillToTake(
-        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "id1", pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     await sharedPreferencesService.addPillToDates(fixedNow, pill);
 
     // Update with different casing and whitespace
     const PillToTake updatedPillInstance = PillToTake(
-        pillName: "  test pill  ", pillRegiment: 10, amountOfDaysToTake: 1);
+        id: "id1", pillName: "  test pill  ", pillRegiment: 10, amountOfDaysToTake: 1);
 
     await sharedPreferencesService.updatePillForDate(updatedPillInstance, fixedDate);
 
@@ -221,7 +221,7 @@ void main() {
       "SharedPreferences Service update pill from date - pill not found guard",
       () async {
     const PillToTake pill = PillToTake(
-        pillName: "Non Existent Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "id1", pillName: "Non Existent Pill", pillRegiment: 2, amountOfDaysToTake: 1);
 
     // This should not throw RangeError
     await sharedPreferencesService.updatePillForDate(pill, fixedDate);
@@ -239,6 +239,7 @@ void main() {
   test("SharedPreferences Service pillImage persistence", () async {
     const String customImage = "assets/images/custom_pill.png";
     const PillToTake pill = PillToTake(
+        id: "id1",
         pillName: "Custom Image Pill",
         pillRegiment: 2,
         amountOfDaysToTake: 1,
@@ -258,7 +259,7 @@ void main() {
 
   test("SharedPreferences Service Clearing All Pills", () async {
     const PillToTake pill = PillToTake(
-        pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
+        id: "id1", pillName: "Test Pill", pillRegiment: 2, amountOfDaysToTake: 1);
     await sharedPreferencesService.addPillToDates(fixedNow, pill);
     List<PillToTake> pills =
         sharedPreferencesService.getPillsToTakeForDate(fixedDate);
@@ -280,7 +281,7 @@ void main() {
   group("SharedPreferences Service migration", () {
     test("Full migration (Yearly + Prefixed + Delimiter)", () async {
       const pill = PillToTake(
-          pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+          id: "id1", pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
       final pillTaken = PillTaken(
           pillName: "Test Pill", lastTaken: DateTime(2023, 3, 29, 10));
 
@@ -331,7 +332,7 @@ void main() {
 
     test("Migration from Prefixed to Delimiter only", () async {
       const pill = PillToTake(
-          pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+          id: "id1", pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
       final String pillsValue = PillToTake.encode([pill]);
 
       SharedPreferences.setMockInitialValues({
@@ -352,9 +353,9 @@ void main() {
     test("Migration with conflict resolution (merge data)", () async {
       const int migrationYear = 2026;
       const pill1 = PillToTake(
-          pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 7);
+          id: "id1", pillName: "Pill A", pillRegiment: 1, amountOfDaysToTake: 7);
       const pill2 = PillToTake(
-          pillName: "Pill B", pillRegiment: 2, amountOfDaysToTake: 7);
+          id: "id2", pillName: "Pill B", pillRegiment: 2, amountOfDaysToTake: 7);
 
       final pillTaken1 = PillTaken(
           pillName: "Pill A",

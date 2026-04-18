@@ -91,7 +91,7 @@ void main() {
     // 2. Write to service synchronously, then drive bloc state update via
     //    tester.runAsync so the stream emission fully completes
     const pill = PillToTake(
-        pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+        id: "test_id", pillName: "Test Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
     await seedBlocState(tester, () async {
       await sharedPreferencesService.addPillToDates(testDate, pill);
@@ -115,7 +115,7 @@ void main() {
     expect(find.text(pillsTakenHeader), findsOneWidget);
 
     const pill = PillToTake(
-        pillName: "Taken Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+        id: "taken_id", pillName: "Taken Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
     // 2. Add AND mark taken synchronously in the service, then drive bloc state
     await seedBlocState(tester, () async {
@@ -145,7 +145,7 @@ void main() {
       await sharedPreferencesService.addPillToDates(
           testDate,
           const PillToTake(
-              pillName: "Layout Pill", pillRegiment: 1, amountOfDaysToTake: 1));
+              id: "layout_id", pillName: "Layout Pill", pillRegiment: 1, amountOfDaysToTake: 1));
     });
 
     await tester.pump();
@@ -157,7 +157,7 @@ void main() {
   testWidgets('DayWidget dismisses pill, shows SnackBar, and undos',
       (WidgetTester tester) async {
     const pill = PillToTake(
-        pillName: "Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+        id: "dismiss_id", pillName: "Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
     await seedBlocState(tester, () async {
       await sharedPreferencesService.addPillToDates(testDate, pill);
@@ -191,7 +191,7 @@ void main() {
   testWidgets('DayWidget swipe start-to-end does NOT dismiss',
       (WidgetTester tester) async {
     const pill = PillToTake(
-        pillName: "No Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+        id: "no_dismiss_id", pillName: "No Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
     await seedBlocState(tester, () async {
       await sharedPreferencesService.addPillToDates(testDate, pill);

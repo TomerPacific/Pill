@@ -5,6 +5,7 @@ import 'package:pill/constants.dart';
 void main() {
   group('PillToTake copyWith', () {
     const pill = PillToTake(
+      id: 'test_id',
       pillName: 'Test',
       pillRegiment: 1,
       amountOfDaysToTake: 1,
@@ -14,6 +15,7 @@ void main() {
     test('should update fields correctly', () {
       final updated = pill.copyWith(pillName: 'Updated');
       expect(updated.pillName, 'Updated');
+      expect(updated.id, 'test_id');
       expect(updated.description, 'Original Description');
     });
 
@@ -39,6 +41,7 @@ void main() {
   group('PillToTake.fromJson', () {
     test('should parse numeric values from double', () {
       final json = {
+        pillIdKey: 'test_id',
         pillNameKey: 'Test Pill',
         pillRegimentKey: 2.0,
         pillAmountOfDaysToTakeKey: 7.0,
@@ -46,12 +49,14 @@ void main() {
 
       final pill = PillToTake.fromJson(json);
 
+      expect(pill.id, 'test_id');
       expect(pill.pillRegiment, 2);
       expect(pill.amountOfDaysToTake, 7);
     });
 
     test('should parse numeric values from string double', () {
       final json = {
+        pillIdKey: 'test_id',
         pillNameKey: 'Test Pill',
         pillRegimentKey: '2.0',
         pillAmountOfDaysToTakeKey: '7.0',
@@ -59,6 +64,7 @@ void main() {
 
       final pill = PillToTake.fromJson(json);
 
+      expect(pill.id, 'test_id');
       expect(pill.pillRegiment, 2);
       expect(pill.amountOfDaysToTake, 7);
     });
@@ -86,6 +92,7 @@ void main() {
       expect(pill.description, isNull);
       expect(pill.amountOfDaysToTake, 1);
       expect(pill.lastTaken, isNull);
+      expect(pill.id, startsWith('Unknown_'));
     });
 
     test('should handle wrong-typed fields with defaults', () {
@@ -105,15 +112,18 @@ void main() {
       expect(pill.description, isNull);
       expect(pill.amountOfDaysToTake, 1);
       expect(pill.lastTaken, isNull);
+      expect(pill.id, startsWith('Unknown_'));
     });
 
     test('should parse valid lastTaken date', () {
       const dateString = '2023-10-27T10:00:00.000Z';
       final json = <String, dynamic>{
+        pillIdKey: 'test_id',
         pillLastTakenKey: dateString
       };
       final pill = PillToTake.fromJson(json);
 
+      expect(pill.id, 'test_id');
       expect(pill.lastTaken, DateTime.parse(dateString));
     });
   });
@@ -132,9 +142,10 @@ void main() {
     });
 
     test('should return list of PillToTake for valid JSON list', () {
-      const validJson = '[{"pillName": "Advil", "pillRegiment": 2, "amountOfDaysToTake": 7}]';
+      const validJson = '[{"id": "id1", "pillName": "Advil", "pillRegiment": 2, "amountOfDaysToTake": 7}]';
       final result = PillToTake.decode(validJson);
       expect(result.length, 1);
+      expect(result[0].id, 'id1');
       expect(result[0].pillName, 'Advil');
       expect(result[0].pillRegiment, 2);
     });

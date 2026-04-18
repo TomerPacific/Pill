@@ -6,6 +6,7 @@ import 'package:pill/constants.dart';
 const String defaultPillToTakeImage = 'assets/images/pill_to_take.png';
 
 class PillToTake extends Equatable {
+  final String id;
   final String pillName;
   final int pillRegiment;
   final String pillImage;
@@ -14,7 +15,8 @@ class PillToTake extends Equatable {
   final DateTime? lastTaken;
 
   const PillToTake(
-      {required this.pillName,
+      {required this.id,
+      required this.pillName,
       required this.pillRegiment,
       this.pillImage = defaultPillToTakeImage,
       this.description,
@@ -34,6 +36,12 @@ class PillToTake extends Equatable {
 
     final nameValue = jsonData[pillNameKey];
     final String name = nameValue is String ? nameValue : 'Unknown';
+
+    // Fallback for legacy data without ID: use name + regiment + days
+    final idValue = jsonData[pillIdKey];
+    final String id = idValue is String 
+        ? idValue 
+        : "${name}_${DateTime.now().millisecondsSinceEpoch}";
     
     final regimentValue = jsonData[pillRegimentKey];
     final int regiment = regimentValue is num 
@@ -52,6 +60,7 @@ class PillToTake extends Equatable {
         : num.tryParse(daysValue?.toString() ?? '')?.toInt() ?? 1;
 
     return PillToTake(
+        id: id,
         pillName: name,
         pillRegiment: regiment,
         pillImage: image,
@@ -61,6 +70,7 @@ class PillToTake extends Equatable {
   }
 
   static Map<String, dynamic> toMap(PillToTake pill) => {
+        pillIdKey: pill.id,
         pillNameKey: pill.pillName,
         pillRegimentKey: pill.pillRegiment,
         pillImageKey: pill.pillImage,
@@ -98,6 +108,7 @@ class PillToTake extends Equatable {
   }
 
   PillToTake copyWith({
+    String? id,
     String? pillName,
     int? pillRegiment,
     String? pillImage,
@@ -108,6 +119,7 @@ class PillToTake extends Equatable {
     bool clearLastTaken = false,
   }) {
     return PillToTake(
+      id: id ?? this.id,
       pillName: pillName ?? this.pillName,
       pillRegiment: pillRegiment ?? this.pillRegiment,
       pillImage: pillImage ?? this.pillImage,
@@ -119,6 +131,7 @@ class PillToTake extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
         pillName,
         pillRegiment,
         pillImage,

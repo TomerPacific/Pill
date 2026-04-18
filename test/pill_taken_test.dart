@@ -7,6 +7,7 @@ void main() {
   group('PillTaken.extractFromPillToTake', () {
     test('should use defaultPillTakenImage when PillToTake has defaultPillToTakeImage', () {
       const pillToTake = PillToTake(
+        id: '1',
         pillName: 'Test Pill',
         pillRegiment: 1,
         amountOfDaysToTake: 1,
@@ -21,6 +22,7 @@ void main() {
     test('should preserve custom image from PillToTake', () {
       const customImage = 'assets/images/custom_pill.png';
       const pillToTake = PillToTake(
+        id: '1',
         pillName: 'Test Pill',
         pillRegiment: 1,
         amountOfDaysToTake: 1,

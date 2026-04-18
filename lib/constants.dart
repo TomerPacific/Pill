@@ -1,3 +1,4 @@
+const String pillIdKey = "id";
 const String pillNameKey = "pillName";
 const String pillWeightKey = "pillWeight";
 const String pillRegimentKey = "pillRegiment";

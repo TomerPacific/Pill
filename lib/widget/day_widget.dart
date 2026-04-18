@@ -96,7 +96,7 @@ class _DayWidgetState extends State<DayWidget> {
         itemBuilder: (_, index) {
           final pill = pills[index];
           return Dismissible(
-            key: ValueKey(pill.pillName),
+            key: ValueKey(pill.id),
             direction: DismissDirection.endToStart,
             background: const SizedBox.shrink(),
             secondaryBackground: _dismissibleBackground(),
@@ -214,9 +214,14 @@ class _DayWidgetState extends State<DayWidget> {
                       : <PillToTake>[];
                   final localPills = _localPills ?? <PillToTake>[];
 
+                  // We check by id because full PillToTake equality includes mutable fields
+                  // like pillRegiment and lastTaken. If we used .contains(pill), any update
+                  // (e.g. tapping a pill) would look like a "new" pill not in localPills,
+                  // triggering this guard and preventing the UI from reflecting the update.
                   final blocWouldReintroduceLocallyRemovedPills =
                       localPills.isNotEmpty &&
-                          blocPills.any((pill) => !localPills.contains(pill));
+                          blocPills.any((pill) =>
+                          !localPills.any((local) => local.id == pill.id));
 
                   if (blocWouldReintroduceLocallyRemovedPills) {
                     return;
