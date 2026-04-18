@@ -176,8 +176,9 @@ void main() {
         expect(find.text("Dismiss Pill removed"), findsOneWidget);
         expect(find.text("Undo"), findsOneWidget);
 
-        // Wait for TWO emissions: addPill state + subsequent loadPills state
-        final stateAfterUndo = pillBloc.stream.skip(1).first;
+        final stateAfterUndo = pillBloc.stream.firstWhere(
+              (state) => state.pillsToTake?.any((p) => p.pillName == "Dismiss Pill") ?? false,
+        );
 
         await tester.tap(find.text("Undo"));
         await tester.runAsync(() => stateAfterUndo);
