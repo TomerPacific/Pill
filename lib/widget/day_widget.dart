@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pill/bloc/pill/pill_bloc.dart';
@@ -199,7 +200,13 @@ class _DayWidgetState extends State<DayWidget> {
               child: BlocConsumer<PillBloc, PillState>(
                 listenWhen: (previous, current) {
                   return widget.mode == DayWidgetMode.toTake &&
-                      previous.pillsToTake != current.pillsToTake;
+                      !listEquals(previous.pillsToTake, current.pillsToTake);
+                },
+                buildWhen: (previous, current) {
+                  if (widget.mode == DayWidgetMode.toTake) {
+                    return !listEquals(previous.pillsToTake, current.pillsToTake);
+                  }
+                  return !listEquals(previous.pillsTaken, current.pillsTaken);
                 },
                 listener: (context, state) {
                   setState(() {
