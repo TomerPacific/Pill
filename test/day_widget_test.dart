@@ -155,38 +155,38 @@ void main() {
   });
 
   testWidgets('DayWidget dismisses pill, shows SnackBar, and undos',
-          (WidgetTester tester) async {
-        const pill = PillToTake(
-            pillName: "Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
+      (WidgetTester tester) async {
+    const pill = PillToTake(
+        pillName: "Dismiss Pill", pillRegiment: 1, amountOfDaysToTake: 1);
 
-        await seedBlocState(tester, () async {
-          await sharedPreferencesService.addPillToDates(testDate, pill);
-        });
+    await seedBlocState(tester, () async {
+      await sharedPreferencesService.addPillToDates(testDate, pill);
+    });
 
-        await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
-        await tester.pumpAndSettle();
+    await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
+    await tester.pumpAndSettle();
 
-        expect(find.byType(PillWidget), findsOneWidget);
+    expect(find.byType(PillWidget), findsOneWidget);
 
-        // Swipe right to left to dismiss
-        await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
-        await tester.pumpAndSettle();
+    // Swipe right to left to dismiss
+    await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
+    await tester.pumpAndSettle();
 
-        expect(find.byType(PillWidget), findsNothing);
-        expect(find.text("Dismiss Pill removed"), findsOneWidget);
-        expect(find.text("Undo"), findsOneWidget);
+    expect(find.byType(PillWidget), findsNothing);
+    expect(find.text("Dismiss Pill removed"), findsOneWidget);
+    expect(find.text("Undo"), findsOneWidget);
 
-        final stateAfterUndo = pillBloc.stream.firstWhere(
-              (state) => state.pillsToTake?.any((p) => p.pillName == "Dismiss Pill") ?? false,
-        );
+    final stateAfterUndo = pillBloc.stream.firstWhere(
+      (state) => state.pillsToTake?.any((p) => p.pillName == "Dismiss Pill") ?? false,
+    );
 
-        await tester.tap(find.text("Undo"));
-        await tester.runAsync(() => stateAfterUndo);
-        await tester.pumpAndSettle();
+    await tester.tap(find.text("Undo"));
+    await tester.runAsync(() => stateAfterUndo);
+    await tester.pumpAndSettle();
 
-        expect(find.byType(PillWidget), findsOneWidget);
-        expect(find.text("Dismiss Pill"), findsOneWidget);
-      });
+    expect(find.byType(PillWidget), findsOneWidget);
+    expect(find.text("Dismiss Pill"), findsOneWidget);
+  });
 
   testWidgets('DayWidget swipe start-to-end does NOT dismiss',
       (WidgetTester tester) async {
