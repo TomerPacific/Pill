@@ -33,10 +33,10 @@ class SharedPreferencesService {
       DateService dateService,
       {int? migrationYear}) async {
     SharedPreferencesService sharedPreferencesService =
-        SharedPreferencesService._create(dateService);
+    SharedPreferencesService._create(dateService);
 
     sharedPreferencesService._sharedPreferences =
-        await SharedPreferences.getInstance();
+    await SharedPreferences.getInstance();
 
     await sharedPreferencesService._migrateKeys(migrationYear: migrationYear);
 
@@ -91,7 +91,7 @@ class SharedPreferencesService {
             final Map<int, List<PillTaken>> pillsByYear = {};
             for (final pill in legacyPills) {
               final trimmedPill =
-                  pill.copyWith(pillName: pill.pillName.trim());
+              pill.copyWith(pillName: pill.pillName.trim());
               final year = trimmedPill.lastTaken?.year ?? currentYear;
               pillsByYear.putIfAbsent(year, () => []).add(trimmedPill);
             }
@@ -102,7 +102,7 @@ class SharedPreferencesService {
               final pillsForYear = entry.value;
               final targetKey = "$legacyTakenKey$year/$datePart";
               final existingYearlyValue =
-                  _sharedPreferences.getString(targetKey);
+              _sharedPreferences.getString(targetKey);
 
               String migratedValue;
               if (existingYearlyValue != null) {
@@ -112,7 +112,7 @@ class SharedPreferencesService {
                     .map((p) => p.copyWith(pillName: p.pillName.trim()))
                     .toList();
                 final merged =
-                    {...pillsForYear, ...trimmedExisting}.toList();
+                {...pillsForYear, ...trimmedExisting}.toList();
                 migratedValue = PillTaken.encode(merged);
               } else {
                 migratedValue = PillTaken.encode(pillsForYear);
@@ -446,6 +446,14 @@ class SharedPreferencesService {
     }
   }
 
+  /// Adds a single pill to a specific date. Used for undo after a dismiss.
+  Future<List<PillToTake>> addPillToDate(PillToTake pill, String date) async {
+    final pills = getPillsToTakeForDate(date);
+    pills.add(pill.copyWith(pillName: pill.pillName.trim()));
+    await _setPillsForDate(date, pills);
+    return pills;
+  }
+
   Future<List<PillTaken>> addTakenPill(PillToTake pillToTake, String date) async {
     PillTaken pill = PillTaken.extractFromPillToTake(pillToTake);
     List<PillTaken> pillsTaken = getPillsTakenForDate(date);
@@ -455,12 +463,12 @@ class SharedPreferencesService {
   }
 
   Future<({List<PillToTake> pillsToTake, List<PillTaken> pillsTaken})?>
-      updatePillForDate(PillToTake pillToTake, String currentDate) async {
+  updatePillForDate(PillToTake pillToTake, String currentDate) async {
     List<PillToTake> pillsToTakeList = getPillsToTakeForDate(currentDate);
 
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     int pillIndex = pillsToTakeList.indexWhere(
-        (element) => element.pillName.trim().toLowerCase() == normalizedName);
+            (element) => element.pillName.trim().toLowerCase() == normalizedName);
 
     if (pillIndex == -1) {
       return null;
@@ -473,7 +481,7 @@ class SharedPreferencesService {
 
     if (pillToSave.pillRegiment == 0) {
       pillsToTakeList.removeWhere(
-          (element) => element.pillName.trim().toLowerCase() == normalizedName);
+              (element) => element.pillName.trim().toLowerCase() == normalizedName);
       await _setPillsForDate(currentDate, pillsToTakeList);
     } else {
       pillsToTakeList[pillIndex] = pillToSave;
@@ -488,7 +496,7 @@ class SharedPreferencesService {
     List<PillToTake> pills = getPillsToTakeForDate(currentDate);
     final normalizedName = pillToTake.pillName.trim().toLowerCase();
     pills.removeWhere(
-        (element) => element.pillName.trim().toLowerCase() == normalizedName);
+            (element) => element.pillName.trim().toLowerCase() == normalizedName);
     await _setPillsForDate(currentDate, pills);
     return pills;
   }
@@ -554,7 +562,7 @@ class SharedPreferencesService {
   Future<void> clearPillsOfPastDays() async {
     try {
       DateTime? timeWhenApplicationWasOpened =
-          getTimeWhenApplicationWasOpened();
+      getTimeWhenApplicationWasOpened();
       if (timeWhenApplicationWasOpened == null) {
         await setTimeWhenApplicationWasOpened();
       } else {
@@ -578,7 +586,7 @@ class SharedPreferencesService {
     for (String key in keys) {
       if (key.startsWith(pillsToTakePrefix)) {
         List<PillToTake> pills =
-            getPillsToTakeForDate(key.substring(pillsToTakePrefix.length));
+        getPillsToTakeForDate(key.substring(pillsToTakePrefix.length));
         if (pills.isNotEmpty) return true;
       }
     }
