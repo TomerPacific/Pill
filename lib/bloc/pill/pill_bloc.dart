@@ -8,6 +8,7 @@ import 'package:pill/model/pill_to_take.dart';
 
 enum PillEvent {
   addPill,
+  addPillToDate,
   removePill,
   updatePill,
   loadPills,
@@ -23,11 +24,11 @@ class PillsEvent {
 
   PillsEvent(
       {required this.eventName,
-      required this.date,
-      this.pillToTake,
-      this.pillsToTake,
-      this.pillsTaken,
-      this.startDateTime});
+        required this.date,
+        this.pillToTake,
+        this.pillsToTake,
+        this.pillsTaken,
+        this.startDateTime});
 }
 
 class PillBloc extends Bloc<PillsEvent, PillState> {
@@ -41,6 +42,9 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
         case PillEvent.addPill:
           await _onAddPill(event, emit);
           break;
+        case PillEvent.addPillToDate:
+          await _onAddPillToDate(event, emit);
+          break;
         case PillEvent.removePill:
           await _onRemovePill(event, emit);
           break;
@@ -49,13 +53,26 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
           break;
         case PillEvent.loadPills:
           final pillsTaken =
-              _sharedPreferencesService.getPillsTakenForDate(event.date);
+          _sharedPreferencesService.getPillsTakenForDate(event.date);
           final pillsToTake =
-              _sharedPreferencesService.getPillsToTakeForDate(event.date);
+          _sharedPreferencesService.getPillsToTakeForDate(event.date);
           emit(PillState(pillsToTake: pillsToTake, pillsTaken: pillsTaken));
           break;
       }
     }, transformer: sequential());
+  }
+
+  Future<void> _onAddPillToDate(PillsEvent event, Emitter<PillState> emitter) async {
+    final pillToTake = event.pillToTake;
+    if (pillToTake == null) return;
+
+    final updatedPills =
+    await _sharedPreferencesService.addPillToDate(pillToTake, event.date);
+
+    emitter(PillState(
+      pillsToTake: updatedPills,
+      pillsTaken: state.pillsTaken,
+    ));
   }
 
   Future<void> _onAddPill(PillsEvent event, Emitter<PillState> emitter) async {
@@ -69,7 +86,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
         event.startDateTime ?? _dateService.now(), pillToTake);
 
     final pillsToTake =
-        _sharedPreferencesService.getPillsToTakeForDate(event.date);
+    _sharedPreferencesService.getPillsToTakeForDate(event.date);
 
     emitter(PillState(
       pillsToTake: pillsToTake,
@@ -82,7 +99,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     if (pillToTake == null) return;
 
     final updatedPills =
-        await _sharedPreferencesService.removePillFromDate(pillToTake, event.date);
+    await _sharedPreferencesService.removePillFromDate(pillToTake, event.date);
 
     emitter(PillState(
       pillsToTake: updatedPills,
@@ -95,7 +112,7 @@ class PillBloc extends Bloc<PillsEvent, PillState> {
     if (pillToTake == null) return;
 
     final result =
-        await _sharedPreferencesService.updatePillForDate(pillToTake, event.date);
+    await _sharedPreferencesService.updatePillForDate(pillToTake, event.date);
 
     if (result == null) return;
 
