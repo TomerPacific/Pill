@@ -130,21 +130,18 @@ class _DayWidgetState extends State<DayWidget> {
                 date: widgetDateStr,
                 pillToTake: pill));
 
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('${pill.pillName} removed'),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                persist: false,
                 action: SnackBarAction(
                   label: 'Undo',
                   onPressed: () {
                     // Clear tracking synchronously before dispatching so the
                     // listener doesn't block the incoming state update.
-                    _locallyRemovedNames
-                        .remove(pill.pillName.trim().toLowerCase());
+                    setState(() {
+                      _locallyRemovedNames.remove(pill.pillName.trim().toLowerCase());
+                    });
                     context.read<PillBloc>().add(PillsEvent(
                         eventName: PillEvent.addPillToDate,
                         date: widgetDateStr,
