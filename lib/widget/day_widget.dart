@@ -130,7 +130,9 @@ class _DayWidgetState extends State<DayWidget> {
                 date: widgetDateStr,
                 pillToTake: pill));
 
-            ScaffoldMessenger.of(context).showSnackBar(
+            final scaffoldMessenger = ScaffoldMessenger.of(context);
+            scaffoldMessenger.clearSnackBars();
+            scaffoldMessenger.showSnackBar(
               SnackBar(
                 content: Text('${pill.pillName} removed'),
                 persist: false,
