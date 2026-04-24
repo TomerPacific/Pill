@@ -141,9 +141,8 @@ class _DayWidgetState extends State<DayWidget> {
                   onPressed: () {
                     // Clear tracking synchronously before dispatching so the
                     // listener doesn't block the incoming state update.
-                    setState(() {
-                      _locallyRemovedNames.remove(pill.pillName.trim().toLowerCase());
-                    });
+                    _locallyRemovedNames.remove(
+                        pill.pillName.trim().toLowerCase());
                     context.read<PillBloc>().add(PillsEvent(
                         eventName: PillEvent.addPillToDate,
                         date: widgetDateStr,
