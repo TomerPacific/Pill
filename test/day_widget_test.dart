@@ -190,6 +190,32 @@ void main() {
         expect(find.text('Dismiss Pill'), findsOneWidget);
       });
 
+  testWidgets('DayWidget Snackbar disappears after duration',
+          (WidgetTester tester) async {
+        const pill = PillToTake(
+            pillName: 'Timed Pill', pillRegiment: 1, amountOfDaysToTake: 1);
+
+        await seedBlocState(tester, () async {
+          await sharedPreferencesService.addPillToDates(testDate, pill);
+        });
+
+        await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
+        await tester.pumpAndSettle();
+
+        // Swipe end-to-start (right to left) to dismiss.
+        await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Timed Pill removed'), findsOneWidget);
+
+        // Default SnackBar duration is 4 seconds.
+        // We pump for longer than that to ensure it's gone.
+        await tester.pump(const Duration(seconds: 5));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Timed Pill removed'), findsNothing);
+      });
+
   testWidgets('DayWidget dismisses one of multiple pills and undos correctly',
           (WidgetTester tester) async {
         // Increase surface size to ensure all 3 pills are rendered by ListView.builder
