@@ -18,81 +18,84 @@ class MockDateService extends DateService {
   DateTime now() => mockDate;
 }
 
-void main() async {
+void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   final DateTime date = DateTime(2026, 4, 4);
   DateService dateService = MockDateService(date);
-  SharedPreferences.setMockInitialValues({});
-  SharedPreferencesService sharedPreferencesService =
-      await SharedPreferencesService.create(dateService);
   String currentDateStorage = dateService.formatDateForStorage(date);
   String currentDateDisplay = dateService.formatDateForDisplay(date);
   String title = "You do not have to take any pills today 😀";
 
-  setUp(() async {
-    await sharedPreferencesService.clearAllPills();
-  });
+  late SharedPreferencesService sharedPreferencesService;
+  late Widget base;
 
-  Widget base = MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (context) => PillBloc(sharedPreferencesService, dateService)
-              ..add(PillsEvent(
-                  eventName: PillEvent.loadPills, date: currentDateStorage))),
-        BlocProvider(
-            create: (context) => ThemeBloc(sharedPreferencesService, false)),
-        BlocProvider(
-            create: (context) => ClearPillsBloc(sharedPreferencesService)),
-      ],
-      child: MaterialApp(home: BlocBuilder<PillBloc, PillState>(
-        builder: (context, state) {
-          return Scaffold(
-              body: SizedBox(
-            height: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 40.0),
-                    child: Text(currentDateDisplay,
-                        style: const TextStyle(
-                            fontSize: 25.0, fontWeight: FontWeight.bold)),
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    sharedPreferencesService =
+        await SharedPreferencesService.create(dateService);
+    await sharedPreferencesService.clearAllPills();
+
+    base = MultiBlocProvider(
+        providers: [
+          BlocProvider(
+              create: (context) => PillBloc(sharedPreferencesService, dateService)
+                ..add(PillsEvent(
+                    eventName: PillEvent.loadPills, date: currentDateStorage))),
+          BlocProvider(
+              create: (context) => ThemeBloc(sharedPreferencesService, false)),
+          BlocProvider(
+              create: (context) => ClearPillsBloc(sharedPreferencesService)),
+        ],
+        child: MaterialApp(home: BlocBuilder<PillBloc, PillState>(
+          builder: (context, state) {
+            return Scaffold(
+                body: SizedBox(
+              height: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 40.0),
+                      child: Text(currentDateDisplay,
+                          style: const TextStyle(
+                              fontSize: 25.0, fontWeight: FontWeight.bold)),
+                    ),
                   ),
-                ),
-                (state.pillsToTake == null || state.pillsToTake!.isEmpty)
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Text(title,
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)))
-                    : Expanded(
-                        child: SizedBox(
-                        height: 200.0,
-                        child: ListView.builder(
-                            itemCount: state.pillsToTake!.length,
-                            itemBuilder: (_, index) => Dismissible(
-                                key: ObjectKey(
-                                    state.pillsToTake![index].pillName),
-                                child: PillWidget(
-                                  pillToTake: state.pillsToTake![index],
-                                  dateService: dateService,
-                                  date: date,
-                                ),
-                                onDismissed: (direction) {
-                                  context.read<PillBloc>().add(PillsEvent(
-                                      eventName: PillEvent.removePill,
-                                      date: currentDateStorage,
-                                      pillToTake: state.pillsToTake![index]));
-                                })),
-                      ))
-              ],
-            ),
-          ));
-        },
-      )));
+                  (state.pillsToTake == null || state.pillsToTake!.isEmpty)
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Text(title,
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)))
+                      : Expanded(
+                          child: SizedBox(
+                          height: 200.0,
+                          child: ListView.builder(
+                              itemCount: state.pillsToTake!.length,
+                              itemBuilder: (_, index) => Dismissible(
+                                  key: ObjectKey(
+                                      state.pillsToTake![index].pillName),
+                                  child: PillWidget(
+                                    pillToTake: state.pillsToTake![index],
+                                    dateService: dateService,
+                                    date: date,
+                                  ),
+                                  onDismissed: (direction) {
+                                    context.read<PillBloc>().add(PillsEvent(
+                                        eventName: PillEvent.removePill,
+                                        date: currentDateStorage,
+                                        pillToTake: state.pillsToTake![index]));
+                                  })),
+                        ))
+                ],
+              ),
+            ));
+          },
+        )));
+  });
 
   testWidgets("Pill Widget - Info Icon Display and Tooltip", (WidgetTester tester) async {
     const PillToTake pillWithInfo = PillToTake(
