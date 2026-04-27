@@ -30,7 +30,7 @@ class DayWidget extends StatefulWidget {
 class _DayWidgetState extends State<DayWidget> {
   // Local copy of the pill list, kept in sync with bloc via BlocConsumer.
   // Mutated immediately on dismiss so Dismissible is satisfied synchronously.
-  List<PillToTake>? _localPills;
+  List<PillToTake> _localPills = [];
 
   // Track names of pills dismissed locally but not yet confirmed removed by
   // the bloc, so we don't re-introduce them prematurely from a stale emission.
@@ -45,9 +45,11 @@ class _DayWidgetState extends State<DayWidget> {
     super.initState();
     // Seed from the current bloc state so the list is populated on the very
     // first build, before the BlocConsumer listener has a chance to fire.
-    final currentState = context.read<PillBloc>().state;
-    if (currentState.pillsToTake != null) {
-      _localPills = List.from(currentState.pillsToTake!);
+    if (widget.mode == DayWidgetMode.toTake) {
+      final pills = context.read<PillBloc>().state.pillsToTake;
+      if (pills != null) {
+        _localPills = List.from(pills);
+      }
     }
   }
 
@@ -82,8 +84,7 @@ class _DayWidgetState extends State<DayWidget> {
   }
 
   Widget _pillsToTakeList(BuildContext context) {
-    final pills = _localPills;
-    if (pills == null || pills.isEmpty) {
+    if (_localPills.isEmpty) {
       return Padding(
           padding: const EdgeInsets.only(top: 20),
           child: Text(_header,
@@ -92,9 +93,9 @@ class _DayWidgetState extends State<DayWidget> {
     }
 
     return ListView.builder(
-      itemCount: pills.length,
+      itemCount: _localPills.length,
       itemBuilder: (_, index) {
-        final pill = pills[index];
+        final pill = _localPills[index];
         return Dismissible(
           key: ObjectKey(pill.pillName),
           direction: DismissDirection.endToStart,
@@ -121,7 +122,7 @@ class _DayWidgetState extends State<DayWidget> {
 
             // Remove from local list immediately — Flutter requires this.
             setState(() {
-              _localPills!.remove(pill);
+              _localPills.remove(pill);
               _locallyRemovedNames.add(pill.pillName.trim().toLowerCase());
             });
 
