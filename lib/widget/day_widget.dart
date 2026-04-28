@@ -213,6 +213,14 @@ class _DayWidgetState extends State<DayWidget> {
                       ? List<PillToTake>.from(state.pillsToTake!)
                       : <PillToTake>[];
 
+                  // Clear confirmed removals: if a name in _locallyRemovedNames
+                  // is no longer in blocPills, the removal has been processed.
+                  final blocPillNames = blocPills
+                      .map((p) => p.pillName.trim().toLowerCase())
+                      .toSet();
+                  _locallyRemovedNames
+                      .removeWhere((name) => !blocPillNames.contains(name));
+
                   // If the bloc is emitting a state that still contains a pill
                   // we dismissed locally (dismiss animation still in flight),
                   // ignore it — we'll get another emission once removal lands.
@@ -227,7 +235,10 @@ class _DayWidgetState extends State<DayWidget> {
                 },
                 buildWhen: (previous, current) {
                   if (widget.mode == DayWidgetMode.toTake) {
-                    return !listEquals(previous.pillsToTake, current.pillsToTake);
+                    // In toTake mode, UI is driven by _localPills which is updated
+                    // via setState in the listener. Returning false here avoids
+                    // redundant rebuilds from the bloc emission itself.
+                    return false;
                   }
                   return !listEquals(previous.pillsTaken, current.pillsTaken);
                 },
