@@ -201,11 +201,13 @@ class _DayWidgetState extends State<DayWidget> {
             ),
             Expanded(
               child: BlocConsumer<PillBloc, PillState>(
-                // Always listen in toTake mode so that undo — which restores
-                // the list to a state equal to a previous one — still triggers
-                // the listener despite Equatable seeing no change.
+                // Only listen in toTake mode when the pillsToTake list actually
+                // changes. We check list equality explicitly to ensure we don't
+                // trigger on unrelated state changes (like pillsTaken updates)
+                // which could interrupt local animations.
                 listenWhen: (previous, current) =>
-                widget.mode == DayWidgetMode.toTake,
+                    widget.mode == DayWidgetMode.toTake &&
+                    !listEquals(previous.pillsToTake, current.pillsToTake),
                 listener: (context, state) {
                   final blocPills = state.pillsToTake != null
                       ? List<PillToTake>.from(state.pillsToTake!)
@@ -225,7 +227,7 @@ class _DayWidgetState extends State<DayWidget> {
                 },
                 buildWhen: (previous, current) {
                   if (widget.mode == DayWidgetMode.toTake) {
-                    return true;
+                    return !listEquals(previous.pillsToTake, current.pillsToTake);
                   }
                   return !listEquals(previous.pillsTaken, current.pillsTaken);
                 },
