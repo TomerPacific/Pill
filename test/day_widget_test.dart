@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MockDateService extends DateService {
   final DateTime _now;
   MockDateService(this._now);
+
   @override
   DateTime now() => _now;
 }
@@ -36,8 +37,7 @@ void main() {
     testDateDisplayStr = dateService.formatDateForDisplay(testDate);
 
     SharedPreferences.setMockInitialValues({});
-    sharedPreferencesService =
-    await SharedPreferencesService.create(dateService);
+    sharedPreferencesService = await SharedPreferencesService.create(dateService);
     pillBloc = PillBloc(sharedPreferencesService, dateService);
   });
 
@@ -49,15 +49,18 @@ void main() {
   /// bloc to emit the new state before returning. Uses tester.runAsync so that
   /// real async (SharedPreferences) can complete inside the fake-async zone.
   Future<void> seedBlocState(
-      WidgetTester tester, Future<void> Function() serviceSetup) async {
+      WidgetTester tester,
+      Future<void> Function() serviceSetup,
+      ) async {
     await serviceSetup();
     await tester.runAsync(() async {
+      final future =
+      pillBloc.stream.firstWhere((state) => state.pillsToTake != null);
       pillBloc.add(PillsEvent(
         eventName: PillEvent.loadPills,
         date: testDateStorageStr,
       ));
-      // Wait for the state that actually contains the loaded data (even if empty list).
-      await pillBloc.stream.firstWhere((state) => state.pillsToTake != null);
+      await future;
     });
   }
 
@@ -80,7 +83,8 @@ void main() {
     );
   }
 
-  testWidgets('DayWidget renders empty state and updates when a pill is added',
+  testWidgets(
+      'DayWidget renders empty state and updates when a pill is added',
           (WidgetTester tester) async {
         await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
         await tester.pumpAndSettle();
@@ -89,7 +93,10 @@ void main() {
         expect(find.text(testDateDisplayStr), findsOneWidget);
 
         const pill = PillToTake(
-            pillName: 'Test Pill', pillRegiment: 1, amountOfDaysToTake: 1);
+          pillName: 'Test Pill',
+          pillRegiment: 1,
+          amountOfDaysToTake: 1,
+        );
 
         await seedBlocState(tester, () async {
           await sharedPreferencesService.addPillToDates(testDate, pill);
@@ -111,13 +118,17 @@ void main() {
         expect(find.text(pillsTakenHeader), findsOneWidget);
 
         const pill = PillToTake(
-            pillName: 'Taken Pill', pillRegiment: 1, amountOfDaysToTake: 1);
+          pillName: 'Taken Pill',
+          pillRegiment: 1,
+          amountOfDaysToTake: 1,
+        );
 
         await seedBlocState(tester, () async {
           await sharedPreferencesService.addPillToDates(testDate, pill);
           await sharedPreferencesService.updatePillForDate(
-              pill.copyWith(pillRegiment: 0, lastTaken: testDate),
-              testDateStorageStr);
+            pill.copyWith(pillRegiment: 0, lastTaken: testDate),
+            testDateStorageStr,
+          );
         });
 
         await tester.pump();
@@ -138,9 +149,13 @@ void main() {
 
         await seedBlocState(tester, () async {
           await sharedPreferencesService.addPillToDates(
-              testDate,
-              const PillToTake(
-                  pillName: 'Layout Pill', pillRegiment: 1, amountOfDaysToTake: 1));
+            testDate,
+            const PillToTake(
+              pillName: 'Layout Pill',
+              pillRegiment: 1,
+              amountOfDaysToTake: 1,
+            ),
+          );
         });
 
         await tester.pump();
@@ -152,7 +167,10 @@ void main() {
   testWidgets('DayWidget dismisses pill, shows SnackBar, and undos',
           (WidgetTester tester) async {
         const pill = PillToTake(
-            pillName: 'Dismiss Pill', pillRegiment: 1, amountOfDaysToTake: 1);
+          pillName: 'Dismiss Pill',
+          pillRegiment: 1,
+          amountOfDaysToTake: 1,
+        );
 
         await seedBlocState(tester, () async {
           await sharedPreferencesService.addPillToDates(testDate, pill);
@@ -193,7 +211,10 @@ void main() {
   testWidgets('DayWidget Snackbar disappears after duration',
           (WidgetTester tester) async {
         const pill = PillToTake(
-            pillName: 'Timed Pill', pillRegiment: 1, amountOfDaysToTake: 1);
+          pillName: 'Timed Pill',
+          pillRegiment: 1,
+          amountOfDaysToTake: 1,
+        );
 
         await seedBlocState(tester, () async {
           await sharedPreferencesService.addPillToDates(testDate, pill);
@@ -281,7 +302,10 @@ void main() {
   testWidgets('DayWidget swipe start-to-end does NOT dismiss',
           (WidgetTester tester) async {
         const pill = PillToTake(
-            pillName: 'No Dismiss Pill', pillRegiment: 1, amountOfDaysToTake: 1);
+          pillName: 'No Dismiss Pill',
+          pillRegiment: 1,
+          amountOfDaysToTake: 1,
+        );
 
         await seedBlocState(tester, () async {
           await sharedPreferencesService.addPillToDates(testDate, pill);
@@ -299,5 +323,130 @@ void main() {
         expect(find.byType(PillWidget), findsOneWidget);
         expect(find.text('No Dismiss Pill'), findsOneWidget);
         expect(find.text('No Dismiss Pill removed'), findsNothing);
+      });
+
+  testWidgets(
+      'DayWidget (toTake) ignores state changes where only pillsTaken differs (regression test)',
+          (WidgetTester tester) async {
+        const pill = PillToTake(
+          pillName: 'Stable Pill',
+          pillRegiment: 1,
+          amountOfDaysToTake: 1,
+        );
+
+        await seedBlocState(tester, () async {
+          await sharedPreferencesService.addPillToDates(testDate, pill);
+        });
+
+        await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Stable Pill'), findsOneWidget);
+
+        await tester.runAsync(() async {
+          // Use addTakenPill directly to avoid lookup failures and ensure emission.
+          await sharedPreferencesService.addTakenPill(
+            const PillToTake(
+              pillName: 'Other Taken Pill',
+              pillRegiment: 0,
+              amountOfDaysToTake: 1,
+            ),
+            testDateStorageStr,
+          );
+
+          final future = pillBloc.stream.firstWhere(
+                (state) =>
+            state.pillsTaken?.any((p) => p.pillName == 'Other Taken Pill') ??
+                false,
+          );
+
+          pillBloc.add(PillsEvent(
+            eventName: PillEvent.loadPills,
+            date: testDateStorageStr,
+          ));
+
+          await future;
+        });
+
+        await tester.pump();
+        expect(find.text('Stable Pill'), findsOneWidget);
+      });
+
+  testWidgets(
+      'DayWidget (toTake) does not interrupt an ongoing dismiss animation when pillsTaken changes',
+          (WidgetTester tester) async {
+        const pill = PillToTake(
+          pillName: 'Animating Pill',
+          pillRegiment: 1,
+          amountOfDaysToTake: 1,
+        );
+
+        await seedBlocState(tester, () async {
+          await sharedPreferencesService.addPillToDates(testDate, pill);
+        });
+
+        await tester.pumpWidget(createWidgetUnderTest(mode: DayWidgetMode.toTake));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Animating Pill'), findsOneWidget);
+
+        // Use a consistent surface size.
+        tester.view.physicalSize = const Size(800, 600);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+        addTearDown(() => tester.view.resetDevicePixelRatio());
+
+        // Start a drag but don't release yet.
+        final itemFinder = find.text('Animating Pill');
+        final gesture = await tester.startGesture(tester.getCenter(itemFinder));
+        await tester.pump(); // Register the touch down
+        
+        // Swipe to the left in increments. 
+        // We move enough to reveal the background text 'Delete'.
+        for (int i = 0; i < 4; i++) {
+          await gesture.moveBy(const Offset(-100, 0));
+          await tester.pump(const Duration(milliseconds: 10));
+        }
+
+        // We use skipOffstage: false to be robust during the animation.
+        expect(find.text('Delete', skipOffstage: false), findsOneWidget);
+
+        await tester.runAsync(() async {
+          // Add a taken pill to trigger a state update.
+          await sharedPreferencesService.addTakenPill(
+            const PillToTake(
+              pillName: 'Other Taken',
+              pillRegiment: 0,
+              amountOfDaysToTake: 1,
+            ),
+            testDateStorageStr,
+          );
+
+          final future = pillBloc.stream.firstWhere(
+                (state) =>
+            state.pillsTaken?.any((p) => p.pillName == 'Other Taken') ?? false,
+          );
+
+          pillBloc.add(PillsEvent(
+            eventName: PillEvent.loadPills,
+            date: testDateStorageStr,
+          ));
+          await future;
+        });
+
+        // Pump to let the bloc update potentially propagate.
+        // It shouldn't trigger a rebuild of the toTake list.
+        await tester.pump();
+
+        // Verify the background is still visible.
+        expect(find.text('Delete', skipOffstage: false), findsOneWidget);
+
+        // Finish the gesture.
+        await gesture.moveBy(const Offset(-100, 0));
+        await gesture.up();
+        await tester.pumpAndSettle();
+
+        expect(find.text('Animating Pill'), findsNothing);
+        expect(find.text('Animating Pill removed'), findsOneWidget);
       });
 }
