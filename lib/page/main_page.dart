@@ -102,7 +102,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
             appBar: _MainPageAppBar(
               key: const ValueKey('MainPageAppBar'),
               onPillsTabTapped: _loadPillsForToday,
-              onSettingsTabTapped: () => _updateNow(),
+              onSettingsTabTapped: () {
+                context
+                    .read<ClearPillsBloc>()
+                    .add(ClearPillsEvent.updatePillsStatus);
+              },
             ),
             body: _MainPageTabBarView(
               key: const ValueKey('MainPageTabBarView'),
@@ -142,9 +146,6 @@ class _MainPageAppBar extends StatelessWidget implements PreferredSizeWidget {
               break;
             case settingsTabIndex:
               onSettingsTabTapped();
-              context
-                  .read<ClearPillsBloc>()
-                  .add(ClearPillsEvent.updatePillsStatus);
               break;
           }
         },
